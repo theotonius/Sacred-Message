@@ -55,10 +55,10 @@ export const geminiService = {
     try {
       const response = await ai.models.generateContent({
         model: "gemini-3-flash-preview",
-        contents: `Analyze the following spiritual text or song lyrics: "${query}". 
-        Provide a deep, poetic, and soulful explanation in Bengali.`,
+        contents: `Analyze the following Biblical text or verse: "${query}". 
+        Provide a deep, poetic, and soulful explanation in Bengali based on Christian theology.`,
         config: {
-          systemInstruction: "You are 'Sacred Word', a divine lyrical scholar. Analyze inputs with deep emotional intelligence. Output strictly valid JSON. All string values must be in Bengali script.",
+          systemInstruction: "You are 'Sacred Word', a divine Biblical scholar and Christian theologian. Analyze inputs strictly through a Biblical lens. Provide poetic and soulful explanations in Bengali based on Christian scripture and doctrine. If the input is not related to the Bible, politely explain that you only provide Biblical insights. Output strictly valid JSON. All string values must be in Bengali script.",
           responseMimeType: "application/json",
           responseSchema: {
             type: Type.OBJECT,
@@ -97,7 +97,7 @@ export const geminiService = {
     const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
     const response = await ai.models.generateContent({
       model: "gemini-2.5-flash-preview-tts",
-      contents: [{ parts: [{ text: `দয়া করে এটি ভক্তিভরে পাঠ করুন: ${text}` }] }],
+      contents: [{ parts: [{ text: `দয়া করে এই পবিত্র বাইবেলের পদটি ভক্তিভরে পাঠ করুন: ${text}` }] }],
       config: {
         responseModalities: [Modality.AUDIO],
         speechConfig: {

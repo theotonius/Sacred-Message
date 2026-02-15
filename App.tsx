@@ -113,7 +113,7 @@ export default function App() {
             <h1 className="text-4xl font-black text-white leading-none bn-serif tracking-tight">
               পবিত্র <span className="text-divine-gold">বানী</span>
             </h1>
-            <p className="text-[10px] text-amber-500/60 font-black uppercase tracking-[0.4em] mt-2">Heavenly Interpretation AI</p>
+            <p className="text-[10px] text-amber-500/60 font-black uppercase tracking-[0.4em] mt-2">Biblical Theology AI</p>
           </div>
         </div>
         
@@ -130,7 +130,7 @@ export default function App() {
             {/* Professional Search Area */}
             <div className="max-w-4xl mx-auto mt-12">
               <div className="text-center mb-12">
-                <h2 className="text-white text-xl font-medium tracking-widest uppercase mb-4 opacity-40">Seek Divine Wisdom</h2>
+                <h2 className="text-white text-xl font-medium tracking-widest uppercase mb-4 opacity-40">Seek Biblical Wisdom</h2>
                 <div className="h-0.5 w-16 bg-amber-500 mx-auto rounded-full"></div>
               </div>
               
@@ -140,7 +140,7 @@ export default function App() {
                   <input 
                     value={query} 
                     onChange={e => setQuery(e.target.value)}
-                    placeholder="পবিত্র বাণী বা সংগীতের চরণ লিখুন..."
+                    placeholder="পবিত্র বাইবেলের পদ বা অধ্যায় লিখুন..."
                     className="w-full bg-slate-900/60 backdrop-blur-3xl border border-white/10 pl-10 pr-48 py-8 rounded-[2.5rem] text-2xl outline-none focus:ring-1 ring-amber-500/50 transition-all placeholder-slate-600 text-white font-medium shadow-3xl bn-serif"
                   />
                   <div className="absolute right-3 top-1/2 -translate-y-1/2 flex gap-2">
@@ -151,7 +151,7 @@ export default function App() {
                       >
                         <div className="absolute inset-0 bg-white/10 translate-y-full group-hover/btn:translate-y-0 transition-transform"></div>
                         {state === AppState.SEARCHING ? <i className="fa-solid fa-spinner fa-spin"></i> : <i className="fa-solid fa-wand-sparkles"></i>}
-                        <span className="relative z-10">বিশ্লেষণ</span>
+                        <span className="relative z-10">বাইবেলীয় বিশ্লেষণ</span>
                       </button>
                   </div>
                 </div>
@@ -166,8 +166,8 @@ export default function App() {
                   <i className="fa-solid fa-cross text-amber-500 text-2xl absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"></i>
                 </div>
                 <div className="text-center">
-                  <h3 className="text-white text-2xl font-bold bn-serif mb-2">ঐশ্বরিক অন্তর্দৃষ্টি খোঁজা হচ্ছে</h3>
-                  <p className="text-slate-500 text-[10px] uppercase tracking-[0.5em] font-black">Sacred Word AI is thinking...</p>
+                  <h3 className="text-white text-2xl font-bold bn-serif mb-2">ঐশ্বরিক বাইবেলীয় অন্তর্দৃষ্টি খোঁজা হচ্ছে</h3>
+                  <p className="text-slate-500 text-[10px] uppercase tracking-[0.5em] font-black">Biblical AI is meditating...</p>
                 </div>
               </div>
             )}
@@ -186,7 +186,7 @@ export default function App() {
                 {/* Main Quote Card */}
                 <div className="relative group">
                   <div className="absolute -inset-4 bg-amber-500/5 rounded-[4rem] blur-2xl group-hover:bg-amber-500/10 transition-all duration-700"></div>
-                  <div className="relative bg-slate-900/40 backdrop-blur-3xl p-16 md:p-24 rounded-[4rem] border border-white/5 overflow-hidden text-center shadow-2xl">
+                  <div className="relative bg-slate-900/40 backdrop-blur-3xl p-12 md:p-20 rounded-[4rem] border border-white/5 overflow-hidden text-center shadow-2xl">
                     <div className="absolute top-10 right-10 flex gap-4">
                       <button onClick={toggleSave} className={`w-14 h-14 flex items-center justify-center rounded-2xl divine-glass transition-all ${savedVerses.find(v => v.reference === currentVerse.reference) ? 'text-amber-400 bg-amber-500/10' : 'text-slate-500 hover:text-slate-300'}`}>
                         <i className={`fa-solid ${savedVerses.find(v => v.reference === currentVerse.reference) ? 'fa-bookmark' : 'fa-bookmark-o'}`}></i>
@@ -196,55 +196,56 @@ export default function App() {
                       </button>
                     </div>
 
-                    <div className="mb-12">
-                      <i className="fa-solid fa-quote-left text-amber-500/20 text-6xl mb-6"></i>
-                      <h2 className="text-4xl md:text-6xl font-bold text-white leading-[1.4] bn-serif italic px-4 drop-shadow-xl">
+                    <div className="mb-10">
+                      <i className="fa-solid fa-quote-left text-amber-500/20 text-5xl mb-6"></i>
+                      {/* Standardized Font Size for the main verse */}
+                      <h2 className="text-lg md:text-2xl font-bold text-white leading-relaxed bn-serif italic px-4 drop-shadow-xl max-w-4xl mx-auto">
                         {currentVerse.text}
                       </h2>
                     </div>
                     
-                    <div className="inline-flex items-center gap-6 px-10 py-4 bg-amber-500/10 rounded-full border border-amber-500/20 shadow-inner">
+                    <div className="inline-flex items-center gap-6 px-10 py-3.5 bg-amber-500/10 rounded-full border border-amber-500/20 shadow-inner">
                       <div className="w-1.5 h-1.5 bg-amber-500 rounded-full animate-pulse"></div>
-                      <p className="text-amber-500 font-black tracking-[0.2em] text-xl bn-serif">{currentVerse.reference}</p>
+                      <p className="text-amber-500 font-black tracking-[0.2em] text-base md:text-lg bn-serif">{currentVerse.reference}</p>
                       <div className="w-1.5 h-1.5 bg-amber-500 rounded-full animate-pulse"></div>
                     </div>
                   </div>
                 </div>
 
-                {/* Professional Analysis Sections */}
+                {/* Professional Analysis Sections - Standardized Font Size */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                   <div className="divine-card p-10 rounded-[3rem] space-y-6">
                     <div className="w-16 h-16 bg-amber-500/10 rounded-2xl flex items-center justify-center text-amber-500 text-2xl shadow-inner">
-                      <i className="fa-solid fa-lightbulb"></i>
+                      <i className="fa-solid fa-church"></i>
                     </div>
                     <h4 className="text-xl font-black text-amber-400 bn-serif flex items-center gap-3">
-                      ভাবার্থ ও মর্ম
+                      তাত্ত্বিক অর্থ
                     </h4>
-                    <p className="text-slate-300 text-lg leading-relaxed bn-serif italic font-light">
+                    <p className="text-slate-300 text-base md:text-lg leading-relaxed bn-serif italic font-light">
                       {currentVerse.explanation.theologicalMeaning}
                     </p>
                   </div>
 
                   <div className="divine-card p-10 rounded-[3rem] space-y-6">
                     <div className="w-16 h-16 bg-blue-500/10 rounded-2xl flex items-center justify-center text-blue-400 text-2xl shadow-inner">
-                      <i className="fa-solid fa-scroll"></i>
+                      <i className="fa-solid fa-book-open-reader"></i>
                     </div>
                     <h4 className="text-xl font-black text-blue-400 bn-serif flex items-center gap-3">
-                      প্রেক্ষাপট ও ইতিহাস
+                      শাস্ত্রীয় প্রেক্ষাপট
                     </h4>
-                    <p className="text-slate-400 text-lg leading-relaxed bn-serif font-light">
+                    <p className="text-slate-400 text-base md:text-lg leading-relaxed bn-serif font-light">
                       {currentVerse.explanation.historicalContext}
                     </p>
                   </div>
 
                   <div className="divine-card p-10 rounded-[3rem] space-y-6">
                     <div className="w-16 h-16 bg-emerald-500/10 rounded-2xl flex items-center justify-center text-emerald-400 text-2xl shadow-inner">
-                      <i className="fa-solid fa-seedling"></i>
+                      <i className="fa-solid fa-cross"></i>
                     </div>
                     <h4 className="text-xl font-black text-emerald-400 bn-serif flex items-center gap-3">
-                      জীবনচর্চায় প্রয়োগ
+                      খ্রিস্টীয় জীবনচর্চা
                     </h4>
-                    <p className="text-slate-300 text-lg leading-relaxed bn-serif italic font-light">
+                    <p className="text-slate-300 text-base md:text-lg leading-relaxed bn-serif italic font-light">
                       {currentVerse.explanation.practicalApplication}
                     </p>
                   </div>
@@ -265,32 +266,32 @@ export default function App() {
             {!currentVerse && state === AppState.IDLE && (
               <div className="max-w-4xl mx-auto space-y-8">
                 <div className="text-center opacity-40">
-                  <p className="text-[10px] font-black uppercase tracking-[0.5em] mb-6">Suggested Passages</p>
+                  <p className="text-[10px] font-black uppercase tracking-[0.5em] mb-6">Suggested Bible Passages</p>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <RecommendItem 
-                    title="আমি বাংলায় গান গাই" 
-                    desc="Cultural Spiritualism" 
-                    icon="fa-music"
-                    onClick={() => handleSearch('আমি বাংলায় গান গাই')} 
+                    title="গীতসংহিতা ২৩" 
+                    desc="Divine Protection" 
+                    icon="fa-hands-praying"
+                    onClick={() => handleSearch('গীতসংহিতা ২৩')} 
                   />
                   <RecommendItem 
                     title="যোহন ৩:১৬" 
-                    desc="Biblical Foundation" 
-                    icon="fa-book-bible"
+                    desc="God's Love" 
+                    icon="fa-heart"
                     onClick={() => handleSearch('যোহন ৩:১৬')} 
                   />
                   <RecommendItem 
-                    title="সুরা আল-ফাতিহা" 
-                    desc="Divine Guidance" 
-                    icon="fa-mosque"
-                    onClick={() => handleSearch('সুরা আল-ফাতিহা')} 
+                    title="রোমীয় ৮:২৮" 
+                    desc="Divine Purpose" 
+                    icon="fa-shield-halved"
+                    onClick={() => handleSearch('রোমীয় ৮:২৮')} 
                   />
                   <RecommendItem 
-                    title="ধনধান্য পুষ্প ভরা" 
-                    desc="Patriotic Devotion" 
-                    icon="fa-flag"
-                    onClick={() => handleSearch('ধনধান্য পুষ্প ভরা')} 
+                    title="মথি ৫:৩-১২" 
+                    desc="The Beatitudes" 
+                    icon="fa-mountain-sun"
+                    onClick={() => handleSearch('মথি ৫:৩-১২')} 
                   />
                 </div>
               </div>
@@ -308,9 +309,9 @@ export default function App() {
 
             {savedVerses.length === 0 ? (
               <div className="divine-glass p-32 text-center rounded-[5rem] opacity-40">
-                <i className="fa-solid fa-folder-open text-7xl mb-8"></i>
-                <p className="text-2xl bn-serif italic">বর্তমানে কোনো সংরক্ষিত বাণী নেই</p>
-                <button onClick={() => setActiveView('SEARCH')} className="mt-10 px-12 py-5 bg-amber-500 text-black font-black rounded-2xl hover:scale-105 transition-all">বাণী খুঁজুন</button>
+                <i className="fa-solid fa-book-bible text-7xl mb-8"></i>
+                <p className="text-2xl bn-serif italic">বর্তমানে কোনো সংরক্ষিত পদ নেই</p>
+                <button onClick={() => setActiveView('SEARCH')} className="mt-10 px-12 py-5 bg-amber-500 text-black font-black rounded-2xl hover:scale-105 transition-all">বাইবেলের পদ খুঁজুন</button>
               </div>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -362,8 +363,8 @@ export default function App() {
                 </div>
 
                 <div className="pt-10 border-t border-white/5 flex justify-between items-center opacity-40">
-                   <p className="text-[10px] font-black uppercase tracking-[0.3em]">Version 2.5 Divine Edition</p>
-                   <p className="text-[10px] font-black uppercase tracking-[0.3em]">© পবিত্র বানী AI</p>
+                   <p className="text-[10px] font-black uppercase tracking-[0.3em]">Version 3.0 Biblical Edition</p>
+                   <p className="text-[10px] font-black uppercase tracking-[0.3em]">© পবিত্র বানী (Biblical AI)</p>
                 </div>
              </div>
           </div>
