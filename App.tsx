@@ -159,6 +159,13 @@ export default function App() {
     return Array.from(new Set(allTags));
   }, [savedVerses]);
 
+  const tagSuggestions = useMemo(() => {
+    if (!newTagValue.trim()) return [];
+    return uniqueTags.filter(tag => 
+      tag.toLowerCase().includes(newTagValue.toLowerCase())
+    ).slice(0, 5);
+  }, [newTagValue, uniqueTags]);
+
   const filteredVerses = useMemo(() => {
     if (!filterTag) return savedVerses;
     return savedVerses.filter(v => (v.tags || []).includes(filterTag));
@@ -495,21 +502,36 @@ export default function App() {
                       </div>
 
                       {newTagInputId === v.id && (
-                        <div className="mt-6 flex gap-2 animate-in fade-in slide-in-from-bottom-2 duration-300" onClick={e => e.stopPropagation()}>
-                          <input 
-                            autoFocus
-                            value={newTagValue}
-                            onChange={e => setNewTagValue(e.target.value)}
-                            onKeyDown={e => { if (e.key === 'Enter') addTagToVerse(v.id, newTagValue); if (e.key === 'Escape') setNewTagInputId(null); }}
-                            placeholder="ট্যাগ লিখুন.."
-                            className={`flex-1 bg-white/5 border border-white/10 rounded-2xl px-5 py-3 text-xs outline-none focus:ring-1 ring-amber-500/50 ${theme === 'dark' ? 'text-white' : 'text-slate-900'} bn-serif`}
-                          />
-                          <button 
-                            onClick={() => addTagToVerse(v.id, newTagValue)}
-                            className="bg-amber-600 text-white p-3 rounded-2xl shadow-lg active:scale-90"
-                          >
-                            <i className="fa-solid fa-check"></i>
-                          </button>
+                        <div className="mt-6 space-y-4 animate-in fade-in slide-in-from-bottom-2 duration-300" onClick={e => e.stopPropagation()}>
+                          {tagSuggestions.length > 0 && (
+                            <div className="flex flex-wrap gap-2">
+                              {tagSuggestions.map(suggestion => (
+                                <button 
+                                  key={suggestion}
+                                  onClick={() => addTagToVerse(v.id, suggestion)}
+                                  className="px-3 py-1.5 bg-amber-500/10 border border-amber-500/20 rounded-full text-[10px] font-black text-amber-500 uppercase tracking-widest hover:bg-amber-500 hover:text-white transition-all"
+                                >
+                                  {suggestion}
+                                </button>
+                              ))}
+                            </div>
+                          )}
+                          <div className="flex gap-2">
+                            <input 
+                              autoFocus
+                              value={newTagValue}
+                              onChange={e => setNewTagValue(e.target.value)}
+                              onKeyDown={e => { if (e.key === 'Enter') addTagToVerse(v.id, newTagValue); if (e.key === 'Escape') setNewTagInputId(null); }}
+                              placeholder="ট্যাগ লিখুন.."
+                              className={`flex-1 bg-white/5 border border-white/10 rounded-2xl px-5 py-3 text-xs outline-none focus:ring-1 ring-amber-500/50 ${theme === 'dark' ? 'text-white' : 'text-slate-900'} bn-serif`}
+                            />
+                            <button 
+                              onClick={() => addTagToVerse(v.id, newTagValue)}
+                              className="bg-amber-600 text-white p-3 rounded-2xl shadow-lg active:scale-90"
+                            >
+                              <i className="fa-solid fa-check"></i>
+                            </button>
+                          </div>
                         </div>
                       )}
                     </div>
