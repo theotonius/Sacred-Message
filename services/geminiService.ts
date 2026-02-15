@@ -2,7 +2,7 @@
 import { GoogleGenAI, Type, Modality } from "@google/genai";
 import { VerseData } from "../types";
 
-// Manual base64 decode function
+// Standard base64 decode for audio handling
 function decode(base64: string) {
   const binaryString = window.atob(base64);
   const len = binaryString.length;
@@ -13,7 +13,7 @@ function decode(base64: string) {
   return bytes;
 }
 
-// Custom raw PCM audio decoding logic
+// Decode raw PCM audio from the API
 async function decodeAudioData(
   data: Uint8Array,
   ctx: AudioContext,
@@ -33,7 +33,7 @@ async function decodeAudioData(
   return buffer;
 }
 
-// Enhanced JSON extraction from potential markdown response
+// Robust JSON extraction helper
 function extractJson(text: string): any {
   try {
     const jsonMatch = text.match(/\{[\s\S]*\}/);
@@ -49,32 +49,32 @@ function extractJson(text: string): any {
 
 export const geminiService = {
   async fetchVerseExplanation(query: string): Promise<VerseData> {
-    // Access API_KEY directly as required by guidelines
+    // Strictly using process.env.API_KEY as per guidelines
     const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
     
     try {
       const response = await ai.models.generateContent({
         model: "gemini-3-flash-preview",
         contents: `Analyze the following spiritual text or song lyrics: "${query}". 
-        Provide a deep, poetic explanation in Bengali.`,
+        Provide a deep, poetic, and soulful explanation in Bengali.`,
         config: {
-          systemInstruction: "You are a professional Bengali Literary and Spiritual Scholar. Analyze the input text. If it is a song, identify its soul/mood. If it is a scripture, explain its meaning. ALWAYS output in valid JSON. All values must be in Bengali script.",
+          systemInstruction: "You are a world-class Bengali Lyrical and Spiritual Scholar. Analyze the input carefully. If it's a song, describe its emotional depth. If it's a verse, explain its wisdom. ALWAYS output in valid JSON. All values must be in Bengali script.",
           responseMimeType: "application/json",
           responseSchema: {
             type: Type.OBJECT,
             properties: {
-              reference: { type: Type.STRING, description: "Title or Reference" },
-              text: { type: Type.STRING, description: "The original text snippet" },
+              reference: { type: Type.STRING, description: "Title or Source" },
+              text: { type: Type.STRING, description: "The original lyric/verse snippet" },
               explanation: {
                 type: Type.OBJECT,
                 properties: {
-                  theologicalMeaning: { type: Type.STRING, description: "Inner spiritual meaning" },
-                  historicalContext: { type: Type.STRING, description: "Contextual background" },
-                  practicalApplication: { type: Type.STRING, description: "Life application" },
+                  theologicalMeaning: { type: Type.STRING, description: "Inner spiritual essence" },
+                  historicalContext: { type: Type.STRING, description: "Background info" },
+                  practicalApplication: { type: Type.STRING, description: "Personal reflection" },
                 },
                 required: ["theologicalMeaning", "historicalContext", "practicalApplication"]
               },
-              keyThemes: { type: Type.ARRAY, items: { type: Type.STRING }, description: "3-4 Bengali theme tags" }
+              keyThemes: { type: Type.ARRAY, items: { type: Type.STRING }, description: "3-4 Bengali keyword tags" }
             },
             required: ["reference", "text", "explanation", "keyThemes"]
           }
@@ -88,8 +88,8 @@ export const geminiService = {
         timestamp: Date.now()
       };
     } catch (error: any) {
-      console.error("Gemini API Error:", error);
-      throw new Error("তথ্য খুঁজে পাওয়া যায়নি বা এপিআই কী-তে সমস্যা রয়েছে।");
+      console.error("Gemini API Request Error:", error);
+      throw new Error("দুঃখিত, তথ্যটি খুঁজে পাওয়া যাচ্ছে না। আপনার ইন্টারনেট সংযোগ বা এপিআই সেটিংস চেক করুন।");
     }
   },
 
@@ -97,7 +97,7 @@ export const geminiService = {
     const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
     const response = await ai.models.generateContent({
       model: "gemini-2.5-flash-preview-tts",
-      contents: [{ parts: [{ text: `দয়া করে এই অংশটি স্পষ্ট ও ভক্তিভরে পাঠ করুন: ${text}` }] }],
+      contents: [{ parts: [{ text: `দয়া করে এই লিরিক্সটি অত্যন্ত ভক্তি ও আবেগ দিয়ে পাঠ করুন: ${text}` }] }],
       config: {
         responseModalities: [Modality.AUDIO],
         speechConfig: {
