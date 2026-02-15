@@ -17,12 +17,31 @@
         font-style: normal;
       }
 
+      :root {
+        --bg-color: #030712;
+        --text-color: #ffffff;
+        --card-bg: rgba(15, 23, 42, 0.6);
+        --glass-bg: rgba(255, 255, 255, 0.03);
+        --border-color: rgba(255, 255, 255, 0.05);
+        --accent-gold: #fbbf24;
+      }
+
+      .light-theme {
+        --bg-color: #fdfdfb;
+        --text-color: #0f172a;
+        --card-bg: rgba(255, 255, 255, 0.8);
+        --glass-bg: rgba(0, 0, 0, 0.03);
+        --border-color: rgba(0, 0, 0, 0.08);
+        --accent-gold: #d97706;
+      }
+
       body {
         font-family: 'SolaimanLipi', 'Hind Siliguri', sans-serif;
-        background-color: #030712;
-        color: #ffffff;
+        background-color: var(--bg-color);
+        color: var(--text-color);
         margin: 0;
         padding: 0;
+        transition: background-color 0.5s ease, color 0.5s ease;
       }
 
       .bn-serif {
@@ -36,18 +55,18 @@
       }
 
       .divine-glass {
-        background: rgba(255, 255, 255, 0.03);
+        background: var(--glass-bg);
         backdrop-filter: blur(20px);
         -webkit-backdrop-filter: blur(20px);
-        border: 1px solid rgba(255, 255, 255, 0.05);
+        border: 1px solid var(--border-color);
       }
 
       .divine-card {
-        background: rgba(15, 23, 42, 0.6);
+        background: var(--card-bg);
         backdrop-filter: blur(30px);
         -webkit-backdrop-filter: blur(30px);
-        border: 1px solid rgba(255, 255, 255, 0.05);
-        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        border: 1px solid var(--border-color);
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15);
       }
 
       @keyframes float {
