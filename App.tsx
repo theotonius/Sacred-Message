@@ -13,6 +13,19 @@ const NavItem: React.FC<{ icon: string; label: string; active: boolean; onClick:
   </button>
 );
 
+const fonts = [
+  { id: 'SolaimanLipi', name: 'সোলায়মান লিপি' },
+  { id: 'Nikosh', name: 'নিকষ' },
+  { id: 'Hind Siliguri', name: 'হিন্দ শিলিগুড়ি' },
+  { id: 'Mukti', name: 'মুক্তি' },
+  { id: 'Ananda', name: 'আনন্দ' },
+  { id: 'Kalpurush', name: 'কালপুরুষ' },
+  { id: 'SiyamRupali', name: 'সিয়াম রূপালী' },
+  { id: 'AdorshoLipi', name: 'আদর্শ লিপি' },
+  { id: 'Purno Pran', name: 'পূর্ণ প্রাণ' },
+  { id: 'Noto Sans Bengali', name: 'নোটো সান্স' }
+];
+
 export default function App() {
   const [activeView, setActiveView] = useState<View>('SEARCH');
   const [query, setQuery] = useState('');
@@ -22,6 +35,7 @@ export default function App() {
   const [isReading, setIsReading] = useState(false);
   const [selectedVoice, setSelectedVoice] = useState('Kore');
   const [fontSize, setFontSize] = useState('base'); 
+  const [fontFamily, setFontFamily] = useState('SolaimanLipi');
   const [theme, setTheme] = useState('dark');
   const [error, setError] = useState('');
   const [showCopyFeedback, setShowCopyFeedback] = useState(false);
@@ -40,11 +54,17 @@ export default function App() {
     if (storedVoice) setSelectedVoice(storedVoice);
     const storedTheme = localStorage.getItem('sacred_word_theme');
     if (storedTheme) setTheme(storedTheme);
+    const storedFont = localStorage.getItem('sacred_word_font');
+    if (storedFont) setFontFamily(storedFont);
   }, []);
 
   useEffect(() => {
     document.body.className = theme === 'light' ? 'light-theme' : '';
   }, [theme]);
+
+  useEffect(() => {
+    document.documentElement.style.setProperty('--app-font', `'${fontFamily}', 'Hind Siliguri', sans-serif`);
+  }, [fontFamily]);
 
   const saveToLocal = (verses: VerseData[]) => {
     localStorage.setItem('sacred_word_verses', JSON.stringify(verses));
@@ -54,6 +74,11 @@ export default function App() {
   const handleFontSizeChange = (size: string) => {
     setFontSize(size);
     localStorage.setItem('sacred_word_font_size', size);
+  };
+
+  const handleFontChange = (font: string) => {
+    setFontFamily(font);
+    localStorage.setItem('sacred_word_font', font);
   };
 
   const handleVoiceChange = (voice: string) => {
@@ -116,7 +141,6 @@ export default function App() {
           text: shareText,
         });
       } catch (err) {
-        // If sharing failed or was aborted, fall back to clipboard only if not AbortError
         if ((err as Error).name !== 'AbortError') {
           copyToClipboard(shareText);
         }
@@ -368,7 +392,7 @@ export default function App() {
         )}
 
         {activeView === 'SETTINGS' && (
-          <div className="max-w-4xl mx-auto py-12 space-y-12 animate-in fade-in zoom-in-95">
+          <div className="max-w-4xl mx-auto py-12 space-y-12 animate-in fade-in zoom-in-95 pb-32">
              <div className="flex items-center gap-6">
                <div className={`w-16 h-16 ${theme === 'dark' ? 'bg-white/5' : 'bg-black/5'} rounded-3xl flex items-center justify-center text-slate-500`}>
                  <i className="fa-solid fa-sliders text-2xl"></i>
@@ -377,44 +401,64 @@ export default function App() {
              </div>
 
              <div className="space-y-8">
-                <div className="divine-glass p-10 rounded-[4rem] space-y-8">
+                <div className="divine-glass p-8 md:p-10 rounded-[4rem] space-y-10">
+                    {/* Theme Selection */}
                     <div className="space-y-6">
                       <h4 className="text-xs font-black text-amber-600 uppercase tracking-[0.4em] ml-2">থিম পরিবর্তন</h4>
                       <div className="grid grid-cols-2 gap-4">
                           <button 
                             onClick={() => handleThemeChange('dark')} 
-                            className={`p-10 rounded-[2.5rem] border-2 transition-all flex flex-col items-center gap-4 ${theme === 'dark' ? 'bg-amber-500/10 border-amber-500/50 text-amber-500 shadow-[0_0_40px_rgba(251,191,36,0.1)]' : 'bg-black/5 border-transparent text-slate-500 hover:bg-black/10'}`}
+                            className={`p-6 md:p-8 rounded-[2rem] border-2 transition-all flex flex-col items-center gap-3 ${theme === 'dark' ? 'bg-amber-500/10 border-amber-500/50 text-amber-500 shadow-[0_0_40px_rgba(251,191,36,0.1)]' : 'bg-black/5 border-transparent text-slate-500 hover:bg-black/10'}`}
                           >
-                            <i className="fa-solid fa-moon text-2xl opacity-40"></i>
+                            <i className="fa-solid fa-moon text-xl opacity-40"></i>
                             <span className="font-black tracking-widest text-[10px] uppercase">ডার্ক থিম</span>
                           </button>
                           <button 
                             onClick={() => handleThemeChange('light')} 
-                            className={`p-10 rounded-[2.5rem] border-2 transition-all flex flex-col items-center gap-4 ${theme === 'light' ? 'bg-amber-500/10 border-amber-500/50 text-amber-600 shadow-[0_0_40px_rgba(251,191,36,0.1)]' : 'bg-white/5 border-transparent text-slate-400 hover:bg-white/10'}`}
+                            className={`p-6 md:p-8 rounded-[2rem] border-2 transition-all flex flex-col items-center gap-3 ${theme === 'light' ? 'bg-amber-500/10 border-amber-500/50 text-amber-600 shadow-[0_0_40px_rgba(251,191,36,0.1)]' : 'bg-white/5 border-transparent text-slate-400 hover:bg-white/10'}`}
                           >
-                            <i className="fa-solid fa-sun text-2xl opacity-40"></i>
+                            <i className="fa-solid fa-sun text-xl opacity-40"></i>
                             <span className="font-black tracking-widest text-[10px] uppercase">লাইট থিম</span>
                           </button>
                       </div>
                     </div>
 
+                    {/* Font Selection */}
                     <div className={`pt-8 border-t ${theme === 'dark' ? 'border-white/5' : 'border-black/5'} space-y-6`}>
-                      <h4 className="text-xs font-black text-amber-600 uppercase tracking-[0.4em] ml-2">কণ্ঠস্বর নির্বাচন</h4>
-                      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                          {['Kore', 'Zephyr', 'Charon', 'Puck'].map(v => (
-                            <button key={v} onClick={() => handleVoiceChange(v)} className={`p-6 md:p-10 rounded-[2.5rem] border-2 transition-all flex flex-col items-center gap-4 ${selectedVoice === v ? 'bg-amber-500/10 border-amber-500/50 text-amber-500 shadow-[0_0_40px_rgba(251,191,36,0.1)]' : 'bg-white/5 border-transparent text-slate-500 hover:bg-white/10'}`}>
-                              <i className="fa-solid fa-microphone-lines text-2xl opacity-40"></i>
-                              <span className="font-black tracking-widest text-[10px] uppercase">{v} কণ্ঠস্বর</span>
+                      <h4 className="text-xs font-black text-amber-600 uppercase tracking-[0.4em] ml-2">ফন্ট নির্বাচন</h4>
+                      <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                          {fonts.map(f => (
+                            <button 
+                              key={f.id} 
+                              onClick={() => handleFontChange(f.id)} 
+                              style={{ fontFamily: f.id }}
+                              className={`px-6 py-4 rounded-2xl border transition-all text-sm md:text-base ${fontFamily === f.id ? 'bg-amber-500 text-white border-amber-500 shadow-md' : 'bg-white/5 border-white/10 text-slate-400 hover:bg-white/10'}`}
+                            >
+                              {f.name}
                             </button>
                           ))}
                       </div>
                     </div>
 
+                    {/* Voice Selection */}
+                    <div className={`pt-8 border-t ${theme === 'dark' ? 'border-white/5' : 'border-black/5'} space-y-6`}>
+                      <h4 className="text-xs font-black text-amber-600 uppercase tracking-[0.4em] ml-2">কণ্ঠস্বর নির্বাচন</h4>
+                      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                          {['Kore', 'Zephyr', 'Charon', 'Puck'].map(v => (
+                            <button key={v} onClick={() => handleVoiceChange(v)} className={`p-4 md:p-6 rounded-[2rem] border-2 transition-all flex flex-col items-center gap-3 ${selectedVoice === v ? 'bg-amber-500/10 border-amber-500/50 text-amber-500 shadow-[0_0_40px_rgba(251,191,36,0.1)]' : 'bg-white/5 border-transparent text-slate-500 hover:bg-white/10'}`}>
+                              <i className="fa-solid fa-microphone-lines text-xl opacity-40"></i>
+                              <span className="font-black tracking-widest text-[9px] uppercase">{v} কণ্ঠস্বর</span>
+                            </button>
+                          ))}
+                      </div>
+                    </div>
+
+                    {/* Font Size Selection */}
                     <div className={`pt-8 border-t ${theme === 'dark' ? 'border-white/5' : 'border-black/5'} space-y-6`}>
                       <h4 className="text-xs font-black text-amber-600 uppercase tracking-[0.4em] ml-2">পাঠের অক্ষরের আকার</h4>
-                      <div className="flex flex-wrap gap-4">
+                      <div className="flex flex-wrap gap-3">
                           {[{ id: 'sm', label: 'ছোট' }, { id: 'base', label: 'মাঝারি' }, { id: 'lg', label: 'বড়' }, { id: 'xl', label: 'অতিরিক্ত বড়' }].map(size => (
-                            <button key={size.id} onClick={() => handleFontSizeChange(size.id)} className={`px-8 py-4 rounded-2xl border transition-all font-bold bn-serif ${fontSize === size.id ? 'bg-amber-600 text-white border-amber-500 shadow-lg' : 'bg-white/5 border-white/10 text-slate-500 hover:bg-white/10'}`}>{size.label}</button>
+                            <button key={size.id} onClick={() => handleFontSizeChange(size.id)} className={`px-6 py-3 rounded-xl border transition-all font-bold bn-serif text-sm ${fontSize === size.id ? 'bg-amber-500 text-white border-amber-500 shadow-lg' : 'bg-white/5 border-white/10 text-slate-500 hover:bg-white/10'}`}>{size.label}</button>
                           ))}
                       </div>
                     </div>

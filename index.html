@@ -7,6 +7,13 @@
     <title>পবিত্র বানী - Sacred Word AI</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link href="https://fonts.maateen.me/nikosh/font.css" rel="stylesheet">
+    <link href="https://fonts.maateen.me/mukti/font.css" rel="stylesheet">
+    <link href="https://fonts.maateen.me/ananda/font.css" rel="stylesheet">
+    <link href="https://fonts.maateen.me/kalpurush/font.css" rel="stylesheet">
+    <link href="https://fonts.maateen.me/siyam-rupali/font.css" rel="stylesheet">
+    <link href="https://fonts.maateen.me/adorsho-lipi/font.css" rel="stylesheet">
+    <link href="https://fonts.maateen.me/purno-pran/font.css" rel="stylesheet">
     <style>
       @import url('https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@300;400;500;600;700&family=Noto+Sans+Bengali:wght@400;700&family=Noto+Serif+Bengali:wght@400;700&display=swap');
       
@@ -24,6 +31,7 @@
         --glass-bg: rgba(255, 255, 255, 0.03);
         --border-color: rgba(255, 255, 255, 0.05);
         --accent-gold: #fbbf24;
+        --app-font: 'SolaimanLipi', 'Hind Siliguri', sans-serif;
       }
 
       .light-theme {
@@ -36,7 +44,7 @@
       }
 
       body {
-        font-family: 'SolaimanLipi', 'Hind Siliguri', sans-serif;
+        font-family: var(--app-font);
         background-color: var(--bg-color);
         color: var(--text-color);
         margin: 0;
@@ -44,8 +52,14 @@
         transition: background-color 0.5s ease, color 0.5s ease;
       }
 
+      /* Base typography overrides */
+      h1, h2, h3, h4, p, span, button, input {
+        font-family: inherit;
+      }
+
       .bn-serif {
-        font-family: 'SolaimanLipi', 'Noto Serif Bengali', serif;
+        font-family: inherit;
+        font-weight: 500;
       }
 
       .text-divine-gold {
