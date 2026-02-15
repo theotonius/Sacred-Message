@@ -650,21 +650,49 @@ export default function App() {
                     </div>
                 </div>
 
-                <div className="divine-glass p-12 md:p-16 rounded-[4rem] space-y-10 overflow-hidden relative shadow-3xl">
-                   <h4 className="text-base font-black text-amber-600 uppercase tracking-[0.5em] mb-4">ডেভেলপার পরিচিতি</h4>
+                {/* Enhanced Developer Section */}
+                <div className={`relative group overflow-hidden divine-glass p-12 md:p-16 rounded-[4.5rem] shadow-3xl border-2 ${theme === 'dark' ? 'border-white/5 hover:border-amber-500/20' : 'border-black/5 hover:border-amber-500/30'} transition-all duration-700`}>
+                   <div className="absolute top-0 right-0 w-80 h-80 bg-gradient-to-br from-amber-500/10 via-amber-600/5 to-transparent blur-[80px] rounded-full -z-10 transition-opacity group-hover:opacity-100 opacity-60"></div>
+                   
                    <div className="flex flex-col md:flex-row gap-12 items-center md:items-start relative z-10">
-                      <div className={`w-40 h-40 ${theme === 'dark' ? 'bg-slate-800' : 'bg-slate-200'} rounded-[3rem] flex items-center justify-center border-2 border-white/10 shadow-2xl overflow-hidden`}>
-                        <i className="fa-solid fa-user-tie text-7xl text-slate-400"></i>
+                      <div className="relative">
+                        <div className={`w-44 h-44 ${theme === 'dark' ? 'bg-slate-800' : 'bg-slate-200'} rounded-[3.5rem] flex items-center justify-center border-4 border-amber-500/10 shadow-2xl overflow-hidden group-hover:scale-105 transition-transform duration-500`}>
+                          <i className="fa-solid fa-user-gear text-8xl text-amber-500/50"></i>
+                        </div>
+                        <div className="absolute -bottom-4 -right-4 bg-amber-500 text-white px-5 py-2 rounded-2xl font-black text-[10px] uppercase tracking-widest shadow-lg border-4 border-slate-900 group-hover:rotate-6 transition-transform">Lead Engineer</div>
                       </div>
-                      <div className="space-y-6 text-center md:text-left flex-1">
-                         <h3 className={`text-3xl font-black ${theme === 'dark' ? 'text-white' : 'text-slate-900'} bn-serif tracking-tight`}>পবিত্র বানী ডেভেলপার টিম</h3>
-                         <p className={`${theme === 'dark' ? 'text-slate-400' : 'text-slate-700'} leading-relaxed bn-serif text-lg font-medium text-justify`}>"পবিত্র বানী" অ্যাপটি আধুনিক কৃত্রিম বুদ্ধিমত্তা এবং বাইবেলীয় দর্শনের এক অনবদ্য মেলবন্ধন। আমাদের লক্ষ্য প্রতিটি মানুষের অন্তরে শান্তির আলো পৌঁছে দেয়া।</p>
-                         <div className="flex justify-center md:justify-start gap-5 pt-4">
-                            <SocialIcon icon="fa-github" /><SocialIcon icon="fa-linkedin" /><SocialIcon icon="fa-envelope" />
+
+                      <div className="space-y-8 text-center md:text-left flex-1">
+                         <div className="space-y-3">
+                           <h3 className={`text-4xl font-black ${theme === 'dark' ? 'text-white' : 'text-slate-900'} bn-serif tracking-tight`}>পবিত্র বানী <span className="text-amber-500">ডেভেলপার টিম</span></h3>
+                           <p className="text-amber-600 font-black text-xs uppercase tracking-[0.5em]">শান্তি ও প্রজ্ঞার কারিগর</p>
+                         </div>
+                         
+                         <p className={`${theme === 'dark' ? 'text-slate-400' : 'text-slate-700'} leading-relaxed bn-serif text-lg font-medium text-justify max-w-2xl`}>
+                           "পবিত্র বানী" অ্যাপটি আধুনিক কৃত্রিম বুদ্ধিমত্তা এবং বাইবেলীয় দর্শনের এক অনবদ্য মেলবন্ধন। আমাদের লক্ষ্য প্রতিটি মানুষের অন্তরে প্রযুক্তির মাধ্যমে শান্তির আলো ও ঐশ্বরিক জ্ঞান পৌঁছে দেয়া।
+                         </p>
+
+                         <div className="flex flex-wrap justify-center md:justify-start gap-4">
+                            {/* Functional Call Button */}
+                            <a 
+                              href="tel:+8801614802711" 
+                              className="flex items-center gap-4 px-8 py-5 bg-amber-600 hover:bg-amber-500 text-white rounded-[2rem] shadow-xl hover:shadow-amber-500/30 active:scale-95 transition-all group/call"
+                            >
+                              <div className="w-10 h-10 bg-white/10 rounded-xl flex items-center justify-center group-hover/call:rotate-12 transition-transform relative overflow-hidden">
+                                <div className="absolute inset-0 bg-white/20 animate-pulse"></div>
+                                <i className="fa-solid fa-phone-volume text-lg relative z-10"></i>
+                              </div>
+                              <span className="font-black bn-serif text-lg tracking-wide">+8801614802711</span>
+                            </a>
+
+                            <div className="flex gap-4">
+                               <SocialIcon icon="fa-github" />
+                               <SocialIcon icon="fa-linkedin" />
+                               <SocialIcon icon="fa-envelope" />
+                            </div>
                          </div>
                       </div>
                    </div>
-                   <div className="absolute top-0 right-0 w-64 h-64 bg-amber-500/5 blur-[80px] rounded-full -z-10"></div>
                 </div>
              </div>
           </div>
