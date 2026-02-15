@@ -49,7 +49,7 @@ function extractJson(text: string): any {
 
 export const geminiService = {
   async fetchVerseExplanation(query: string): Promise<VerseData> {
-    // Strictly using process.env.API_KEY as per guidelines
+    // Strictly using process.env.API_KEY as per the rules
     const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
     
     try {
@@ -58,23 +58,23 @@ export const geminiService = {
         contents: `Analyze the following spiritual text or song lyrics: "${query}". 
         Provide a deep, poetic, and soulful explanation in Bengali.`,
         config: {
-          systemInstruction: "You are a world-class Bengali Lyrical and Spiritual Scholar. Analyze the input carefully. If it's a song, describe its emotional depth. If it's a verse, explain its wisdom. ALWAYS output in valid JSON. All values must be in Bengali script.",
+          systemInstruction: "You are 'Sacred Word', a divine lyrical scholar. Analyze inputs with deep emotional intelligence. Output strictly valid JSON. All string values must be in Bengali script.",
           responseMimeType: "application/json",
           responseSchema: {
             type: Type.OBJECT,
             properties: {
-              reference: { type: Type.STRING, description: "Title or Source" },
-              text: { type: Type.STRING, description: "The original lyric/verse snippet" },
+              reference: { type: Type.STRING },
+              text: { type: Type.STRING },
               explanation: {
                 type: Type.OBJECT,
                 properties: {
-                  theologicalMeaning: { type: Type.STRING, description: "Inner spiritual essence" },
-                  historicalContext: { type: Type.STRING, description: "Background info" },
-                  practicalApplication: { type: Type.STRING, description: "Personal reflection" },
+                  theologicalMeaning: { type: Type.STRING },
+                  historicalContext: { type: Type.STRING },
+                  practicalApplication: { type: Type.STRING },
                 },
                 required: ["theologicalMeaning", "historicalContext", "practicalApplication"]
               },
-              keyThemes: { type: Type.ARRAY, items: { type: Type.STRING }, description: "3-4 Bengali keyword tags" }
+              keyThemes: { type: Type.ARRAY, items: { type: Type.STRING } }
             },
             required: ["reference", "text", "explanation", "keyThemes"]
           }
@@ -89,7 +89,7 @@ export const geminiService = {
       };
     } catch (error: any) {
       console.error("Gemini API Request Error:", error);
-      throw new Error("দুঃখিত, তথ্যটি খুঁজে পাওয়া যাচ্ছে না। আপনার ইন্টারনেট সংযোগ বা এপিআই সেটিংস চেক করুন।");
+      throw new Error(error.message || "এপিআই এর সাথে সংযোগ করা যাচ্ছে না। দয়া করে আপনার কী চেক করুন।");
     }
   },
 
@@ -97,7 +97,7 @@ export const geminiService = {
     const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
     const response = await ai.models.generateContent({
       model: "gemini-2.5-flash-preview-tts",
-      contents: [{ parts: [{ text: `দয়া করে এই লিরিক্সটি অত্যন্ত ভক্তি ও আবেগ দিয়ে পাঠ করুন: ${text}` }] }],
+      contents: [{ parts: [{ text: `দয়া করে এটি ভক্তিভরে পাঠ করুন: ${text}` }] }],
       config: {
         responseModalities: [Modality.AUDIO],
         speechConfig: {

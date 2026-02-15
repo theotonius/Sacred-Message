@@ -1,6 +1,6 @@
 {
-  "name": "Sacred Script AI",
-  "description": "An AI-powered spiritual companion that provides deep theological explanations, historical context, and meditative artwork for any Bible verse.",
+  "name": "পবিত্র বানী (Sacred Word)",
+  "description": "An AI-powered soulful companion that provides deep spiritual insights, lyrical analysis, and audio readings for any text or song.",
   "requestFramePermissions": [
     "microphone"
   ]
