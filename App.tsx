@@ -274,13 +274,13 @@ export default function App() {
             {!currentVerse && state === AppState.IDLE && (
               <div className="max-w-4xl mx-auto space-y-8">
                 <div className="text-center opacity-40">
-                  <p className="text-[10px] font-black uppercase tracking-[0.5em] mb-6">Suggested Bible Passages</p>
+                  <p className="text-[10px] font-black uppercase tracking-[0.5em] mb-6">প্রস্তাবিত বাইবেলের পদসমূহ</p>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <RecommendItem title="গীতসংহিতা ২৩" desc="Divine Protection" icon="fa-hands-praying" onClick={() => handleSearch('গীতসংহিতা ২৩')} />
-                  <RecommendItem title="যোহন ৩:১৬" desc="God's Love" icon="fa-heart" onClick={() => handleSearch('যোহন ৩:১৬')} />
-                  <RecommendItem title="রোমীয় ৮:২৮" desc="Divine Purpose" icon="fa-shield-halved" onClick={() => handleSearch('রোমীয় ৮:২৮')} />
-                  <RecommendItem title="মথি ৫:৩-১২" desc="The Beatitudes" icon="fa-mountain-sun" onClick={() => handleSearch('মথি ৫:৩-১২')} />
+                  <RecommendItem title="গীতসংহিতা ২৩" desc="ঐশ্বরিক সুরক্ষা" icon="fa-hands-praying" onClick={() => handleSearch('গীতসংহিতা ২৩')} />
+                  <RecommendItem title="যোহন ৩:১৬" desc="ঈশ্বরের ভালোবাসা" icon="fa-heart" onClick={() => handleSearch('যোহন ৩:১৬')} />
+                  <RecommendItem title="রোমীয় ৮:২৮" desc="ঐশ্বরিক লক্ষ্য" icon="fa-shield-halved" onClick={() => handleSearch('রোমীয় ৮:২৮')} />
+                  <RecommendItem title="মথি ৫:৩-১২" desc="আশীর্বচন" icon="fa-mountain-sun" onClick={() => handleSearch('মথি ৫:৩-১২')} />
                 </div>
               </div>
             )}
@@ -330,18 +330,18 @@ export default function App() {
              <div className="space-y-8">
                 <div className="divine-glass p-10 rounded-[4rem] space-y-8">
                     <div className="space-y-6">
-                      <h4 className="text-xs font-black text-amber-500 uppercase tracking-[0.4em] ml-2">Voice Synthesis</h4>
+                      <h4 className="text-xs font-black text-amber-500 uppercase tracking-[0.4em] ml-2">কণ্ঠস্বর নির্বাচন</h4>
                       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                           {['Kore', 'Zephyr', 'Charon', 'Puck'].map(v => (
                             <button key={v} onClick={() => handleVoiceChange(v)} className={`p-6 md:p-10 rounded-[2.5rem] border-2 transition-all flex flex-col items-center gap-4 ${selectedVoice === v ? 'bg-amber-500/10 border-amber-500/50 text-amber-400 shadow-[0_0_40px_rgba(251,191,36,0.1)]' : 'bg-white/5 border-transparent text-slate-500 hover:bg-white/10'}`}>
                               <i className="fa-solid fa-microphone-lines text-2xl opacity-40"></i>
-                              <span className="font-black tracking-widest text-[10px] uppercase">{v} Voice</span>
+                              <span className="font-black tracking-widest text-[10px] uppercase">{v} কণ্ঠস্বর</span>
                             </button>
                           ))}
                       </div>
                     </div>
                     <div className="pt-8 border-t border-white/5 space-y-6">
-                      <h4 className="text-xs font-black text-amber-500 uppercase tracking-[0.4em] ml-2">Reading Text Size</h4>
+                      <h4 className="text-xs font-black text-amber-500 uppercase tracking-[0.4em] ml-2">পাঠের অক্ষরের আকার</h4>
                       <div className="flex flex-wrap gap-4">
                           {[{ id: 'sm', label: 'ছোট' }, { id: 'base', label: 'মাঝারি' }, { id: 'lg', label: 'বড়' }, { id: 'xl', label: 'অতিরিক্ত বড়' }].map(size => (
                             <button key={size.id} onClick={() => handleFontSizeChange(size.id)} className={`px-8 py-4 rounded-2xl border transition-all font-bold bn-serif ${fontSize === size.id ? 'bg-amber-500 text-black border-amber-500 shadow-lg' : 'bg-white/5 border-white/10 text-slate-400 hover:bg-white/10'}`}>{size.label}</button>
@@ -351,7 +351,7 @@ export default function App() {
                 </div>
 
                 <div className="divine-glass p-10 rounded-[4rem] space-y-8 overflow-hidden relative">
-                   <h4 className="text-xs font-black text-amber-500 uppercase tracking-[0.4em] ml-2">Developer Profile</h4>
+                   <h4 className="text-xs font-black text-amber-500 uppercase tracking-[0.4em] ml-2">ডেভেলপার পরিচিতি</h4>
                    <div className="flex flex-col md:flex-row gap-10 items-center md:items-start">
                       <div className="w-32 h-32 bg-slate-800 rounded-full flex items-center justify-center border border-white/10"><i className="fa-solid fa-user-tie text-5xl text-slate-500"></i></div>
                       <div className="space-y-4 text-center md:text-left flex-1">
