@@ -165,7 +165,7 @@ export default function App() {
                   <input 
                     value={query} 
                     onChange={e => setQuery(e.target.value)}
-                    placeholder="পবিত্র বাইবেলের পদ বা অধ্যায় লিখুন..."
+                    placeholder="পবিত্র বাইবেলের পদ বা অধ্যায় লিখুন.."
                     className="w-full bg-slate-900/80 backdrop-blur-3xl border border-white/20 pl-10 pr-32 md:pr-48 py-8 rounded-[2.5rem] text-xl md:text-2xl outline-none focus:ring-2 ring-amber-500/50 transition-all placeholder-slate-400 text-white font-bold shadow-3xl bn-serif"
                   />
                   <div className="absolute right-3 top-1/2 -translate-y-1/2 flex gap-2">
