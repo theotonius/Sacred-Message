@@ -26,15 +26,10 @@ export default function App() {
   const audioContextRef = useRef<AudioContext | null>(null);
   const audioSourceRef = useRef<AudioBufferSourceNode | null>(null);
 
-  // Load saved verses
   useEffect(() => {
     const stored = localStorage.getItem('sacred_verses');
     if (stored) {
-      try {
-        setSavedVerses(JSON.parse(stored));
-      } catch (e) {
-        setSavedVerses([]);
-      }
+      try { setSavedVerses(JSON.parse(stored)); } catch (e) { setSavedVerses([]); }
     }
   }, []);
 
@@ -51,16 +46,19 @@ export default function App() {
     
     setState(AppState.SEARCHING);
     setError('');
+    setCurrentVerse(null);
     stopAudio();
-    setCurrentVerse(null); // Clear previous result
     
     try {
       const data = await geminiService.fetchVerseExplanation(finalQuery);
+      if (!data || !data.text) {
+        throw new Error("কোনো তথ্য খুঁজে পাওয়া যায়নি। ভিন্ন কিছু লিখে চেষ্টা করুন।");
+      }
       setCurrentVerse(data);
       setState(AppState.IDLE);
     } catch (err: any) {
       console.error(err);
-      setError(err.message || 'একটি অজানা সমস্যা হয়েছে।');
+      setError(err.message || 'একটি অজানা সমস্যা হয়েছে। পুনরায় চেষ্টা করুন।');
       setState(AppState.ERROR);
     }
   };
@@ -89,7 +87,10 @@ export default function App() {
     setIsReading(true);
     try {
       const buffer = await geminiService.readVerseAloud(currentVerse.text, selectedVoice);
-      if (!audioContextRef.current) audioContextRef.current = new AudioContext({ sampleRate: 24000 });
+      // Fixed: Cross-browser AudioContext initialization
+      if (!audioContextRef.current) {
+        audioContextRef.current = new (window.AudioContext || (window as any).webkitAudioContext)({ sampleRate: 24000 });
+      }
       const source = audioContextRef.current.createBufferSource();
       source.buffer = buffer;
       source.connect(audioContextRef.current.destination);
@@ -98,253 +99,202 @@ export default function App() {
       source.start(0);
     } catch (e) { 
       setIsReading(false); 
+      alert("অডিও প্লে করতে সমস্যা হচ্ছে।");
     }
   };
 
   return (
-    <div className="min-h-screen flex flex-col items-center">
-      {/* Top Nav / Brand */}
-      <header className="w-full max-w-5xl px-6 pt-8 pb-4 flex justify-between items-center">
+    <div className="min-h-screen flex flex-col items-center pb-32 md:pb-0">
+      <header className="w-full max-w-5xl px-6 pt-10 pb-6 flex justify-between items-center">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-amber-600 rounded-lg flex items-center justify-center shadow-lg shadow-amber-900/40">
-            <i className="fa-solid fa-cross text-white"></i>
+          <div className="w-12 h-12 bg-amber-600 rounded-2xl flex items-center justify-center shadow-xl shadow-amber-900/40 rotate-3">
+            <i className="fa-solid fa-music text-white text-xl"></i>
           </div>
-          <h1 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-amber-400 to-amber-200">
-            পবিত্র বাণী AI
-          </h1>
+          <div>
+            <h1 className="text-2xl font-black bg-clip-text text-transparent bg-gradient-to-br from-amber-400 to-amber-100 tracking-tight">
+              লিরিক্স বাণী AI
+            </h1>
+            <p className="text-[10px] text-amber-500 font-bold uppercase tracking-[0.2em] opacity-60">Lyrical Reading App</p>
+          </div>
         </div>
         <div className="hidden md:flex glass px-4 py-2 rounded-2xl gap-2">
-          <NavItem icon="fa-magnifying-glass" label="অনুসন্ধান" active={activeView === 'SEARCH'} onClick={() => setActiveView('SEARCH')} />
+          <NavItem icon="fa-magnifying-glass" label="সার্চ" active={activeView === 'SEARCH'} onClick={() => setActiveView('SEARCH')} />
           <NavItem icon="fa-bookmark" label="সংরক্ষিত" active={activeView === 'SAVED'} onClick={() => setActiveView('SAVED')} />
           <NavItem icon="fa-gear" label="সেটিংস" active={activeView === 'SETTINGS'} onClick={() => setActiveView('SETTINGS')} />
-          <NavItem icon="fa-code" label="ডেভেলপার" active={activeView === 'DEVELOPER'} onClick={() => setActiveView('DEVELOPER')} />
         </div>
       </header>
 
-      {/* Main Container */}
-      <main className="w-full max-w-5xl p-6 mb-24">
+      <main className="w-full max-w-5xl p-6">
         {activeView === 'SEARCH' && (
-          <div className="space-y-12">
-            <form onSubmit={(e) => { e.preventDefault(); handleSearch(); }} className="relative group max-w-2xl mx-auto mt-4">
-              <div className="absolute left-6 top-1/2 -translate-y-1/2 text-amber-500/50 z-10">
-                <i className="fa-solid fa-music"></i>
-              </div>
-              <input 
-                value={query} 
-                onChange={e => setQuery(e.target.value)}
-                placeholder="পদ বা গানের লিরিক্স লিখে খুঁজুন..."
-                className="w-full glass pl-14 pr-32 py-5 rounded-full text-lg outline-none focus:ring-4 ring-amber-500/10 transition-all placeholder-slate-500 shadow-xl"
-              />
-              <button 
-                type="submit"
-                disabled={state === AppState.SEARCHING}
-                className="absolute right-2 top-1/2 -translate-y-1/2 bg-gradient-to-r from-amber-600 to-amber-500 hover:from-amber-500 hover:to-amber-400 text-white font-bold px-7 py-3 rounded-full shadow-lg transition-all flex items-center gap-2 disabled:opacity-70"
-              >
-                {state === AppState.SEARCHING ? (
-                  <i className="fa-solid fa-circle-notch fa-spin"></i>
-                ) : (
-                  <i className="fa-solid fa-magnifying-glass"></i>
-                )}
-                <span>খুঁজুন</span>
-              </button>
-            </form>
-
-            {state === AppState.SEARCHING ? (
-              <div className="flex flex-col items-center py-24 gap-8">
+          <div className="space-y-12 animate-in fade-in duration-700">
+            {/* Search Box */}
+            <div className="max-w-3xl mx-auto space-y-4">
+              <form onSubmit={(e) => { e.preventDefault(); handleSearch(); }} className="relative group">
+                <div className="absolute -inset-1 bg-gradient-to-r from-amber-500/20 to-amber-700/20 rounded-full blur opacity-0 group-focus-within:opacity-100 transition-all"></div>
                 <div className="relative">
-                  <div className="w-20 h-20 border-4 border-amber-500/10 border-t-amber-500 rounded-full animate-spin"></div>
+                  <div className="absolute left-6 top-1/2 -translate-y-1/2 text-amber-500/50">
+                    <i className="fa-solid fa-feather-pointed"></i>
+                  </div>
+                  <input 
+                    value={query} 
+                    onChange={e => setQuery(e.target.value)}
+                    placeholder="গানের লিরিক্স বা বাণী লিখে খুঁজুন..."
+                    className="w-full glass pl-14 pr-32 py-6 rounded-full text-lg outline-none focus:ring-4 ring-amber-500/10 transition-all placeholder-slate-500 text-white font-medium"
+                  />
+                  <button 
+                    type="submit"
+                    disabled={state === AppState.SEARCHING}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 bg-amber-600 hover:bg-amber-500 text-white font-black px-8 py-3.5 rounded-full shadow-lg transition-all flex items-center gap-2 disabled:opacity-50 active:scale-95"
+                  >
+                    {state === AppState.SEARCHING ? <i className="fa-solid fa-circle-notch fa-spin"></i> : <i className="fa-solid fa-wand-magic-sparkles"></i>}
+                    <span className="hidden sm:inline">খুঁজুন</span>
+                  </button>
+                </div>
+              </form>
+            </div>
+
+            {/* Content Display */}
+            {state === AppState.SEARCHING && (
+              <div className="flex flex-col items-center py-20 gap-8">
+                <div className="relative w-24 h-24">
+                  <div className="absolute inset-0 border-4 border-amber-500/10 rounded-full"></div>
+                  <div className="absolute inset-0 border-4 border-transparent border-t-amber-500 rounded-full animate-spin"></div>
                   <div className="absolute inset-0 flex items-center justify-center">
-                    <i className="fa-solid fa-star text-amber-500 animate-pulse text-2xl"></i>
+                    <i className="fa-solid fa-book-open-reader text-amber-500 text-2xl animate-pulse"></i>
                   </div>
                 </div>
-                <div className="text-center space-y-2">
-                  <p className="text-amber-500 font-bold text-xl tracking-wide animate-pulse">গভীর ব্যাখ্যা বিশ্লেষণ করা হচ্ছে...</p>
-                  <p className="text-slate-500 text-sm">AI এর মাধ্যমে আধ্যাত্মিক অর্থ খোঁজা হচ্ছে</p>
+                <div className="text-center">
+                  <h3 className="text-amber-500 font-bold text-2xl bn-serif animate-pulse mb-2">গভীর অর্থ বিশ্লেষণ করা হচ্ছে...</h3>
+                  <p className="text-slate-500 text-sm tracking-widest uppercase">AI is reading between the lines</p>
                 </div>
               </div>
-            ) : currentVerse ? (
-              <div className="max-w-4xl mx-auto space-y-10 animate-in fade-in slide-in-from-bottom-8 duration-1000">
-                
-                {/* Hero Card */}
+            )}
+
+            {state === AppState.ERROR && (
+              <div className="glass p-12 text-center rounded-[3rem] border-rose-500/20 max-w-2xl mx-auto shadow-2xl animate-in zoom-in-95 duration-300">
+                <div className="w-20 h-20 bg-rose-500/10 rounded-full flex items-center justify-center mx-auto mb-6">
+                  <i className="fa-solid fa-triangle-exclamation text-rose-500 text-4xl"></i>
+                </div>
+                <h3 className="text-white text-xl font-bold mb-3">তথ্য পাওয়া যায়নি</h3>
+                <p className="text-slate-400 mb-8 leading-relaxed">{error}</p>
+                <button onClick={() => setState(AppState.IDLE)} className="px-8 py-3 bg-white/5 hover:bg-white/10 rounded-full text-white font-bold transition-all">আবার চেষ্টা করুন</button>
+              </div>
+            )}
+
+            {/* Fixed Error: This comparison appears to be unintentional because the types 'boolean' and 'AppState' have no overlap. */}
+            {currentVerse && state !== AppState.SEARCHING && (
+              <div className="max-w-4xl mx-auto space-y-10 animate-in slide-in-from-bottom-10 duration-1000">
                 <div className="relative group">
-                  <div className="absolute -inset-1 bg-gradient-to-r from-amber-600/20 to-amber-400/20 rounded-[3rem] blur-xl opacity-75"></div>
+                  <div className="absolute -inset-4 bg-gradient-to-b from-amber-600/10 to-transparent rounded-[3rem] blur-2xl"></div>
                   <div className="relative glass p-10 md:p-16 rounded-[3rem] border border-white/10 text-center overflow-hidden">
-                    <div className="absolute top-0 left-0 p-8 text-amber-500/10 text-8xl">
-                      <i className="fa-solid fa-quote-left"></i>
-                    </div>
                     <div className="absolute top-6 right-8 flex gap-3">
-                      <button onClick={toggleSave} className={`text-2xl transition-all p-3 rounded-full bg-white/5 hover:bg-white/10 ${savedVerses.find(v => v.reference === currentVerse.reference) ? 'text-amber-400' : 'text-slate-400'}`}>
+                      <button onClick={toggleSave} className={`w-12 h-12 flex items-center justify-center rounded-full glass hover:bg-white/10 transition-all ${savedVerses.find(v => v.reference === currentVerse.reference) ? 'text-amber-400' : 'text-slate-400'}`}>
                         <i className="fa-solid fa-bookmark"></i>
                       </button>
-                      <button onClick={handleRead} className={`text-2xl transition-all p-3 rounded-full bg-white/5 hover:bg-white/10 ${isReading ? 'text-rose-500' : 'text-amber-500'}`}>
-                        <i className={`fa-solid ${isReading ? 'fa-circle-stop' : 'fa-circle-play'}`}></i>
+                      <button onClick={handleRead} className={`w-12 h-12 flex items-center justify-center rounded-full glass hover:bg-white/10 transition-all ${isReading ? 'text-rose-500' : 'text-amber-500'}`}>
+                        <i className={`fa-solid ${isReading ? 'fa-circle-stop' : 'fa-circle-play text-xl'}`}></i>
                       </button>
                     </div>
-                    
-                    <h2 className="text-3xl md:text-5xl font-bold text-white mb-10 leading-[1.4] bn-serif italic relative z-10 px-4">
+
+                    <p className="text-amber-500/60 uppercase tracking-[0.4em] font-black text-xs mb-8">Original Lyrical Snippet</p>
+                    <h2 className="text-3xl md:text-5xl font-bold text-white mb-10 leading-[1.6] bn-serif italic px-4">
                       "{currentVerse.text}"
                     </h2>
-                    <div className="inline-block px-8 py-2 bg-amber-500/10 rounded-full border border-amber-500/20 relative z-10">
-                      <p className="text-amber-500 font-black tracking-widest text-xl">— {currentVerse.reference} —</p>
+                    <div className="inline-block px-8 py-3 bg-amber-600/20 rounded-2xl border border-amber-600/30">
+                      <p className="text-amber-400 font-black tracking-widest text-lg">— {currentVerse.reference} —</p>
                     </div>
 
-                    <div className="mt-10 flex flex-wrap justify-center gap-3">
+                    <div className="mt-12 flex flex-wrap justify-center gap-3">
                       {currentVerse.keyThemes.map((t, idx) => (
-                        <span key={idx} className="bg-slate-900/50 text-slate-300 px-4 py-1.5 rounded-full text-sm border border-white/5 font-medium">#{t}</span>
+                        <span key={idx} className="bg-slate-900/80 text-amber-500/80 px-5 py-2 rounded-full text-xs border border-white/5 font-bold uppercase tracking-widest">#{t}</span>
                       ))}
                     </div>
                   </div>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                   <ModernSection 
-                      title="মূল অর্থ ও ভাবার্থ" 
-                      content={currentVerse.explanation.theologicalMeaning} 
-                      icon="fa-dove"
-                      color="amber"
-                   />
-                   <ModernSection 
-                      title="পটভূমি ও ইতিহাস" 
-                      content={currentVerse.explanation.historicalContext} 
-                      icon="fa-landmark-columns"
-                      color="slate"
-                   />
-                </div>
-
-                <div className="relative group">
-                   <div className="absolute -inset-0.5 bg-gradient-to-r from-amber-500 to-amber-700 rounded-3xl blur opacity-10"></div>
-                   <div className="relative glass p-8 md:p-10 rounded-3xl border border-amber-500/10">
-                      <h4 className="flex items-center gap-4 text-amber-400 font-bold mb-6 text-2xl bn-serif">
-                        <div className="w-12 h-12 rounded-2xl bg-amber-500/20 flex items-center justify-center shadow-inner">
-                          <i className="fa-solid fa-lightbulb"></i>
-                        </div>
-                        বাস্তব জীবনে প্রয়োগ
+                   <div className="glass p-10 rounded-[2.5rem] space-y-4 border-l-4 border-l-amber-500">
+                      <h4 className="text-xl font-black text-amber-500 bn-serif flex items-center gap-3">
+                        <i className="fa-solid fa-wand-magic-sparkles"></i> মূল ভাবার্থ
                       </h4>
-                      <p className="text-slate-200 text-lg leading-relaxed bn-serif italic">
-                        {currentVerse.explanation.practicalApplication}
-                      </p>
+                      <p className="text-slate-300 text-lg leading-relaxed bn-serif italic">{currentVerse.explanation.theologicalMeaning}</p>
+                   </div>
+                   <div className="glass p-10 rounded-[2.5rem] space-y-4 border-l-4 border-l-slate-600">
+                      <h4 className="text-xl font-black text-slate-400 bn-serif flex items-center gap-3">
+                        <i className="fa-solid fa-clock-rotate-left"></i> পটভূমি
+                      </h4>
+                      <p className="text-slate-400 text-lg leading-relaxed bn-serif">{currentVerse.explanation.historicalContext}</p>
                    </div>
                 </div>
 
-                <div className="flex justify-center pt-6">
-                   <button 
-                    onClick={() => { setCurrentVerse(null); setQuery(''); }}
-                    className="flex items-center gap-2 text-slate-500 hover:text-amber-500 transition-colors font-bold uppercase tracking-widest text-sm"
-                   >
-                     <i className="fa-solid fa-arrow-left"></i> অন্য কিছু খুঁজুন
-                   </button>
+                <div className="glass p-12 rounded-[3rem] relative overflow-hidden group">
+                   <div className="absolute top-0 right-0 p-12 text-amber-500/5 text-9xl">
+                     <i className="fa-solid fa-lightbulb"></i>
+                   </div>
+                   <h4 className="text-2xl font-black text-amber-500 mb-6 bn-serif">অনুপ্রেরণা ও প্রয়োগ</h4>
+                   <p className="text-slate-200 text-xl leading-relaxed bn-serif italic relative z-10">
+                     {currentVerse.explanation.practicalApplication}
+                   </p>
                 </div>
+              </div>
+            )}
 
-              </div>
-            ) : state === AppState.ERROR ? (
-              <div className="glass p-12 text-center rounded-[2.5rem] border-rose-500/20 max-w-2xl mx-auto shadow-2xl">
-                <div className="w-20 h-20 bg-rose-500/10 rounded-full flex items-center justify-center mx-auto mb-6">
-                  <i className="fa-solid fa-circle-exclamation text-rose-500 text-4xl"></i>
-                </div>
-                <p className="text-slate-300 text-xl mb-8 leading-relaxed font-medium">{error}</p>
-                <button onClick={() => setState(AppState.IDLE)} className="px-10 py-4 bg-slate-800 rounded-2xl text-white font-bold hover:bg-slate-700 transition-all active:scale-95">পুনরায় চেষ্টা করুন</button>
-              </div>
-            ) : (
-              <div className="max-w-4xl mx-auto">
-                <div className="text-center mb-10">
-                  <h3 className="text-slate-500 uppercase tracking-[0.3em] text-xs font-bold">অনুপ্রেরণা নিন</h3>
-                </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                  <Suggest title="যোহন ৩:১৬" sub="ঈশ্বরের ভালোবাসা" onClick={() => handleSearch('যোহন ৩:১৬')} />
-                  <Suggest title="গীতসংহিতা ২৩" sub="নির্ভরতা" onClick={() => handleSearch('গীতসংহিতা ২৩')} />
-                  <Suggest title="মথি ৫:৩-১২" sub="আশীর্বাদ" onClick={() => handleSearch('মথি ৫:৩-১২')} />
-                  <Suggest title="ফিলিপীয় ৪:১৩" sub="শক্তি" onClick={() => handleSearch('ফিলিপীয় ৪:১৩')} />
-                </div>
+            {!currentVerse && state === AppState.IDLE && (
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-3xl mx-auto">
+                <SuggestCard title="আমি বাংলায় গান গাই" type="Lyrics" onClick={() => handleSearch('আমি বাংলায় গান গাই')} />
+                <SuggestCard title="যোহন ৩:১৬" type="Verse" onClick={() => handleSearch('যোহন ৩:১৬')} />
+                <SuggestCard title="ধনধান্য পুষ্প ভরা" type="Lyrics" onClick={() => handleSearch('ধনধান্য পুষ্প ভরা')} />
+                <SuggestCard title="গীতসংহিতা ২৩" type="Psalm" onClick={() => handleSearch('গীতসংহিতা ২৩')} />
               </div>
             )}
           </div>
         )}
 
-        {/* Saved View */}
         {activeView === 'SAVED' && (
-          <div className="space-y-8 animate-in fade-in duration-500">
-            <h2 className="text-3xl font-bold text-amber-400 flex items-center gap-4 px-2">
-              <i className="fa-solid fa-bookmark text-xl opacity-50"></i> সংরক্ষিত সংকলন
+          <div className="animate-in fade-in slide-in-from-right-10 duration-500 space-y-8">
+            <h2 className="text-3xl font-black text-white flex items-center gap-4">
+              <span className="w-2 h-8 bg-amber-500 rounded-full"></span>
+              সংরক্ষিত লিরিক্স
             </h2>
             {savedVerses.length === 0 ? (
-              <div className="glass p-24 text-center rounded-[3rem] border-dashed border-white/5">
-                <i className="fa-solid fa-folder-open text-slate-800 text-7xl mb-6"></i>
-                <p className="text-slate-500 italic text-xl">আপনার সংরক্ষিত ব্যাখ্যাগুলো এখানে দেখা যাবে।</p>
-                <button onClick={() => setActiveView('SEARCH')} className="mt-8 px-8 py-3 bg-amber-600/10 text-amber-500 rounded-full font-bold hover:bg-amber-600/20 transition-all">সার্চ শুরু করুন</button>
+              <div className="glass p-20 text-center rounded-[3rem] border-dashed border-white/5 opacity-50">
+                <i className="fa-solid fa-box-open text-6xl mb-6 text-slate-700"></i>
+                <p className="text-slate-400 font-bold italic">এখনো কিছুই সংরক্ষণ করা হয়নি</p>
               </div>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {savedVerses.map(v => (
-                  <div key={v.id} className="relative glass rounded-[2rem] overflow-hidden group hover:border-amber-500/30 transition-all border border-white/5 p-8">
-                    <div className="flex justify-between items-start mb-6">
-                      <h3 className="text-2xl font-bold text-white bn-serif">{v.reference}</h3>
-                      <button onClick={(e) => { e.stopPropagation(); saveToLocal(savedVerses.filter(item => item.id !== v.id)); }} className="text-rose-500/30 hover:text-rose-500 transition-all p-2">
-                        <i className="fa-solid fa-trash-can"></i>
-                      </button>
+                  <div key={v.id} className="glass p-8 rounded-[2.5rem] group hover:border-amber-500/30 transition-all cursor-pointer relative" onClick={() => { setCurrentVerse(v); setActiveView('SEARCH'); }}>
+                    <div className="flex justify-between items-start mb-4">
+                       <h3 className="text-xl font-bold text-amber-500 bn-serif">{v.reference}</h3>
+                       <button onClick={(e) => { e.stopPropagation(); saveToLocal(savedVerses.filter(item => item.id !== v.id)); }} className="text-slate-600 hover:text-rose-500 transition-colors">
+                         <i className="fa-solid fa-trash-can"></i>
+                       </button>
                     </div>
-                    <p className="text-slate-400 line-clamp-3 text-lg italic mb-8 bn-serif">"{v.text}"</p>
-                    <button onClick={() => { setCurrentVerse(v); setActiveView('SEARCH'); }} className="w-full py-4 bg-white/5 rounded-2xl text-amber-500 font-bold hover:bg-white/10 transition-all">
-                      বিস্তারিত পড়ুন <i className="fa-solid fa-chevron-right text-xs ml-2"></i>
-                    </button>
+                    <p className="text-slate-400 line-clamp-2 italic bn-serif">"{v.text}"</p>
                   </div>
                 ))}
               </div>
             )}
           </div>
         )}
-
-        {/* Other Views placeholder */}
-        {activeView === 'SETTINGS' && (
-          <div className="glass p-12 rounded-[3rem] max-w-2xl mx-auto space-y-10">
-            <h2 className="text-3xl font-bold text-amber-400">অ্যাপ সেটিংস</h2>
-            <div className="space-y-4">
-                <label className="block text-slate-400 text-sm font-bold uppercase tracking-widest">কণ্ঠস্বর (TTS Voice)</label>
-                <div className="grid grid-cols-2 gap-4">
-                  {['Kore', 'Zephyr', 'Charon', 'Puck'].map((v) => (
-                    <button key={v} onClick={() => setSelectedVoice(v)} className={`p-5 rounded-2xl border transition-all text-left font-bold ${selectedVoice === v ? 'bg-amber-500/20 border-amber-500 text-amber-400' : 'bg-white/5 border-white/5 text-slate-500'}`}>{v}</button>
-                  ))}
-                </div>
-            </div>
-          </div>
-        )}
-        
-        {activeView === 'DEVELOPER' && (
-          <div className="glass p-12 rounded-[3rem] max-w-2xl mx-auto text-center space-y-6">
-             <i className="fa-solid fa-code text-5xl text-amber-500 mb-4"></i>
-             <h2 className="text-3xl font-bold">পবিত্র বাণী AI</h2>
-             <p className="text-slate-400 bn-serif">এটি একটি AI চালিত আধ্যাত্মিক অ্যাপ্লিকেশন যা আপনার প্রতিদিনের অনুপ্রেরণার উৎস হতে পারে।</p>
-             <p className="text-[10px] text-slate-600 uppercase tracking-widest font-black">Built with Google Gemini 3 Flash</p>
-          </div>
-        )}
       </main>
 
-      {/* Mobile Nav */}
-      <nav className="fixed bottom-6 left-6 right-6 glass md:hidden flex justify-around p-5 rounded-full z-50 shadow-2xl">
-        <NavItem icon="fa-magnifying-glass" label="" active={activeView === 'SEARCH'} onClick={() => setActiveView('SEARCH')} />
-        <NavItem icon="fa-bookmark" label="" active={activeView === 'SAVED'} onClick={() => setActiveView('SAVED')} />
-        <NavItem icon="fa-gear" label="" active={activeView === 'SETTINGS'} onClick={() => setActiveView('SETTINGS')} />
-        <NavItem icon="fa-cross" label="" active={activeView === 'DEVELOPER'} onClick={() => setActiveView('DEVELOPER')} />
+      <nav className="fixed bottom-6 left-6 right-6 glass md:hidden flex justify-around p-4 rounded-3xl z-50 shadow-2xl border-white/10">
+        <NavItem icon="fa-magnifying-glass" label="সার্চ" active={activeView === 'SEARCH'} onClick={() => setActiveView('SEARCH')} />
+        <NavItem icon="fa-bookmark" label="সংগ্রহ" active={activeView === 'SAVED'} onClick={() => setActiveView('SAVED')} />
+        <NavItem icon="fa-gear" label="সেটিংস" active={activeView === 'SETTINGS'} onClick={() => setActiveView('SETTINGS')} />
       </nav>
     </div>
   );
 }
 
-const ModernSection: React.FC<{ title: string; content: string; icon: string; color: 'amber' | 'slate' }> = ({ title, content, icon, color }) => (
-  <div className="relative glass p-8 rounded-3xl border border-white/5 flex flex-col h-full">
-    <div className={`w-14 h-14 rounded-2xl ${color === 'amber' ? 'bg-amber-500/10 text-amber-500' : 'bg-slate-500/10 text-slate-400'} flex items-center justify-center text-xl mb-6 shadow-lg`}>
-      <i className={`fa-solid ${icon}`}></i>
+const SuggestCard: React.FC<{ title: string; type: string; onClick: () => void }> = ({ title, type, onClick }) => (
+  <button onClick={onClick} className="glass p-6 rounded-3xl text-left hover:bg-amber-600/5 hover:border-amber-500/20 transition-all group flex items-center justify-between">
+    <div className="space-y-1">
+      <p className="text-[10px] text-amber-500 font-black uppercase tracking-widest opacity-50">{type}</p>
+      <h4 className="text-lg font-bold text-slate-300 group-hover:text-white transition-colors bn-serif">{title}</h4>
     </div>
-    <h4 className="text-xl font-bold text-white mb-4 bn-serif">{title}</h4>
-    <p className="text-slate-400 text-base leading-[1.7] bn-serif italic">{content}</p>
-  </div>
-);
-
-const Suggest: React.FC<{ title: string; sub: string; onClick: () => void }> = ({ title, sub, onClick }) => (
-  <button onClick={onClick} className="glass p-8 rounded-[2rem] text-left hover:bg-white/5 transition-all group border border-transparent hover:border-amber-500/20 shadow-lg">
-    <div className="flex justify-between items-center mb-4">
-      <span className="font-bold text-2xl group-hover:text-amber-400 transition-colors bn-serif">{title}</span>
-      <span className="text-[10px] bg-amber-500/10 text-amber-500 px-3 py-1 rounded-full uppercase font-black">{sub}</span>
-    </div>
-    <p className="text-sm text-slate-500">বিস্তারিত ব্যাখ্যা দেখুন</p>
+    <i className="fa-solid fa-chevron-right text-slate-700 group-hover:text-amber-500 transition-all translate-x-0 group-hover:translate-x-1"></i>
   </button>
 );

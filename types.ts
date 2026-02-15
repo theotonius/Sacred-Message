@@ -15,8 +15,7 @@ export interface VerseData {
 export enum AppState {
   IDLE = 'IDLE',
   SEARCHING = 'SEARCHING',
-  READING = 'READING',
   ERROR = 'ERROR'
 }
 
-export type View = 'SEARCH' | 'SAVED' | 'SETTINGS' | 'DEVELOPER';
+export type View = 'SEARCH' | 'SAVED' | 'SETTINGS';

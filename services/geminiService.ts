@@ -2,6 +2,7 @@
 import { GoogleGenAI, Type, Modality } from "@google/genai";
 import { VerseData } from "../types";
 
+// Manual decode function following guidelines
 function decode(base64: string) {
   const binaryString = window.atob(base64);
   const len = binaryString.length;
@@ -12,6 +13,7 @@ function decode(base64: string) {
   return bytes;
 }
 
+// Custom audio decoding logic for raw PCM data
 async function decodeAudioData(
   data: Uint8Array,
   ctx: AudioContext,
@@ -31,70 +33,70 @@ async function decodeAudioData(
   return buffer;
 }
 
-function cleanJsonResponse(text: string): string {
-  if (!text) return '{}';
-  // Remove markdown blocks if present
-  let cleaned = text.trim();
-  if (cleaned.includes('```')) {
-    cleaned = cleaned.replace(/```json/g, '').replace(/```/g, '').trim();
+// Utility to handle JSON extraction if the model returns markdown blocks
+function extractJson(text: string): any {
+  try {
+    const jsonMatch = text.match(/\{[\s\S]*\}/);
+    if (jsonMatch) {
+      return JSON.parse(jsonMatch[0]);
+    }
+    return JSON.parse(text);
+  } catch (e) {
+    console.error("JSON Extraction failed:", e);
+    throw new Error("সার্ভার থেকে প্রাপ্ত তথ্য সঠিক ফরম্যাটে নেই।");
   }
-  // Remove any potential text before or after the JSON object
-  const start = cleaned.indexOf('{');
-  const end = cleaned.lastIndexOf('}');
-  if (start !== -1 && end !== -1) {
-    cleaned = cleaned.substring(start, end + 1);
-  }
-  return cleaned;
 }
 
 export const geminiService = {
   async fetchVerseExplanation(query: string): Promise<VerseData> {
-    // Re-initialize AI client on every call to ensure fresh API key
-    const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+    const apiKey = process.env.API_KEY;
+    if (!apiKey) {
+      throw new Error("এপিআই কী (API Key) সঠিকভাবে সেট করা নেই।");
+    }
+
+    // Always create a new instance with the current API key right before the call
+    const ai = new GoogleGenAI({ apiKey });
     
     try {
       const response = await ai.models.generateContent({
+        // Updated to gemini-3-flash-preview for general text analysis task
         model: "gemini-3-flash-preview",
-        contents: `Spiritual Verse, Song Lyrical or Theme: "${query}". Provide a deep and poetic explanation in Bengali.`,
+        contents: `Analyses the following spiritual song lyrics, poem, or Bible verse: "${query}". 
+        Provide a deep, poetic, and soulful explanation in Bengali.`,
         config: {
-          systemInstruction: "You are a Bengali Spiritual and Musical Scholar. Provide a detailed analysis of the input verse or lyrics. Output MUST be a valid JSON object. All values must be in Bengali script.",
+          systemInstruction: "You are a world-class Bengali Lyrical and Spiritual Scholar. Your goal is to provide a structured analysis of the input text. If it's a song, identify the mood. If it's a verse, explain the theology. ALWAYS output in valid JSON. Use Bengali script for all explanations.",
           responseMimeType: "application/json",
           responseSchema: {
             type: Type.OBJECT,
             properties: {
-              reference: { type: Type.STRING, description: "Reference or Title in Bengali" },
-              text: { type: Type.STRING, description: "Original verse or lyrics in Bengali" },
+              reference: { type: Type.STRING, description: "Title of the song or Bible reference" },
+              text: { type: Type.STRING, description: "The original lyrics or verse snippet" },
               explanation: {
                 type: Type.OBJECT,
                 properties: {
-                  theologicalMeaning: { type: Type.STRING, description: "Deeper meaning in Bengali" },
-                  historicalContext: { type: Type.STRING, description: "Context or background in Bengali" },
-                  practicalApplication: { type: Type.STRING, description: "Personal application or reflection in Bengali" },
+                  theologicalMeaning: { type: Type.STRING, description: "Inner spiritual meaning" },
+                  historicalContext: { type: Type.STRING, description: "Background context" },
+                  practicalApplication: { type: Type.STRING, description: "Personal reflection or life lesson" },
                 },
                 required: ["theologicalMeaning", "historicalContext", "practicalApplication"]
               },
-              keyThemes: { type: Type.ARRAY, items: { type: Type.STRING }, description: "3-4 Bengali tags" }
+              keyThemes: { type: Type.ARRAY, items: { type: Type.STRING }, description: "3-4 emotional or spiritual tags" }
             },
             required: ["reference", "text", "explanation", "keyThemes"]
           }
         }
       });
 
-      const rawText = response.text;
-      const cleanedText = cleanJsonResponse(rawText || '');
-      
-      const data = JSON.parse(cleanedText);
+      // Use .text property directly
+      const data = extractJson(response.text || '');
       return {
         ...data,
         id: Math.random().toString(36).substring(2, 11),
         timestamp: Date.now()
       };
     } catch (error: any) {
-      console.error("Gemini API Error:", error);
-      if (error.message?.includes('403') || error.message?.includes('permission')) {
-        throw new Error("এপিআই কী (API Key) এর সমস্যা। অনুগ্রহ করে সেটিংস চেক করুন।");
-      }
-      throw new Error("সার্ভার থেকে তথ্য সংগ্রহ করা সম্ভব হয়নি। দয়া করে আবার চেষ্টা করুন।");
+      console.error("Gemini Service Error:", error);
+      throw new Error(error.message || "সার্ভার থেকে তথ্য পাওয়া যায়নি।");
     }
   },
 
@@ -113,6 +115,8 @@ export const geminiService = {
 
     const base64Audio = response.candidates?.[0]?.content?.parts?.[0]?.inlineData?.data;
     if (!base64Audio) throw new Error("Audio generation failed");
+    
+    // Cross-browser AudioContext initialization
     const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)({ sampleRate: 24000 });
     return await decodeAudioData(decode(base64Audio), audioContext, 24000, 1);
   }
