@@ -33,7 +33,7 @@ export default function App() {
   const [currentVerse, setCurrentVerse] = useState<VerseData | null>(null);
   const [savedVerses, setSavedVerses] = useState<VerseData[]>([]);
   const [isReading, setIsReading] = useState(false);
-  const [selectedVoice, setSelectedVoice] = useState('Kore');
+  const [selectedVoice, setSelectedVoice] = useState('Zephyr');
   const [fontSize, setFontSize] = useState('base'); 
   const [fontFamily, setFontFamily] = useState('SolaimanLipi');
   const [theme, setTheme] = useState('dark');
@@ -597,23 +597,26 @@ export default function App() {
                       </div>
                     </div>
 
-                    {/* Font Selection */}
+                    {/* Font Selection Dropdown */}
                     <div className={`pt-12 border-t ${theme === 'dark' ? 'border-white/5' : 'border-black/5'} space-y-8`}>
                       <div className="flex items-center gap-4">
                         <div className="h-2 w-2 bg-blue-500 rounded-full"></div>
                         <h4 className="text-base font-black text-amber-600 uppercase tracking-[0.4em]">ফন্ট নির্বাচন</h4>
                       </div>
-                      <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                      <div className="relative group/select">
+                        <select 
+                          value={fontFamily} 
+                          onChange={(e) => handleFontChange(e.target.value)}
+                          className={`w-full p-6 rounded-2xl border-2 transition-all appearance-none cursor-pointer outline-none focus:border-amber-500/50 shadow-inner ${theme === 'dark' ? 'bg-white/5 border-white/5 text-slate-200' : 'bg-black/5 border-black/5 text-slate-800'} bn-serif text-lg`}
+                          style={{ fontFamily: fontFamily }}
+                        >
                           {fonts.map(f => (
-                            <button 
-                              key={f.id} 
-                              onClick={() => handleFontChange(f.id)} 
-                              style={{ fontFamily: f.id }}
-                              className={`px-6 py-5 rounded-2xl border-2 transition-all text-base md:text-lg ${fontFamily === f.id ? 'bg-amber-500 text-white border-amber-500 shadow-xl' : 'bg-white/5 border-white/5 text-slate-500 hover:bg-white/10'}`}
-                            >
-                              {f.name}
-                            </button>
+                            <option key={f.id} value={f.id} className="bg-slate-900 text-white" style={{ fontFamily: f.id }}>{f.name}</option>
                           ))}
+                        </select>
+                        <div className="absolute right-6 top-1/2 -translate-y-1/2 pointer-events-none text-amber-500/50 group-hover/select:text-amber-500 transition-colors">
+                          <i className="fa-solid fa-chevron-down"></i>
+                        </div>
                       </div>
                     </div>
 
@@ -623,11 +626,11 @@ export default function App() {
                         <div className="h-2 w-2 bg-emerald-500 rounded-full"></div>
                         <h4 className="text-base font-black text-amber-600 uppercase tracking-[0.4em]">কণ্ঠস্বর নির্বাচন</h4>
                       </div>
-                      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                          {['Kore', 'Zephyr', 'Charon', 'Puck'].map(v => (
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                          {['Kore', 'Zephyr', 'Charon'].map(v => (
                             <button key={v} onClick={() => handleVoiceChange(v)} className={`p-6 rounded-[2rem] border-2 transition-all flex flex-col items-center gap-4 ${selectedVoice === v ? 'bg-amber-500/10 border-amber-500/50 text-amber-500 shadow-[0_0_50px_rgba(251,191,36,0.15)]' : 'bg-white/5 border-transparent text-slate-500 hover:bg-white/10'}`}>
                               <i className="fa-solid fa-microphone-lines text-2xl opacity-40"></i>
-                              <span className="font-black tracking-widest text-[10px] uppercase">{v} কণ্ঠস্বর</span>
+                              <span className="font-black tracking-widest text-[10px] uppercase">{v} কণ্ঠস্বর {v === 'Zephyr' && '(Default)'}</span>
                             </button>
                           ))}
                       </div>
