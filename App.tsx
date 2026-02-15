@@ -238,7 +238,7 @@ export default function App() {
 
   return (
     <div className={`min-h-screen flex flex-col relative transition-colors duration-500`}>
-      <div className={`fixed top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[600px] ${theme === 'dark' ? 'bg-amber-500/5' : 'bg-amber-500/10'} blur-[120px] rounded-full -z-10 pointer-events-none`}></div>
+      <div className={`fixed top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[600px] ${theme === 'dark' ? 'bg-amber-400/5' : 'bg-amber-500/10'} blur-[120px] rounded-full -z-10 pointer-events-none`}></div>
 
       <header className="w-full max-w-7xl mx-auto px-6 pt-10 pb-6 flex justify-between items-center z-20">
         <div className="flex items-center gap-5">
@@ -265,13 +265,13 @@ export default function App() {
           <div className="space-y-12 animate-in fade-in slide-in-from-bottom-8 duration-700 pb-8 md:pb-0">
             <div className="max-w-4xl mx-auto mt-4 md:mt-8">
               <form onSubmit={(e) => { e.preventDefault(); handleSearch(); }} className="relative group">
-                <div className="absolute -inset-1 bg-gradient-to-r from-amber-500/30 to-amber-200/30 rounded-[2.5rem] blur-xl opacity-0 group-focus-within:opacity-100 transition-all duration-1000"></div>
+                <div className="absolute -inset-1 bg-gradient-to-r from-amber-500/15 to-amber-200/15 rounded-[2.5rem] blur-xl opacity-0 group-focus-within:opacity-100 transition-all duration-1000"></div>
                 <div className="relative">
                   <input 
                     value={query} 
                     onChange={e => setQuery(e.target.value)}
                     placeholder="পবিত্র বাইবেলের পদ বা অধ্যায় লিখুন.."
-                    className={`w-full ${theme === 'dark' ? 'bg-slate-900/80' : 'bg-white/80'} backdrop-blur-3xl border border-white/20 pl-10 pr-32 md:pr-48 py-8 rounded-[2.5rem] text-xl md:text-2xl outline-none focus:ring-2 ring-amber-500/50 transition-all ${theme === 'dark' ? 'placeholder-slate-400 text-white' : 'placeholder-slate-500 text-slate-900'} font-bold shadow-3xl bn-serif`}
+                    className={`w-full ${theme === 'dark' ? 'bg-slate-900/30' : 'bg-white/80'} backdrop-blur-3xl border border-white/10 pl-10 pr-32 md:pr-48 py-8 rounded-[2.5rem] text-xl md:text-2xl outline-none focus:ring-2 ring-amber-500/50 transition-all ${theme === 'dark' ? 'placeholder-slate-500 text-white' : 'placeholder-slate-500 text-slate-900'} font-bold shadow-3xl bn-serif`}
                   />
                   <div className="absolute right-3 top-1/2 -translate-y-1/2 flex gap-2">
                      <button 
@@ -323,7 +323,7 @@ export default function App() {
 
                     <div className="mb-10">
                       <i className="fa-solid fa-quote-left text-amber-500/20 text-4xl mb-6"></i>
-                      <h2 className={`${mainTextSizeClass} font-bold ${theme === 'dark' ? 'text-white' : 'text-slate-800'} leading-relaxed bn-serif italic px-6 drop-shadow-xl max-w-3xl mx-auto`}>
+                      <h2 className={`${mainTextSizeClass} font-bold ${theme === 'dark' ? 'text-white' : 'text-slate-100'} leading-relaxed bn-serif italic px-6 drop-shadow-xl max-w-3xl mx-auto`}>
                         {currentVerse.text}
                       </h2>
                     </div>
@@ -369,14 +369,14 @@ export default function App() {
                 </div>
 
                 <div className="flex flex-wrap justify-center gap-4 pt-8">
-                  <button onClick={toggleSave} className={`flex items-center gap-4 px-10 py-5 rounded-[2rem] divine-glass transition-all border-2 ${isCurrentVerseSaved ? 'text-amber-600 bg-amber-500/10 border-amber-500/40 shadow-[0_0_30px_rgba(251,191,36,0.15)]' : 'text-slate-500 border-white/5 hover:border-amber-500/20 hover:text-slate-700'}`}>
+                  <button onClick={toggleSave} className={`flex items-center gap-4 px-10 py-5 rounded-[2rem] divine-glass transition-all border-2 ${isCurrentVerseSaved ? 'text-amber-600 bg-amber-500/10 border-amber-500/40 shadow-[0_0_30px_rgba(251,191,36,0.15)]' : 'text-slate-400 border-white/5 hover:border-amber-500/20 hover:text-slate-100'}`}>
                     <i className={`fa-solid ${isCurrentVerseSaved ? 'fa-bookmark' : 'fa-bookmark'} text-xl`}></i>
                     <span className="font-black bn-serif tracking-widest uppercase">{isCurrentVerseSaved ? 'সংগ্রহ থেকে সরান' : 'সংগ্রহে রাখুন'}</span>
                   </button>
 
-                  <button onClick={handleShare} className={`flex items-center gap-4 px-10 py-5 rounded-[2rem] divine-glass transition-all border-2 text-slate-500 border-white/5 hover:border-amber-500/20 hover:text-slate-700 relative`}>
+                  <button onClick={handleShare} className={`flex items-center gap-4 px-10 py-5 rounded-[2rem] divine-glass transition-all border-2 text-slate-400 border-white/5 hover:border-amber-500/20 hover:text-slate-100 relative`}>
                     {showCopyFeedback && (
-                      <div className="absolute -top-12 left-1/2 -translate-x-1/2 bg-emerald-500 text-white text-[10px] px-4 py-2 rounded-full font-black uppercase tracking-widest animate-in fade-in slide-in-from-bottom-2">কপি করা হয়েছে!</div>
+                      <div className="absolute -top-12 left-1/2 -translate-x-1/2 bg-emerald-600 text-white text-[10px] px-4 py-2 rounded-full font-black uppercase tracking-widest animate-in fade-in slide-in-from-bottom-2">কপি করা হয়েছে!</div>
                     )}
                     <i className="fa-solid fa-share-nodes text-xl"></i>
                     <span className="font-black bn-serif tracking-widest uppercase">শেয়ার করুন</span>
@@ -403,13 +403,19 @@ export default function App() {
 
         {activeView === 'SAVED' && (
           <div className="animate-in fade-in slide-in-from-right-12 duration-600 space-y-12 py-10 pb-12 md:pb-0">
-            <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-8">
-               <h2 className={`text-6xl font-black ${theme === 'dark' ? 'text-white' : 'text-slate-900'} bn-serif leading-none`}>আপনার <span className="text-divine-gold">সংগ্রহ</span></h2>
-               <div className="flex-1 hidden md:block h-1 bg-white/5 rounded-full mb-3 ml-6"></div>
+            <div className="flex flex-col items-center text-center gap-4 mb-16 animate-in fade-in slide-in-from-top-6 duration-1000">
+               <div className="flex items-center gap-5">
+                 <div className="h-px w-8 md:w-16 bg-gradient-to-r from-transparent to-amber-500/40"></div>
+                 <i className="fa-solid fa-bookmark text-amber-500/30 text-xl"></i>
+                 <h2 className={`text-3xl md:text-4xl font-black ${theme === 'dark' ? 'text-white' : 'text-slate-900'} bn-serif leading-none tracking-tight`}>আপনার <span className="text-divine-gold">সংগ্রহ</span></h2>
+                 <i className="fa-solid fa-bookmark text-amber-500/30 text-xl"></i>
+                 <div className="h-px w-8 md:w-16 bg-gradient-to-l from-transparent to-amber-500/40"></div>
+               </div>
+               <p className="text-[10px] text-amber-600/60 font-black uppercase tracking-[0.5em]">পবিত্র হৃদয়ে সংরক্ষিত জ্ঞান</p>
             </div>
 
             {savedVerses.length > 0 && (
-              <div className="flex items-center gap-4 overflow-x-auto pb-4 scrollbar-hide no-scrollbar">
+              <div className="flex items-center justify-center gap-4 overflow-x-auto pb-4 scrollbar-hide no-scrollbar">
                 <button 
                   onClick={() => setFilterTag(null)}
                   className={`whitespace-nowrap px-6 py-2.5 rounded-full transition-all text-xs font-black uppercase tracking-widest border ${!filterTag ? 'bg-amber-500 text-white border-amber-500 shadow-lg shadow-amber-500/20' : 'divine-glass text-slate-400 border-white/5 hover:border-amber-500/20'}`}
@@ -606,7 +612,7 @@ const RecommendItem: React.FC<{ title: string; desc: string; icon: string; onCli
        <div className={`w-16 h-16 ${theme === 'dark' ? 'bg-white/5' : 'bg-black/5'} rounded-2xl flex items-center justify-center text-slate-500 group-hover:bg-amber-500/10 group-hover:text-amber-500 transition-all`}><i className={`fa-solid ${icon} text-2xl`}></i></div>
        <div>
          <p className="text-[10px] font-black uppercase tracking-[0.4em] text-amber-600/40 mb-2">{desc}</p>
-         <h4 className={`text-2xl font-bold ${theme === 'dark' ? 'text-slate-200' : 'text-slate-800'} bn-serif group-hover:text-amber-600 transition-colors`}>{title}</h4>
+         <h4 className={`text-2xl font-bold ${theme === 'dark' ? 'text-slate-200' : 'text-slate-100'} bn-serif group-hover:text-amber-600 transition-colors`}>{title}</h4>
        </div>
     </div>
     <div className={`w-12 h-12 rounded-full border ${theme === 'dark' ? 'border-white/5' : 'border-black/5'} flex items-center justify-center text-slate-400 group-hover:text-amber-500 transition-all`}><i className="fa-solid fa-chevron-right text-xs"></i></div>
