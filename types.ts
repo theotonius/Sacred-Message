@@ -8,6 +8,7 @@ export interface VerseData {
     historicalContext: string;
     practicalApplication: string;
   };
+  prayer: string;
   keyThemes: string[];
   tags?: string[];
   timestamp: number;

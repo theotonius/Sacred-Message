@@ -381,7 +381,26 @@ export default function App() {
                   </div>
                 </div>
 
-                <div className="flex flex-wrap justify-center gap-3 pt-10">
+                {/* Soulful Prayer Section */}
+                <div className="max-w-4xl mx-auto divine-glass p-12 rounded-[4rem] space-y-8 border-amber-500/20 shadow-3xl animate-in slide-in-from-bottom-8 duration-1000">
+                  <div className="flex flex-col items-center gap-6">
+                    <div className="w-16 h-16 bg-amber-500/10 rounded-full flex items-center justify-center text-amber-500 text-3xl shadow-inner animate-pulse">
+                      <i className="fa-solid fa-hands-praying"></i>
+                    </div>
+                    <h4 className="text-2xl font-black text-amber-600 bn-serif">ঐশ্বরিক প্রার্থনা</h4>
+                  </div>
+                  <div className="relative">
+                     <i className="fa-solid fa-quote-left text-amber-500/5 text-8xl absolute -top-10 -left-10 select-none"></i>
+                     <p className={`${explanationSizeClass} ${theme === 'dark' ? 'text-slate-200' : 'text-slate-800'} leading-relaxed bn-serif font-medium text-justify relative z-10 px-4`}>
+                       {currentVerse.prayer}
+                     </p>
+                  </div>
+                  <div className="text-center">
+                    <p className="text-amber-600/60 font-black text-xs uppercase tracking-[0.4em] bn-serif">আমেন</p>
+                  </div>
+                </div>
+
+                <div className="flex flex-wrap justify-center gap-3 pt-6">
                    {currentVerse.keyThemes.map((themeStr, i) => (
                      <span key={i} className="px-6 py-3 rounded-full divine-glass text-xs font-black text-amber-600/70 uppercase tracking-widest border border-amber-500/10 hover:border-amber-500/40 transition-all cursor-default shadow-sm">{themeStr}</span>
                    ))}

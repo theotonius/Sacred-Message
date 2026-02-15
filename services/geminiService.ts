@@ -49,16 +49,16 @@ function extractJson(text: string): any {
 
 export const geminiService = {
   async fetchVerseExplanation(query: string): Promise<VerseData> {
-    // Strictly using process.env.API_KEY as per the rules
     const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
     
     try {
       const response = await ai.models.generateContent({
         model: "gemini-3-flash-preview",
         contents: `Analyze the following Biblical text or verse: "${query}". 
-        Provide a deep, poetic, and soulful explanation in Bengali based on Christian theology.`,
+        Provide a deep, poetic, and soulful explanation in Bengali based on Christian theology. 
+        Additionally, write a short, heartfelt prayer in Bengali based on this verse.`,
         config: {
-          systemInstruction: "You are 'Sacred Word', a divine Biblical scholar and Christian theologian. Analyze inputs strictly through a Biblical lens. Provide poetic and soulful explanations in Bengali based on Christian scripture and doctrine. If the input is not related to the Bible, politely explain that you only provide Biblical insights. Output strictly valid JSON. All string values must be in Bengali script.",
+          systemInstruction: "You are 'Sacred Word', a divine Biblical scholar and Christian theologian. Analyze inputs strictly through a Biblical lens. Provide poetic and soulful explanations in Bengali based on Christian scripture and doctrine. For every verse, provide a short, soulful, and heartfelt prayer in Bengali. If the input is not related to the Bible, politely explain that you only provide Biblical insights. Output strictly valid JSON. All string values must be in Bengali script.",
           responseMimeType: "application/json",
           responseSchema: {
             type: Type.OBJECT,
@@ -74,9 +74,10 @@ export const geminiService = {
                 },
                 required: ["theologicalMeaning", "historicalContext", "practicalApplication"]
               },
+              prayer: { type: Type.STRING, description: "A soulful prayer based on the verse." },
               keyThemes: { type: Type.ARRAY, items: { type: Type.STRING } }
             },
-            required: ["reference", "text", "explanation", "keyThemes"]
+            required: ["reference", "text", "explanation", "prayer", "keyThemes"]
           }
         }
       });
