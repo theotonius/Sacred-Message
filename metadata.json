@@ -1,0 +1,7 @@
+{
+  "name": "Sacred Script AI",
+  "description": "An AI-powered spiritual companion that provides deep theological explanations, historical context, and meditative artwork for any Bible verse.",
+  "requestFramePermissions": [
+    "microphone"
+  ]
+}
