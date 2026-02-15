@@ -376,7 +376,7 @@ export default function App() {
 
                 <div className="flex flex-wrap justify-center gap-3 pt-10">
                    {currentVerse.keyThemes.map((themeStr, i) => (
-                     <span key={i} className="px-6 py-3 rounded-full divine-glass text-[10px] font-black text-amber-600/70 uppercase tracking-widest border border-amber-500/10 hover:border-amber-500/40 transition-all cursor-default shadow-sm">{themeStr}</span>
+                     <span key={i} className="px-6 py-3 rounded-full divine-glass text-xs font-black text-amber-600/70 uppercase tracking-widest border border-amber-500/10 hover:border-amber-500/40 transition-all cursor-default shadow-sm">{themeStr}</span>
                    ))}
                 </div>
 
@@ -430,7 +430,7 @@ export default function App() {
               <div className="flex items-center justify-center gap-4 overflow-x-auto pb-6 scrollbar-hide no-scrollbar max-w-4xl mx-auto">
                 <button 
                   onClick={() => setFilterTag(null)}
-                  className={`whitespace-nowrap px-8 py-3 rounded-full transition-all text-[11px] font-black uppercase tracking-widest border-2 ${!filterTag ? 'bg-amber-500 text-white border-amber-500 shadow-xl shadow-amber-500/20' : 'divine-glass text-slate-500 border-white/5 hover:border-amber-500/20'}`}
+                  className={`whitespace-nowrap px-8 py-3 rounded-full transition-all text-sm font-black uppercase tracking-widest border-2 ${!filterTag ? 'bg-amber-500 text-white border-amber-500 shadow-xl shadow-amber-500/20' : 'divine-glass text-slate-500 border-white/5 hover:border-amber-500/20'}`}
                 >
                   সবগুলো
                 </button>
@@ -438,7 +438,7 @@ export default function App() {
                   <button 
                     key={tag}
                     onClick={() => setFilterTag(tag === filterTag ? null : tag)}
-                    className={`whitespace-nowrap px-8 py-3 rounded-full transition-all text-[11px] font-black uppercase tracking-widest border-2 ${filterTag === tag ? 'bg-amber-500 text-white border-amber-500 shadow-xl shadow-amber-500/20' : 'divine-glass text-slate-500 border-white/5 hover:border-amber-500/20'}`}
+                    className={`whitespace-nowrap px-8 py-3 rounded-full transition-all text-sm font-black uppercase tracking-widest border-2 ${filterTag === tag ? 'bg-amber-500 text-white border-amber-500 shadow-xl shadow-amber-500/20' : 'divine-glass text-slate-500 border-white/5 hover:border-amber-500/20'}`}
                   >
                     {tag}
                   </button>
@@ -482,7 +482,7 @@ export default function App() {
                     <div className="mt-10">
                       <div className="flex flex-wrap gap-2.5">
                         {(v.tags || []).map(tag => (
-                          <span key={tag} className="flex items-center gap-2 px-4 py-1.5 bg-amber-500/5 border border-amber-500/10 rounded-full text-[10px] font-black text-amber-600 uppercase tracking-widest group/tag hover:border-amber-500/30 transition-all shadow-sm">
+                          <span key={tag} className="flex items-center gap-2 px-4 py-2 bg-amber-500/5 border border-amber-500/10 rounded-full text-xs font-black text-amber-600 uppercase tracking-widest group/tag hover:border-amber-500/30 transition-all shadow-sm">
                             {tag}
                             <button 
                               onClick={(e) => { e.stopPropagation(); removeTagFromVerse(v.id, tag); }}
@@ -538,7 +538,7 @@ export default function App() {
                     <div className="space-y-8">
                       <div className="flex items-center gap-4">
                         <div className="h-2 w-2 bg-amber-500 rounded-full"></div>
-                        <h4 className="text-xs font-black text-amber-600 uppercase tracking-[0.5em]">থিম পরিবর্তন</h4>
+                        <h4 className="text-base font-black text-amber-600 uppercase tracking-[0.4em]">থিম পরিবর্তন</h4>
                       </div>
                       <div className="grid grid-cols-2 gap-6">
                           <button 
@@ -562,7 +562,7 @@ export default function App() {
                     <div className={`pt-12 border-t ${theme === 'dark' ? 'border-white/5' : 'border-black/5'} space-y-8`}>
                       <div className="flex items-center gap-4">
                         <div className="h-2 w-2 bg-blue-500 rounded-full"></div>
-                        <h4 className="text-xs font-black text-amber-600 uppercase tracking-[0.5em]">ফন্ট নির্বাচন</h4>
+                        <h4 className="text-base font-black text-amber-600 uppercase tracking-[0.4em]">ফন্ট নির্বাচন</h4>
                       </div>
                       <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                           {fonts.map(f => (
@@ -582,7 +582,7 @@ export default function App() {
                     <div className={`pt-12 border-t ${theme === 'dark' ? 'border-white/5' : 'border-black/5'} space-y-8`}>
                       <div className="flex items-center gap-4">
                         <div className="h-2 w-2 bg-emerald-500 rounded-full"></div>
-                        <h4 className="text-xs font-black text-amber-600 uppercase tracking-[0.5em]">কণ্ঠস্বর নির্বাচন</h4>
+                        <h4 className="text-base font-black text-amber-600 uppercase tracking-[0.4em]">কণ্ঠস্বর নির্বাচন</h4>
                       </div>
                       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                           {['Kore', 'Zephyr', 'Charon', 'Puck'].map(v => (
@@ -598,7 +598,7 @@ export default function App() {
                     <div className={`pt-12 border-t ${theme === 'dark' ? 'border-white/5' : 'border-black/5'} space-y-8`}>
                       <div className="flex items-center gap-4">
                         <div className="h-2 w-2 bg-rose-500 rounded-full"></div>
-                        <h4 className="text-xs font-black text-amber-600 uppercase tracking-[0.5em]">পাঠের অক্ষরের আকার</h4>
+                        <h4 className="text-base font-black text-amber-600 uppercase tracking-[0.4em]">পাঠের অক্ষরের আকার</h4>
                       </div>
                       <div className="flex flex-wrap gap-4">
                           {[{ id: 'sm', label: 'ছোট' }, { id: 'base', label: 'মাঝারি' }, { id: 'lg', label: 'বড়' }, { id: 'xl', label: 'অতিরিক্ত বড়' }].map(size => (
@@ -609,7 +609,7 @@ export default function App() {
                 </div>
 
                 <div className="divine-glass p-12 md:p-16 rounded-[4rem] space-y-10 overflow-hidden relative shadow-3xl">
-                   <h4 className="text-xs font-black text-amber-600 uppercase tracking-[0.5em] mb-4">ডেভেলপার পরিচিতি</h4>
+                   <h4 className="text-base font-black text-amber-600 uppercase tracking-[0.5em] mb-4">ডেভেলপার পরিচিতি</h4>
                    <div className="flex flex-col md:flex-row gap-12 items-center md:items-start relative z-10">
                       <div className={`w-40 h-40 ${theme === 'dark' ? 'bg-slate-800' : 'bg-slate-200'} rounded-[3rem] flex items-center justify-center border-2 border-white/10 shadow-2xl overflow-hidden`}>
                         <i className="fa-solid fa-user-tie text-7xl text-slate-400"></i>
