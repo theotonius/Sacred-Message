@@ -658,8 +658,8 @@ export default function App() {
                       <div className="relative">
                         <div className={`w-44 h-44 ${theme === 'dark' ? 'bg-slate-800' : 'bg-slate-200'} rounded-[3.5rem] flex items-center justify-center border-4 border-amber-500/10 shadow-2xl overflow-hidden group-hover:scale-105 transition-transform duration-500 ring-4 ring-amber-500/30`}>
                           <img 
-                            src="https://drive.google.com/file/d/1D6PyIunFBqxInBMlP41HTdxHUxe-yMWg/view?usp=sharing" 
-                            alt="Devloper" 
+                            src="https://lh3.googleusercontent.com/d/1D6PyIunFBqxInBMlP41HTdxHUxe-yMWg" 
+                            alt="ডেভলপার" 
                             className="w-full h-full object-cover"
                             loading="eager"
                             crossOrigin="anonymous"
@@ -671,7 +671,7 @@ export default function App() {
                               if (parent && !parent.querySelector('.fallback-profile')) {
                                 const fallback = document.createElement('div');
                                 fallback.className = 'fallback-profile w-full h-full flex items-center justify-center bg-gradient-to-br from-amber-400 via-amber-600 to-amber-800 text-white text-6xl font-black shadow-inner animate-pulse';
-                                fallback.innerText = 'Sobuj';
+                                fallback.innerText = 'S';
                                 parent.appendChild(fallback);
                               }
                             }}
