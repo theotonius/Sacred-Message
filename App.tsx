@@ -6,7 +6,7 @@ import { VerseData, AppState, View } from './types';
 const NavItem: React.FC<{ icon: string; label: string; active: boolean; onClick: () => void }> = ({ icon, label, active, onClick }) => (
   <button 
     onClick={onClick}
-    className={`flex items-center gap-3 transition-all px-6 py-3 rounded-2xl group ${active ? 'bg-amber-500/10 text-amber-400 shadow-[0_0_20px_rgba(251,191,36,0.1)]' : 'text-slate-400 hover:text-slate-200 hover:bg-white/5'}`}
+    className={`flex items-center gap-3 transition-all px-6 py-3 rounded-2xl group ${active ? 'bg-amber-500/10 text-amber-400 shadow-[0_0_20px_rgba(251,191,36,0.15)]' : 'text-slate-400 hover:text-slate-200 hover:bg-white/5'}`}
   >
     <i className={`fa-solid ${icon} text-lg group-hover:scale-110 transition-transform`}></i>
     <span className="text-xs font-bold uppercase tracking-widest">{label}</span>
@@ -156,16 +156,17 @@ export default function App() {
 
       <main className="flex-1 w-full max-w-7xl mx-auto p-6 relative z-10">
         {activeView === 'SEARCH' && (
-          <div className="space-y-16 animate-in fade-in slide-in-from-bottom-8 duration-700">
-            <div className="max-w-4xl mx-auto mt-12 md:mt-24">
+          <div className="space-y-12 animate-in fade-in slide-in-from-bottom-8 duration-700">
+            {/* Search container moved up from mt-12/24 to mt-4/8 */}
+            <div className="max-w-4xl mx-auto mt-4 md:mt-8">
               <form onSubmit={(e) => { e.preventDefault(); handleSearch(); }} className="relative group">
-                <div className="absolute -inset-1 bg-gradient-to-r from-amber-500/20 to-amber-200/20 rounded-[2.5rem] blur-xl opacity-0 group-focus-within:opacity-100 transition-all duration-1000"></div>
+                <div className="absolute -inset-1 bg-gradient-to-r from-amber-500/30 to-amber-200/30 rounded-[2.5rem] blur-xl opacity-0 group-focus-within:opacity-100 transition-all duration-1000"></div>
                 <div className="relative">
                   <input 
                     value={query} 
                     onChange={e => setQuery(e.target.value)}
                     placeholder="পবিত্র বাইবেলের পদ বা অধ্যায় লিখুন..."
-                    className="w-full bg-slate-900/60 backdrop-blur-3xl border border-white/10 pl-10 pr-32 md:pr-48 py-8 rounded-[2.5rem] text-xl md:text-2xl outline-none focus:ring-1 ring-amber-500/50 transition-all placeholder-slate-600 text-white font-medium shadow-3xl bn-serif"
+                    className="w-full bg-slate-900/80 backdrop-blur-3xl border border-white/20 pl-10 pr-32 md:pr-48 py-8 rounded-[2.5rem] text-xl md:text-2xl outline-none focus:ring-2 ring-amber-500/50 transition-all placeholder-slate-400 text-white font-bold shadow-3xl bn-serif"
                   />
                   <div className="absolute right-3 top-1/2 -translate-y-1/2 flex gap-2">
                      <button 
