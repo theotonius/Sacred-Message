@@ -2,7 +2,7 @@
 import { GoogleGenAI, Type, Modality } from "@google/genai";
 import { VerseData } from "../types";
 
-// Manual decode function following guidelines
+// Manual base64 decode function
 function decode(base64: string) {
   const binaryString = window.atob(base64);
   const len = binaryString.length;
@@ -13,7 +13,7 @@ function decode(base64: string) {
   return bytes;
 }
 
-// Custom audio decoding logic for raw PCM data
+// Custom raw PCM audio decoding logic
 async function decodeAudioData(
   data: Uint8Array,
   ctx: AudioContext,
@@ -33,7 +33,7 @@ async function decodeAudioData(
   return buffer;
 }
 
-// Utility to handle JSON extraction if the model returns markdown blocks
+// Enhanced JSON extraction from potential markdown response
 function extractJson(text: string): any {
   try {
     const jsonMatch = text.match(/\{[\s\S]*\}/);
@@ -42,52 +42,45 @@ function extractJson(text: string): any {
     }
     return JSON.parse(text);
   } catch (e) {
-    console.error("JSON Extraction failed:", e);
+    console.error("JSON Parsing failed:", e);
     throw new Error("সার্ভার থেকে প্রাপ্ত তথ্য সঠিক ফরম্যাটে নেই।");
   }
 }
 
 export const geminiService = {
   async fetchVerseExplanation(query: string): Promise<VerseData> {
-    const apiKey = process.env.API_KEY;
-    if (!apiKey) {
-      throw new Error("এপিআই কী (API Key) সঠিকভাবে সেট করা নেই।");
-    }
-
-    // Always create a new instance with the current API key right before the call
-    const ai = new GoogleGenAI({ apiKey });
+    // Access API_KEY directly as required by guidelines
+    const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
     
     try {
       const response = await ai.models.generateContent({
-        // Updated to gemini-3-flash-preview for general text analysis task
         model: "gemini-3-flash-preview",
-        contents: `Analyses the following spiritual song lyrics, poem, or Bible verse: "${query}". 
-        Provide a deep, poetic, and soulful explanation in Bengali.`,
+        contents: `Analyze the following spiritual text or song lyrics: "${query}". 
+        Provide a deep, poetic explanation in Bengali.`,
         config: {
-          systemInstruction: "You are a world-class Bengali Lyrical and Spiritual Scholar. Your goal is to provide a structured analysis of the input text. If it's a song, identify the mood. If it's a verse, explain the theology. ALWAYS output in valid JSON. Use Bengali script for all explanations.",
+          systemInstruction: "You are a professional Bengali Literary and Spiritual Scholar. Analyze the input text. If it is a song, identify its soul/mood. If it is a scripture, explain its meaning. ALWAYS output in valid JSON. All values must be in Bengali script.",
           responseMimeType: "application/json",
           responseSchema: {
             type: Type.OBJECT,
             properties: {
-              reference: { type: Type.STRING, description: "Title of the song or Bible reference" },
-              text: { type: Type.STRING, description: "The original lyrics or verse snippet" },
+              reference: { type: Type.STRING, description: "Title or Reference" },
+              text: { type: Type.STRING, description: "The original text snippet" },
               explanation: {
                 type: Type.OBJECT,
                 properties: {
                   theologicalMeaning: { type: Type.STRING, description: "Inner spiritual meaning" },
-                  historicalContext: { type: Type.STRING, description: "Background context" },
-                  practicalApplication: { type: Type.STRING, description: "Personal reflection or life lesson" },
+                  historicalContext: { type: Type.STRING, description: "Contextual background" },
+                  practicalApplication: { type: Type.STRING, description: "Life application" },
                 },
                 required: ["theologicalMeaning", "historicalContext", "practicalApplication"]
               },
-              keyThemes: { type: Type.ARRAY, items: { type: Type.STRING }, description: "3-4 emotional or spiritual tags" }
+              keyThemes: { type: Type.ARRAY, items: { type: Type.STRING }, description: "3-4 Bengali theme tags" }
             },
             required: ["reference", "text", "explanation", "keyThemes"]
           }
         }
       });
 
-      // Use .text property directly
       const data = extractJson(response.text || '');
       return {
         ...data,
@@ -95,8 +88,8 @@ export const geminiService = {
         timestamp: Date.now()
       };
     } catch (error: any) {
-      console.error("Gemini Service Error:", error);
-      throw new Error(error.message || "সার্ভার থেকে তথ্য পাওয়া যায়নি।");
+      console.error("Gemini API Error:", error);
+      throw new Error("তথ্য খুঁজে পাওয়া যায়নি বা এপিআই কী-তে সমস্যা রয়েছে।");
     }
   },
 
@@ -104,7 +97,7 @@ export const geminiService = {
     const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
     const response = await ai.models.generateContent({
       model: "gemini-2.5-flash-preview-tts",
-      contents: [{ parts: [{ text: `দয়া করে এই অংশটি ভক্তিভরে পাঠ করুন: ${text}` }] }],
+      contents: [{ parts: [{ text: `দয়া করে এই অংশটি স্পষ্ট ও ভক্তিভরে পাঠ করুন: ${text}` }] }],
       config: {
         responseModalities: [Modality.AUDIO],
         speechConfig: {
@@ -116,7 +109,6 @@ export const geminiService = {
     const base64Audio = response.candidates?.[0]?.content?.parts?.[0]?.inlineData?.data;
     if (!base64Audio) throw new Error("Audio generation failed");
     
-    // Cross-browser AudioContext initialization
     const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)({ sampleRate: 24000 });
     return await decodeAudioData(decode(base64Audio), audioContext, 24000, 1);
   }
