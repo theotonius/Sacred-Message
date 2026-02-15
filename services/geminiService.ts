@@ -32,54 +32,69 @@ async function decodeAudioData(
 }
 
 function cleanJsonResponse(text: string): string {
-  // Remove markdown code blocks if present
-  return text.replace(/```json/g, '').replace(/```/g, '').trim();
+  if (!text) return '{}';
+  // Remove markdown blocks if present
+  let cleaned = text.trim();
+  if (cleaned.includes('```')) {
+    cleaned = cleaned.replace(/```json/g, '').replace(/```/g, '').trim();
+  }
+  // Remove any potential text before or after the JSON object
+  const start = cleaned.indexOf('{');
+  const end = cleaned.lastIndexOf('}');
+  if (start !== -1 && end !== -1) {
+    cleaned = cleaned.substring(start, end + 1);
+  }
+  return cleaned;
 }
 
 export const geminiService = {
   async fetchVerseExplanation(query: string): Promise<VerseData> {
+    // Re-initialize AI client on every call to ensure fresh API key
     const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
-    const response = await ai.models.generateContent({
-      model: "gemini-3-pro-preview",
-      contents: `Bible Verse or Spiritual Theme to explain: "${query}". 
-      Explain this deeply in Bengali language.`,
-      config: {
-        systemInstruction: "You are a professional Bengali Biblical Scholar. Provide structured, accurate, and spiritually deep information. Ensure all Bengali text is grammatically correct. Output must be in valid JSON format.",
-        responseMimeType: "application/json",
-        responseSchema: {
-          type: Type.OBJECT,
-          properties: {
-            reference: { type: Type.STRING, description: "The Bible reference in Bengali (e.g., যোহন ৩:১৬)" },
-            text: { type: Type.STRING, description: "The full verse text in Bengali script" },
-            explanation: {
-              type: Type.OBJECT,
-              properties: {
-                theologicalMeaning: { type: Type.STRING, description: "Spiritual and theological meaning in Bengali" },
-                historicalContext: { type: Type.STRING, description: "Historical background of the verse in Bengali" },
-                practicalApplication: { type: Type.STRING, description: "How to apply this in daily life in Bengali" },
-              },
-              required: ["theologicalMeaning", "historicalContext", "practicalApplication"]
-            },
-            keyThemes: { type: Type.ARRAY, items: { type: Type.STRING }, description: "3-4 key theme keywords in Bengali" }
-          },
-          required: ["reference", "text", "explanation", "keyThemes"]
-        }
-      }
-    });
-
-    const rawText = response.text || '{}';
-    const cleanedText = cleanJsonResponse(rawText);
     
     try {
+      const response = await ai.models.generateContent({
+        model: "gemini-3-flash-preview",
+        contents: `Spiritual Verse, Song Lyrical or Theme: "${query}". Provide a deep and poetic explanation in Bengali.`,
+        config: {
+          systemInstruction: "You are a Bengali Spiritual and Musical Scholar. Provide a detailed analysis of the input verse or lyrics. Output MUST be a valid JSON object. All values must be in Bengali script.",
+          responseMimeType: "application/json",
+          responseSchema: {
+            type: Type.OBJECT,
+            properties: {
+              reference: { type: Type.STRING, description: "Reference or Title in Bengali" },
+              text: { type: Type.STRING, description: "Original verse or lyrics in Bengali" },
+              explanation: {
+                type: Type.OBJECT,
+                properties: {
+                  theologicalMeaning: { type: Type.STRING, description: "Deeper meaning in Bengali" },
+                  historicalContext: { type: Type.STRING, description: "Context or background in Bengali" },
+                  practicalApplication: { type: Type.STRING, description: "Personal application or reflection in Bengali" },
+                },
+                required: ["theologicalMeaning", "historicalContext", "practicalApplication"]
+              },
+              keyThemes: { type: Type.ARRAY, items: { type: Type.STRING }, description: "3-4 Bengali tags" }
+            },
+            required: ["reference", "text", "explanation", "keyThemes"]
+          }
+        }
+      });
+
+      const rawText = response.text;
+      const cleanedText = cleanJsonResponse(rawText || '');
+      
       const data = JSON.parse(cleanedText);
       return {
         ...data,
-        id: Math.random().toString(36).substr(2, 9),
+        id: Math.random().toString(36).substring(2, 11),
         timestamp: Date.now()
       };
-    } catch (e) {
-      console.error("JSON Parsing failed. Raw:", rawText, "Cleaned:", cleanedText);
-      throw new Error("সার্ভার থেকে সঠিক তথ্য পাওয়া যায়নি। অনুগ্রহ করে আবার চেষ্টা করুন।");
+    } catch (error: any) {
+      console.error("Gemini API Error:", error);
+      if (error.message?.includes('403') || error.message?.includes('permission')) {
+        throw new Error("এপিআই কী (API Key) এর সমস্যা। অনুগ্রহ করে সেটিংস চেক করুন।");
+      }
+      throw new Error("সার্ভার থেকে তথ্য সংগ্রহ করা সম্ভব হয়নি। দয়া করে আবার চেষ্টা করুন।");
     }
   },
 
@@ -87,7 +102,7 @@ export const geminiService = {
     const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
     const response = await ai.models.generateContent({
       model: "gemini-2.5-flash-preview-tts",
-      contents: [{ parts: [{ text: `অনুগ্রহ করে এই পবিত্র পদটি গম্ভীর ও স্পষ্টভাবে পাঠ করুন: ${text}` }] }],
+      contents: [{ parts: [{ text: `দয়া করে এই অংশটি ভক্তিভরে পাঠ করুন: ${text}` }] }],
       config: {
         responseModalities: [Modality.AUDIO],
         speechConfig: {
