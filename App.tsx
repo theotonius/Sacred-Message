@@ -249,7 +249,7 @@ export default function App() {
             <h1 className={`text-4xl font-black ${theme === 'dark' ? 'text-white' : 'text-slate-900'} leading-none bn-serif tracking-tight`}>
               পবিত্র <span className="text-divine-gold">বানী</span>
             </h1>
-            <p className="text-[14px] text-amber-600 font-bold mt-2 bn-serif italic">জ্ঞানের আলো, আত্মার শান্তি</p>
+            <p className="text-[14px] text-amber-600 font-bold mt-2 bn-serif">জ্ঞানের আলো, আত্মার শান্তি</p>
           </div>
         </div>
         
@@ -262,7 +262,7 @@ export default function App() {
 
       <main className="flex-1 w-full max-w-7xl mx-auto p-6 pb-20 md:pb-6 relative z-10">
         {activeView === 'SEARCH' && (
-          <div className="space-y-12 animate-in fade-in slide-in-from-bottom-8 duration-700 pb-8 md:pb-0">
+          <div className="space-y-16 animate-in fade-in slide-in-from-bottom-8 duration-700 pb-8 md:pb-0">
             <div className="max-w-4xl mx-auto mt-4 md:mt-8">
               <form onSubmit={(e) => { e.preventDefault(); handleSearch(); }} className="relative group">
                 <div className="absolute -inset-1 bg-gradient-to-r from-amber-500/15 to-amber-200/15 rounded-[2.5rem] blur-xl opacity-0 group-focus-within:opacity-100 transition-all duration-1000"></div>
@@ -271,7 +271,7 @@ export default function App() {
                     value={query} 
                     onChange={e => setQuery(e.target.value)}
                     placeholder="পবিত্র বাইবেলের পদ বা অধ্যায় লিখুন.."
-                    className={`w-full ${theme === 'dark' ? 'bg-slate-900/30' : 'bg-white/80'} backdrop-blur-3xl border border-white/10 pl-10 pr-32 md:pr-48 py-8 rounded-[2.5rem] text-xl md:text-2xl outline-none focus:ring-2 ring-amber-500/50 transition-all ${theme === 'dark' ? 'placeholder-slate-500 text-white' : 'placeholder-slate-500 text-slate-900'} font-bold shadow-3xl bn-serif`}
+                    className={`w-full ${theme === 'dark' ? 'bg-slate-900/40' : 'bg-white/80'} backdrop-blur-3xl border border-white/10 pl-10 pr-32 md:pr-48 py-8 rounded-[2.5rem] text-xl md:text-2xl outline-none focus:ring-2 ring-amber-500/50 transition-all ${theme === 'dark' ? 'placeholder-slate-600 text-white' : 'placeholder-slate-400 text-slate-900'} font-bold shadow-3xl bn-serif`}
                   />
                   <div className="absolute right-3 top-1/2 -translate-y-1/2 flex gap-2">
                      <button 
@@ -289,96 +289,108 @@ export default function App() {
             </div>
 
             {state === AppState.SEARCHING && (
-              <div className="flex flex-col items-center py-20 gap-8 animate-pulse">
-                <div className="relative w-24 h-24">
-                  <div className="absolute inset-0 border-2 border-amber-500/20 rounded-full"></div>
-                  <div className="absolute inset-0 border-2 border-transparent border-t-amber-500 rounded-full animate-spin"></div>
-                  <i className="fa-solid fa-cross text-amber-500 text-2xl absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"></i>
+              <div className="flex flex-col items-center py-24 gap-8 animate-pulse">
+                <div className="relative w-28 h-28">
+                  <div className="absolute inset-0 border-4 border-amber-500/10 rounded-full"></div>
+                  <div className="absolute inset-0 border-4 border-transparent border-t-amber-500 rounded-full animate-spin"></div>
+                  <i className="fa-solid fa-cross text-amber-500 text-3xl absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"></i>
                 </div>
-                <div className="text-center">
-                  <h3 className={`${theme === 'dark' ? 'text-white' : 'text-slate-800'} text-2xl font-bold bn-serif mb-2`}>ঐশ্বরিক বাইবেলীয় অন্তর্দৃষ্টি খোঁজা হচ্ছে</h3>
+                <div className="text-center space-y-3">
+                  <h3 className={`${theme === 'dark' ? 'text-white' : 'text-slate-800'} text-3xl font-black bn-serif`}>ঐশ্বরিক বাইবেলীয় অন্তর্দৃষ্টি খোঁজা হচ্ছে</h3>
+                  <p className="text-amber-600/60 text-xs font-black uppercase tracking-widest">দয়া করে কিছুক্ষণ অপেক্ষা করুন...</p>
                 </div>
               </div>
             )}
 
             {state === AppState.ERROR && (
-              <div className="max-w-2xl mx-auto divine-glass p-12 rounded-[3rem] text-center border-rose-500/20">
-                <i className="fa-solid fa-circle-exclamation text-rose-500 text-5xl mb-6"></i>
-                <h3 className={`${theme === 'dark' ? 'text-white' : 'text-slate-900'} text-2xl font-black mb-4`}>তথ্য বিভ্রাট</h3>
-                <p className="text-slate-500 text-lg mb-10">{error}</p>
-                <button onClick={() => setState(AppState.IDLE)} className={`px-10 py-4 ${theme === 'dark' ? 'bg-white/5' : 'bg-black/5'} hover:bg-white/10 rounded-2xl ${theme === 'dark' ? 'text-white' : 'text-slate-900'} font-black border border-white/5 transition-all`}>আবার চেষ্টা করুন</button>
+              <div className="max-w-2xl mx-auto divine-glass p-12 md:p-16 rounded-[4rem] text-center border-rose-500/20 shadow-2xl">
+                <div className="w-20 h-20 bg-rose-500/10 rounded-3xl flex items-center justify-center text-rose-500 text-4xl mx-auto mb-8 shadow-inner">
+                  <i className="fa-solid fa-circle-exclamation"></i>
+                </div>
+                <h3 className={`${theme === 'dark' ? 'text-white' : 'text-slate-900'} text-3xl font-black mb-4 bn-serif`}>তথ্য বিভ্রাট</h3>
+                <p className="text-slate-500 text-lg mb-10 bn-serif text-justify">{error}</p>
+                <button onClick={() => setState(AppState.IDLE)} className={`px-12 py-5 bg-rose-600 hover:bg-rose-500 rounded-2xl text-white font-black transition-all shadow-lg active:scale-95`}>আবার চেষ্টা করুন</button>
               </div>
             )}
 
             {currentVerse && state === AppState.IDLE && (
-              <div className="max-w-5xl mx-auto space-y-12 pb-24 animate-in slide-in-from-bottom-12 duration-1000">
+              <div className="max-w-5xl mx-auto space-y-16 pb-24 animate-in slide-in-from-bottom-12 duration-1000">
                 <div className="relative group">
                   <div className="absolute -inset-4 bg-amber-500/5 rounded-[4rem] blur-2xl group-hover:bg-amber-500/10 transition-all duration-700"></div>
-                  <div className={`relative ${theme === 'dark' ? 'bg-slate-900/40' : 'bg-white/60'} backdrop-blur-3xl p-12 md:p-16 rounded-[4rem] border border-white/5 overflow-hidden text-center shadow-2xl`}>
+                  <div className={`relative ${theme === 'dark' ? 'bg-slate-900/50' : 'bg-white/70'} backdrop-blur-3xl p-12 md:p-20 rounded-[4rem] border border-white/5 overflow-hidden text-center shadow-3xl`}>
                     <div className="absolute top-10 right-10">
-                      <button onClick={handleRead} className={`w-14 h-14 flex items-center justify-center rounded-2xl divine-glass transition-all ${isReading ? 'text-rose-500' : 'text-amber-500 hover:text-amber-600'}`}>
-                        <i className={`fa-solid ${isReading ? 'fa-square' : 'fa-play'}`}></i>
+                      <button onClick={handleRead} className={`w-16 h-16 flex items-center justify-center rounded-2xl divine-glass transition-all ${isReading ? 'text-rose-500 shadow-[0_0_20px_rgba(244,63,94,0.3)]' : 'text-amber-500 hover:text-amber-600 hover:scale-105 active:scale-95'}`}>
+                        <i className={`fa-solid ${isReading ? 'fa-square' : 'fa-play'} text-xl`}></i>
                       </button>
                     </div>
 
-                    <div className="mb-10">
-                      <i className="fa-solid fa-quote-left text-amber-500/20 text-4xl mb-6"></i>
-                      <h2 className={`${mainTextSizeClass} font-bold ${theme === 'dark' ? 'text-white' : 'text-slate-100'} leading-relaxed bn-serif italic px-6 drop-shadow-xl max-w-3xl mx-auto`}>
+                    <div className="mb-12 relative">
+                      <i className="fa-solid fa-quote-left text-amber-500/10 text-6xl absolute -top-10 -left-6"></i>
+                      <h2 className={`${mainTextSizeClass} font-bold ${theme === 'dark' ? 'text-white' : 'text-slate-900'} leading-relaxed bn-serif px-8 drop-shadow-sm max-w-4xl mx-auto relative z-10 text-justify`}>
                         {currentVerse.text}
                       </h2>
                     </div>
                     
-                    <div className="inline-flex items-center gap-6 px-10 py-3 bg-amber-500/10 rounded-full border border-amber-500/20 shadow-inner">
-                      <div className="w-1.5 h-1.5 bg-amber-500 rounded-full animate-pulse"></div>
-                      <p className="text-amber-600 font-black tracking-[0.2em] text-sm md:text-base bn-serif">{currentVerse.reference}</p>
-                      <div className="w-1.5 h-1.5 bg-amber-500 rounded-full animate-pulse"></div>
+                    <div className="inline-flex items-center gap-6 px-12 py-4 bg-amber-500/10 rounded-full border border-amber-500/20 shadow-inner">
+                      <div className="w-2 h-2 bg-amber-500 rounded-full animate-pulse"></div>
+                      <p className="text-amber-600 font-black tracking-[0.2em] text-sm md:text-lg bn-serif">{currentVerse.reference}</p>
+                      <div className="w-2 h-2 bg-amber-500 rounded-full animate-pulse"></div>
                     </div>
                   </div>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                  <div className="divine-card p-10 rounded-[3rem] space-y-6">
-                    <div className="w-16 h-16 bg-amber-500/10 rounded-2xl flex items-center justify-center text-amber-500 text-2xl shadow-inner">
+                  <div className="divine-card p-12 rounded-[3rem] space-y-8 hover:border-amber-500/20 transition-all group">
+                    <div className="w-16 h-16 bg-amber-500/10 rounded-2xl flex items-center justify-center text-amber-500 text-2xl shadow-inner group-hover:scale-110 transition-transform">
                       <i className="fa-solid fa-church"></i>
                     </div>
-                    <h4 className="text-xl font-black text-amber-600 bn-serif flex items-center gap-3">তাত্ত্বিক অর্থ</h4>
-                    <p className={`${explanationSizeClass} ${theme === 'dark' ? 'text-slate-300' : 'text-slate-600'} leading-relaxed bn-serif italic font-light`}>{currentVerse.explanation.theologicalMeaning}</p>
+                    <div className="space-y-4">
+                      <h4 className="text-xl font-black text-amber-600 bn-serif">তাত্ত্বিক অর্থ</h4>
+                      <div className="h-0.5 w-10 bg-amber-500/20 rounded-full"></div>
+                      <p className={`${explanationSizeClass} ${theme === 'dark' ? 'text-slate-300' : 'text-slate-700'} leading-relaxed bn-serif font-medium text-justify`}>{currentVerse.explanation.theologicalMeaning}</p>
+                    </div>
                   </div>
 
-                  <div className="divine-card p-10 rounded-[3rem] space-y-6">
-                    <div className="w-16 h-16 bg-blue-500/10 rounded-2xl flex items-center justify-center text-blue-500 text-2xl shadow-inner">
+                  <div className="divine-card p-12 rounded-[3rem] space-y-8 hover:border-blue-500/20 transition-all group">
+                    <div className="w-16 h-16 bg-blue-500/10 rounded-2xl flex items-center justify-center text-blue-500 text-2xl shadow-inner group-hover:scale-110 transition-transform">
                       <i className="fa-solid fa-book-open-reader"></i>
                     </div>
-                    <h4 className="text-xl font-black text-blue-600 bn-serif flex items-center gap-3">শাস্ত্রীয় প্রেক্ষাপট</h4>
-                    <p className={`${explanationSizeClass} ${theme === 'dark' ? 'text-slate-400' : 'text-slate-600'} leading-relaxed bn-serif font-light`}>{currentVerse.explanation.historicalContext}</p>
+                    <div className="space-y-4">
+                      <h4 className="text-xl font-black text-blue-600 bn-serif">শাস্ত্রীয় প্রেক্ষাপট</h4>
+                      <div className="h-0.5 w-10 bg-blue-500/20 rounded-full"></div>
+                      <p className={`${explanationSizeClass} ${theme === 'dark' ? 'text-slate-300' : 'text-slate-700'} leading-relaxed bn-serif font-medium text-justify`}>{currentVerse.explanation.historicalContext}</p>
+                    </div>
                   </div>
 
-                  <div className="divine-card p-10 rounded-[3rem] space-y-6">
-                    <div className="w-16 h-16 bg-emerald-500/10 rounded-2xl flex items-center justify-center text-emerald-500 text-2xl shadow-inner">
+                  <div className="divine-card p-12 rounded-[3rem] space-y-8 hover:border-emerald-500/20 transition-all group">
+                    <div className="w-16 h-16 bg-emerald-500/10 rounded-2xl flex items-center justify-center text-emerald-500 text-2xl shadow-inner group-hover:scale-110 transition-transform">
                       <i className="fa-solid fa-cross"></i>
                     </div>
-                    <h4 className="text-xl font-black text-emerald-600 bn-serif flex items-center gap-3">খ্রিস্টীয় জীবনচর্চা</h4>
-                    <p className={`${explanationSizeClass} ${theme === 'dark' ? 'text-slate-300' : 'text-slate-600'} leading-relaxed bn-serif italic font-light`}>{currentVerse.explanation.practicalApplication}</p>
+                    <div className="space-y-4">
+                      <h4 className="text-xl font-black text-emerald-600 bn-serif">খ্রিস্টীয় জীবনচর্চা</h4>
+                      <div className="h-0.5 w-10 bg-emerald-500/20 rounded-full"></div>
+                      <p className={`${explanationSizeClass} ${theme === 'dark' ? 'text-slate-300' : 'text-slate-700'} leading-relaxed bn-serif font-medium text-justify`}>{currentVerse.explanation.practicalApplication}</p>
+                    </div>
                   </div>
                 </div>
 
-                <div className="flex flex-wrap justify-center gap-4 pt-10">
+                <div className="flex flex-wrap justify-center gap-3 pt-10">
                    {currentVerse.keyThemes.map((themeStr, i) => (
-                     <span key={i} className="px-6 py-2.5 rounded-full divine-glass text-[10px] font-black text-amber-600/60 uppercase tracking-widest border border-amber-500/10 hover:border-amber-500/40 transition-all cursor-default">{themeStr}</span>
+                     <span key={i} className="px-6 py-3 rounded-full divine-glass text-[10px] font-black text-amber-600/70 uppercase tracking-widest border border-amber-500/10 hover:border-amber-500/40 transition-all cursor-default shadow-sm">{themeStr}</span>
                    ))}
                 </div>
 
-                <div className="flex flex-wrap justify-center gap-4 pt-8">
-                  <button onClick={toggleSave} className={`flex items-center gap-4 px-10 py-5 rounded-[2rem] divine-glass transition-all border-2 ${isCurrentVerseSaved ? 'text-amber-600 bg-amber-500/10 border-amber-500/40 shadow-[0_0_30px_rgba(251,191,36,0.15)]' : 'text-slate-400 border-white/5 hover:border-amber-500/20 hover:text-slate-100'}`}>
+                <div className="flex flex-wrap justify-center gap-6 pt-10">
+                  <button onClick={toggleSave} className={`flex items-center gap-4 px-12 py-6 rounded-[2.5rem] divine-glass transition-all border-2 ${isCurrentVerseSaved ? 'text-amber-600 bg-amber-500/10 border-amber-500/40 shadow-[0_0_40px_rgba(251,191,36,0.2)]' : 'text-slate-500 border-white/5 hover:border-amber-500/20 hover:text-slate-200'} active:scale-95`}>
                     <i className={`fa-solid ${isCurrentVerseSaved ? 'fa-bookmark' : 'fa-bookmark'} text-xl`}></i>
                     <span className="font-black bn-serif tracking-widest uppercase">{isCurrentVerseSaved ? 'সংগ্রহ থেকে সরান' : 'সংগ্রহে রাখুন'}</span>
                   </button>
 
-                  <button onClick={handleShare} className={`flex items-center gap-4 px-10 py-5 rounded-[2rem] divine-glass transition-all border-2 text-slate-400 border-white/5 hover:border-amber-500/20 hover:text-slate-100 relative`}>
+                  <button onClick={handleShare} className={`flex items-center gap-4 px-12 py-6 rounded-[2.5rem] divine-glass transition-all border-2 text-slate-500 border-white/5 hover:border-amber-500/20 hover:text-slate-200 active:scale-95 relative group`}>
                     {showCopyFeedback && (
-                      <div className="absolute -top-12 left-1/2 -translate-x-1/2 bg-emerald-600 text-white text-[10px] px-4 py-2 rounded-full font-black uppercase tracking-widest animate-in fade-in slide-in-from-bottom-2">কপি করা হয়েছে!</div>
+                      <div className="absolute -top-14 left-1/2 -translate-x-1/2 bg-emerald-600 text-white text-[10px] px-6 py-2.5 rounded-full font-black uppercase tracking-widest animate-in fade-in slide-in-from-bottom-2 shadow-lg">কপি করা হয়েছে!</div>
                     )}
-                    <i className="fa-solid fa-share-nodes text-xl"></i>
+                    <i className="fa-solid fa-share-nodes text-xl group-hover:rotate-12 transition-transform"></i>
                     <span className="font-black bn-serif tracking-widest uppercase">শেয়ার করুন</span>
                   </button>
                 </div>
@@ -386,11 +398,11 @@ export default function App() {
             )}
 
             {!currentVerse && state === AppState.IDLE && (
-              <div className="max-w-4xl mx-auto space-y-8 pb-8 md:pb-0">
+              <div className="max-w-4xl mx-auto space-y-10 pb-12 md:pb-0">
                 <div className="text-center opacity-40">
-                  <p className="text-[10px] font-black uppercase tracking-[0.5em] mb-6">প্রস্তাবিত বাইবেলের পদসমূহ</p>
+                  <p className="text-[11px] font-black uppercase tracking-[0.6em] mb-6 text-amber-600">প্রস্তাবিত বাইবেলের পদসমূহ</p>
                 </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                   <RecommendItem title="গীতসংহিতা ২৩" desc="ঐশ্বরিক সুরক্ষা" icon="fa-hands-praying" onClick={() => handleSearch('গীতসংহিতা ২৩')} theme={theme} />
                   <RecommendItem title="যোহন ৩:১৬" desc="ঈশ্বরের ভালোবাসা" icon="fa-heart" onClick={() => handleSearch('যোহন ৩:১৬')} theme={theme} />
                   <RecommendItem title="রোমীয় ৮:২৮" desc="ঐশ্বরিক লক্ষ্য" icon="fa-shield-halved" onClick={() => handleSearch('রোমীয় ৮:২৮')} theme={theme} />
@@ -402,23 +414,23 @@ export default function App() {
         )}
 
         {activeView === 'SAVED' && (
-          <div className="animate-in fade-in slide-in-from-right-12 duration-600 space-y-12 py-10 pb-12 md:pb-0">
-            <div className="flex flex-col items-center text-center gap-4 mb-16 animate-in fade-in slide-in-from-top-6 duration-1000">
-               <div className="flex items-center gap-5">
-                 <div className="h-px w-8 md:w-16 bg-gradient-to-r from-transparent to-amber-500/40"></div>
-                 <i className="fa-solid fa-bookmark text-amber-500/30 text-xl"></i>
-                 <h2 className={`text-3xl md:text-4xl font-black ${theme === 'dark' ? 'text-white' : 'text-slate-900'} bn-serif leading-none tracking-tight`}>আপনার <span className="text-divine-gold">সংগ্রহ</span></h2>
-                 <i className="fa-solid fa-bookmark text-amber-500/30 text-xl"></i>
-                 <div className="h-px w-8 md:w-16 bg-gradient-to-l from-transparent to-amber-500/40"></div>
+          <div className="animate-in fade-in slide-in-from-right-12 duration-600 space-y-16 py-10 pb-12 md:pb-0">
+            <div className="flex flex-col items-center text-center gap-6 mb-20 animate-in fade-in slide-in-from-top-10 duration-1000">
+               <div className="flex items-center gap-8">
+                 <div className="h-px w-12 md:w-24 bg-gradient-to-r from-transparent via-amber-500/40 to-transparent"></div>
+                 <i className="fa-solid fa-bookmark text-amber-500/30 text-2xl"></i>
+                 <h2 className={`text-4xl md:text-5xl font-black ${theme === 'dark' ? 'text-white' : 'text-slate-900'} bn-serif leading-none tracking-tight`}>আপনার <span className="text-divine-gold">সংগ্রহ</span></h2>
+                 <i className="fa-solid fa-bookmark text-amber-500/30 text-2xl"></i>
+                 <div className="h-px w-12 md:w-24 bg-gradient-to-l from-transparent via-amber-500/40 to-transparent"></div>
                </div>
-               <p className="text-[10px] text-amber-600/60 font-black uppercase tracking-[0.5em]">পবিত্র হৃদয়ে সংরক্ষিত জ্ঞান</p>
+               <p className="text-[11px] text-amber-600 font-black uppercase tracking-[0.6em] bg-amber-500/5 px-8 py-2.5 rounded-full border border-amber-500/10">পবিত্র হৃদয়ে সংরক্ষিত জ্ঞান</p>
             </div>
 
             {savedVerses.length > 0 && (
-              <div className="flex items-center justify-center gap-4 overflow-x-auto pb-4 scrollbar-hide no-scrollbar">
+              <div className="flex items-center justify-center gap-4 overflow-x-auto pb-6 scrollbar-hide no-scrollbar max-w-4xl mx-auto">
                 <button 
                   onClick={() => setFilterTag(null)}
-                  className={`whitespace-nowrap px-6 py-2.5 rounded-full transition-all text-xs font-black uppercase tracking-widest border ${!filterTag ? 'bg-amber-500 text-white border-amber-500 shadow-lg shadow-amber-500/20' : 'divine-glass text-slate-400 border-white/5 hover:border-amber-500/20'}`}
+                  className={`whitespace-nowrap px-8 py-3 rounded-full transition-all text-[11px] font-black uppercase tracking-widest border-2 ${!filterTag ? 'bg-amber-500 text-white border-amber-500 shadow-xl shadow-amber-500/20' : 'divine-glass text-slate-500 border-white/5 hover:border-amber-500/20'}`}
                 >
                   সবগুলো
                 </button>
@@ -426,7 +438,7 @@ export default function App() {
                   <button 
                     key={tag}
                     onClick={() => setFilterTag(tag === filterTag ? null : tag)}
-                    className={`whitespace-nowrap px-6 py-2.5 rounded-full transition-all text-xs font-black uppercase tracking-widest border ${filterTag === tag ? 'bg-amber-500 text-white border-amber-500 shadow-lg shadow-amber-500/20' : 'divine-glass text-slate-400 border-white/5 hover:border-amber-500/20'}`}
+                    className={`whitespace-nowrap px-8 py-3 rounded-full transition-all text-[11px] font-black uppercase tracking-widest border-2 ${filterTag === tag ? 'bg-amber-500 text-white border-amber-500 shadow-xl shadow-amber-500/20' : 'divine-glass text-slate-500 border-white/5 hover:border-amber-500/20'}`}
                   >
                     {tag}
                   </button>
@@ -435,38 +447,42 @@ export default function App() {
             )}
 
             {filteredVerses.length === 0 ? (
-              <div className="divine-glass p-16 md:p-24 text-center rounded-[5rem] opacity-40">
-                <i className="fa-solid fa-bookmark text-7xl mb-8"></i>
-                <p className={`text-2xl bn-serif italic ${theme === 'dark' ? 'text-white' : 'text-slate-900'}`}>
+              <div className="divine-glass p-20 md:p-32 text-center rounded-[5rem] opacity-50 shadow-2xl max-w-4xl mx-auto border-dashed border-2 border-white/10">
+                <div className="w-24 h-24 bg-slate-500/10 rounded-full flex items-center justify-center mx-auto mb-10">
+                  <i className="fa-solid fa-bookmark text-5xl text-slate-500/50"></i>
+                </div>
+                <p className={`text-2xl bn-serif font-medium ${theme === 'dark' ? 'text-white' : 'text-slate-900'} mb-10`}>
                   {filterTag ? `'${filterTag}' ট্যাগে কোনো পদ পাওয়া যায়নি` : "বর্তমানে কোনো সংরক্ষিত পদ নেই"}
                 </p>
                 {!filterTag && (
-                  <button onClick={() => setActiveView('SEARCH')} className="mt-10 px-12 py-5 bg-amber-600 text-white font-black rounded-2xl hover:scale-105 transition-all">বাইবেলের পদ খুঁজুন</button>
+                  <button onClick={() => setActiveView('SEARCH')} className="px-14 py-6 bg-amber-600 hover:bg-amber-500 text-white font-black rounded-2xl transition-all shadow-xl active:scale-95">বাইবেলের পদ খুঁজুন</button>
                 )}
               </div>
             ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
                 {filteredVerses.map(v => (
-                  <div key={v.id} className="divine-card p-10 rounded-[3rem] group flex flex-col justify-between cursor-pointer transition-transform hover:scale-[1.01]" onClick={() => { setCurrentVerse(v); setActiveView('SEARCH'); }}>
-                    <div className="space-y-6">
+                  <div key={v.id} className="divine-card p-10 rounded-[3.5rem] group flex flex-col justify-between cursor-pointer transition-all hover:scale-[1.03] hover:shadow-3xl hover:border-amber-500/20" onClick={() => { setCurrentVerse(v); setActiveView('SEARCH'); }}>
+                    <div className="space-y-8">
                       <div className="flex justify-between items-start">
-                        <span className="text-amber-600 font-black text-sm bn-serif">{v.reference}</span>
-                        <div className="flex gap-2">
-                          <button onClick={(e) => { e.stopPropagation(); setNewTagInputId(v.id); }} className="text-slate-400 hover:text-amber-500 transition-colors p-2">
+                        <div className="bg-amber-500/10 px-4 py-1.5 rounded-full border border-amber-500/10">
+                          <span className="text-amber-600 font-black text-xs bn-serif tracking-wide">{v.reference}</span>
+                        </div>
+                        <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                          <button onClick={(e) => { e.stopPropagation(); setNewTagInputId(v.id); }} className="text-slate-500 hover:text-amber-500 transition-colors p-2 divine-glass rounded-xl h-10 w-10 flex items-center justify-center">
                             <i className="fa-solid fa-plus-circle"></i>
                           </button>
-                          <button onClick={(e) => { e.stopPropagation(); saveToLocal(savedVerses.filter(item => item.id !== v.id)); }} className="text-slate-400 hover:text-rose-500 transition-colors p-2">
+                          <button onClick={(e) => { e.stopPropagation(); saveToLocal(savedVerses.filter(item => item.id !== v.id)); }} className="text-slate-500 hover:text-rose-500 transition-colors p-2 divine-glass rounded-xl h-10 w-10 flex items-center justify-center">
                             <i className="fa-solid fa-trash-can"></i>
                           </button>
                         </div>
                       </div>
-                      <p className={`${theme === 'dark' ? 'text-slate-200' : 'text-slate-700'} bn-serif text-lg italic line-clamp-4 leading-relaxed opacity-80 group-hover:opacity-100 transition-opacity`}>"{v.text}"</p>
+                      <p className={`${theme === 'dark' ? 'text-slate-200' : 'text-slate-800'} bn-serif text-lg leading-relaxed line-clamp-4 font-medium text-justify`}>"{v.text}"</p>
                     </div>
 
-                    <div className="mt-8">
-                      <div className="flex flex-wrap gap-2">
+                    <div className="mt-10">
+                      <div className="flex flex-wrap gap-2.5">
                         {(v.tags || []).map(tag => (
-                          <span key={tag} className="flex items-center gap-2 px-3 py-1 bg-amber-500/5 border border-amber-500/10 rounded-full text-[9px] font-black text-amber-600 uppercase tracking-widest group/tag hover:border-amber-500/30 transition-all">
+                          <span key={tag} className="flex items-center gap-2 px-4 py-1.5 bg-amber-500/5 border border-amber-500/10 rounded-full text-[10px] font-black text-amber-600 uppercase tracking-widest group/tag hover:border-amber-500/30 transition-all shadow-sm">
                             {tag}
                             <button 
                               onClick={(e) => { e.stopPropagation(); removeTagFromVerse(v.id, tag); }}
@@ -479,18 +495,18 @@ export default function App() {
                       </div>
 
                       {newTagInputId === v.id && (
-                        <div className="mt-4 flex gap-2 animate-in fade-in slide-in-from-bottom-2 duration-300" onClick={e => e.stopPropagation()}>
+                        <div className="mt-6 flex gap-2 animate-in fade-in slide-in-from-bottom-2 duration-300" onClick={e => e.stopPropagation()}>
                           <input 
                             autoFocus
                             value={newTagValue}
                             onChange={e => setNewTagValue(e.target.value)}
                             onKeyDown={e => { if (e.key === 'Enter') addTagToVerse(v.id, newTagValue); if (e.key === 'Escape') setNewTagInputId(null); }}
                             placeholder="ট্যাগ লিখুন.."
-                            className={`flex-1 bg-white/5 border border-white/10 rounded-xl px-4 py-2 text-xs outline-none focus:ring-1 ring-amber-500/50 ${theme === 'dark' ? 'text-white' : 'text-slate-900'}`}
+                            className={`flex-1 bg-white/5 border border-white/10 rounded-2xl px-5 py-3 text-xs outline-none focus:ring-1 ring-amber-500/50 ${theme === 'dark' ? 'text-white' : 'text-slate-900'} bn-serif`}
                           />
                           <button 
                             onClick={() => addTagToVerse(v.id, newTagValue)}
-                            className="bg-amber-600 text-white p-2 rounded-xl"
+                            className="bg-amber-600 text-white p-3 rounded-2xl shadow-lg active:scale-90"
                           >
                             <i className="fa-solid fa-check"></i>
                           </button>
@@ -505,47 +521,56 @@ export default function App() {
         )}
 
         {activeView === 'SETTINGS' && (
-          <div className="max-w-4xl mx-auto py-12 space-y-12 animate-in fade-in zoom-in-95 pb-20 md:pb-16">
-             <div className="flex items-center gap-6">
-               <div className={`w-16 h-16 ${theme === 'dark' ? 'bg-white/5' : 'bg-black/5'} rounded-3xl flex items-center justify-center text-slate-500`}>
-                 <i className="fa-solid fa-sliders text-2xl"></i>
+          <div className="max-w-4xl mx-auto py-12 space-y-16 animate-in fade-in zoom-in-95 pb-20 md:pb-16">
+             <div className="flex items-center gap-8 px-4">
+               <div className={`w-20 h-20 ${theme === 'dark' ? 'bg-white/5' : 'bg-black/5'} rounded-[2rem] flex items-center justify-center text-slate-500 shadow-inner border border-white/5`}>
+                 <i className="fa-solid fa-sliders text-3xl"></i>
                </div>
-               <h2 className={`text-4xl font-black ${theme === 'dark' ? 'text-white' : 'text-slate-900'}`}>অ্যাপ সেটিংস</h2>
+               <div className="space-y-2">
+                 <h2 className={`text-4xl font-black ${theme === 'dark' ? 'text-white' : 'text-slate-900'} bn-serif`}>অ্যাপ সেটিংস</h2>
+                 <p className="text-amber-600 text-xs font-black uppercase tracking-widest">ব্যক্তিগত পাঠ অভিজ্ঞতা কাস্টমাইজ করুন</p>
+               </div>
              </div>
 
-             <div className="space-y-8">
-                <div className="divine-glass p-8 md:p-10 rounded-[4rem] space-y-10">
+             <div className="space-y-10">
+                <div className="divine-glass p-10 md:p-14 rounded-[4rem] space-y-12 shadow-3xl">
                     {/* Theme Selection */}
-                    <div className="space-y-6">
-                      <h4 className="text-xs font-black text-amber-600 uppercase tracking-[0.4em] ml-2">থিম পরিবর্তন</h4>
-                      <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-8">
+                      <div className="flex items-center gap-4">
+                        <div className="h-2 w-2 bg-amber-500 rounded-full"></div>
+                        <h4 className="text-xs font-black text-amber-600 uppercase tracking-[0.5em]">থিম পরিবর্তন</h4>
+                      </div>
+                      <div className="grid grid-cols-2 gap-6">
                           <button 
                             onClick={() => handleThemeChange('dark')} 
-                            className={`p-6 md:p-8 rounded-[2rem] border-2 transition-all flex flex-col items-center gap-3 ${theme === 'dark' ? 'bg-amber-500/10 border-amber-500/50 text-amber-500 shadow-[0_0_40px_rgba(251,191,36,0.1)]' : 'bg-black/5 border-transparent text-slate-500 hover:bg-black/10'}`}
+                            className={`p-10 rounded-[2.5rem] border-2 transition-all flex flex-col items-center gap-4 ${theme === 'dark' ? 'bg-amber-500/10 border-amber-500/50 text-amber-500 shadow-[0_0_50px_rgba(251,191,36,0.15)]' : 'bg-black/5 border-transparent text-slate-500 hover:bg-black/10'}`}
                           >
-                            <i className="fa-solid fa-moon text-xl opacity-40"></i>
-                            <span className="font-black tracking-widest text-[10px] uppercase">ডার্ক থিম</span>
+                            <i className="fa-solid fa-moon text-2xl opacity-50"></i>
+                            <span className="font-black tracking-[0.2em] text-[11px] uppercase">ডার্ক থিম</span>
                           </button>
                           <button 
                             onClick={() => handleThemeChange('light')} 
-                            className={`p-6 md:p-8 rounded-[2rem] border-2 transition-all flex flex-col items-center gap-3 ${theme === 'light' ? 'bg-amber-500/10 border-amber-500/50 text-amber-600 shadow-[0_0_40px_rgba(251,191,36,0.1)]' : 'bg-white/5 border-transparent text-slate-400 hover:bg-white/10'}`}
+                            className={`p-10 rounded-[2.5rem] border-2 transition-all flex flex-col items-center gap-4 ${theme === 'light' ? 'bg-amber-500/10 border-amber-500/50 text-amber-600 shadow-[0_0_50px_rgba(251,191,36,0.15)]' : 'bg-white/5 border-transparent text-slate-400 hover:bg-white/10'}`}
                           >
-                            <i className="fa-solid fa-sun text-xl opacity-40"></i>
-                            <span className="font-black tracking-widest text-[10px] uppercase">লাইট থিম</span>
+                            <i className="fa-solid fa-sun text-2xl opacity-50"></i>
+                            <span className="font-black tracking-[0.2em] text-[11px] uppercase">লাইট থিম</span>
                           </button>
                       </div>
                     </div>
 
                     {/* Font Selection */}
-                    <div className={`pt-8 border-t ${theme === 'dark' ? 'border-white/5' : 'border-black/5'} space-y-6`}>
-                      <h4 className="text-xs font-black text-amber-600 uppercase tracking-[0.4em] ml-2">ফন্ট নির্বাচন</h4>
-                      <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                    <div className={`pt-12 border-t ${theme === 'dark' ? 'border-white/5' : 'border-black/5'} space-y-8`}>
+                      <div className="flex items-center gap-4">
+                        <div className="h-2 w-2 bg-blue-500 rounded-full"></div>
+                        <h4 className="text-xs font-black text-amber-600 uppercase tracking-[0.5em]">ফন্ট নির্বাচন</h4>
+                      </div>
+                      <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                           {fonts.map(f => (
                             <button 
                               key={f.id} 
                               onClick={() => handleFontChange(f.id)} 
                               style={{ fontFamily: f.id }}
-                              className={`px-6 py-4 rounded-2xl border transition-all text-sm md:text-base ${fontFamily === f.id ? 'bg-amber-500 text-white border-amber-500 shadow-md' : 'bg-white/5 border-white/10 text-slate-400 hover:bg-white/10'}`}
+                              className={`px-6 py-5 rounded-2xl border-2 transition-all text-base md:text-lg ${fontFamily === f.id ? 'bg-amber-500 text-white border-amber-500 shadow-xl' : 'bg-white/5 border-white/5 text-slate-500 hover:bg-white/10'}`}
                             >
                               {f.name}
                             </button>
@@ -554,49 +579,58 @@ export default function App() {
                     </div>
 
                     {/* Voice Selection */}
-                    <div className={`pt-8 border-t ${theme === 'dark' ? 'border-white/5' : 'border-black/5'} space-y-6`}>
-                      <h4 className="text-xs font-black text-amber-600 uppercase tracking-[0.4em] ml-2">কণ্ঠস্বর নির্বাচন</h4>
+                    <div className={`pt-12 border-t ${theme === 'dark' ? 'border-white/5' : 'border-black/5'} space-y-8`}>
+                      <div className="flex items-center gap-4">
+                        <div className="h-2 w-2 bg-emerald-500 rounded-full"></div>
+                        <h4 className="text-xs font-black text-amber-600 uppercase tracking-[0.5em]">কণ্ঠস্বর নির্বাচন</h4>
+                      </div>
                       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                           {['Kore', 'Zephyr', 'Charon', 'Puck'].map(v => (
-                            <button key={v} onClick={() => handleVoiceChange(v)} className={`p-4 md:p-6 rounded-[2rem] border-2 transition-all flex flex-col items-center gap-3 ${selectedVoice === v ? 'bg-amber-500/10 border-amber-500/50 text-amber-500 shadow-[0_0_40px_rgba(251,191,36,0.1)]' : 'bg-white/5 border-transparent text-slate-500 hover:bg-white/10'}`}>
-                              <i className="fa-solid fa-microphone-lines text-xl opacity-40"></i>
-                              <span className="font-black tracking-widest text-[9px] uppercase">{v} কণ্ঠস্বর</span>
+                            <button key={v} onClick={() => handleVoiceChange(v)} className={`p-6 rounded-[2rem] border-2 transition-all flex flex-col items-center gap-4 ${selectedVoice === v ? 'bg-amber-500/10 border-amber-500/50 text-amber-500 shadow-[0_0_50px_rgba(251,191,36,0.15)]' : 'bg-white/5 border-transparent text-slate-500 hover:bg-white/10'}`}>
+                              <i className="fa-solid fa-microphone-lines text-2xl opacity-40"></i>
+                              <span className="font-black tracking-widest text-[10px] uppercase">{v} কণ্ঠস্বর</span>
                             </button>
                           ))}
                       </div>
                     </div>
 
                     {/* Font Size Selection */}
-                    <div className={`pt-8 border-t ${theme === 'dark' ? 'border-white/5' : 'border-black/5'} space-y-6`}>
-                      <h4 className="text-xs font-black text-amber-600 uppercase tracking-[0.4em] ml-2">পাঠের অক্ষরের আকার</h4>
-                      <div className="flex flex-wrap gap-3">
+                    <div className={`pt-12 border-t ${theme === 'dark' ? 'border-white/5' : 'border-black/5'} space-y-8`}>
+                      <div className="flex items-center gap-4">
+                        <div className="h-2 w-2 bg-rose-500 rounded-full"></div>
+                        <h4 className="text-xs font-black text-amber-600 uppercase tracking-[0.5em]">পাঠের অক্ষরের আকার</h4>
+                      </div>
+                      <div className="flex flex-wrap gap-4">
                           {[{ id: 'sm', label: 'ছোট' }, { id: 'base', label: 'মাঝারি' }, { id: 'lg', label: 'বড়' }, { id: 'xl', label: 'অতিরিক্ত বড়' }].map(size => (
-                            <button key={size.id} onClick={() => handleFontSizeChange(size.id)} className={`px-6 py-3 rounded-xl border transition-all font-bold bn-serif text-sm ${fontSize === size.id ? 'bg-amber-500 text-white border-amber-500 shadow-lg' : 'bg-white/5 border-white/10 text-slate-500 hover:bg-white/10'}`}>{size.label}</button>
+                            <button key={size.id} onClick={() => handleFontSizeChange(size.id)} className={`px-10 py-4 rounded-2xl border-2 transition-all font-black bn-serif text-lg ${fontSize === size.id ? 'bg-amber-500 text-white border-amber-500 shadow-xl' : 'bg-white/5 border-white/5 text-slate-500 hover:bg-white/10'}`}>{size.label}</button>
                           ))}
                       </div>
                     </div>
                 </div>
 
-                <div className="divine-glass p-10 rounded-[4rem] space-y-8 overflow-hidden relative">
-                   <h4 className="text-xs font-black text-amber-600 uppercase tracking-[0.4em] ml-2">ডেভেলপার পরিচিতি</h4>
-                   <div className="flex flex-col md:flex-row gap-10 items-center md:items-start">
-                      <div className={`w-32 h-32 ${theme === 'dark' ? 'bg-slate-800' : 'bg-slate-200'} rounded-full flex items-center justify-center border border-white/10`}><i className="fa-solid fa-user-tie text-5xl text-slate-400"></i></div>
-                      <div className="space-y-4 text-center md:text-left flex-1">
-                         <h3 className={`text-2xl font-black ${theme === 'dark' ? 'text-white' : 'text-slate-900'} bn-serif tracking-wide`}>পবিত্র বানী ডেভেলপার টিম</h3>
-                         <p className="text-slate-500 leading-relaxed bn-serif text-sm italic">"পবিত্র বানী" অ্যাপটি আধুনিক কৃত্রিম বুদ্ধিমত্তা এবং বাইবেলীয় দর্শনের এক অনবদ্য মেলবন্ধন।</p>
-                         <div className="flex justify-center md:justify-start gap-4 pt-4">
+                <div className="divine-glass p-12 md:p-16 rounded-[4rem] space-y-10 overflow-hidden relative shadow-3xl">
+                   <h4 className="text-xs font-black text-amber-600 uppercase tracking-[0.5em] mb-4">ডেভেলপার পরিচিতি</h4>
+                   <div className="flex flex-col md:flex-row gap-12 items-center md:items-start relative z-10">
+                      <div className={`w-40 h-40 ${theme === 'dark' ? 'bg-slate-800' : 'bg-slate-200'} rounded-[3rem] flex items-center justify-center border-2 border-white/10 shadow-2xl overflow-hidden`}>
+                        <i className="fa-solid fa-user-tie text-7xl text-slate-400"></i>
+                      </div>
+                      <div className="space-y-6 text-center md:text-left flex-1">
+                         <h3 className={`text-3xl font-black ${theme === 'dark' ? 'text-white' : 'text-slate-900'} bn-serif tracking-tight`}>পবিত্র বানী ডেভেলপার টিম</h3>
+                         <p className={`${theme === 'dark' ? 'text-slate-400' : 'text-slate-700'} leading-relaxed bn-serif text-lg font-medium text-justify`}>"পবিত্র বানী" অ্যাপটি আধুনিক কৃত্রিম বুদ্ধিমত্তা এবং বাইবেলীয় দর্শনের এক অনবদ্য মেলবন্ধন। আমাদের লক্ষ্য প্রতিটি মানুষের অন্তরে শান্তির আলো পৌঁছে দেয়া।</p>
+                         <div className="flex justify-center md:justify-start gap-5 pt-4">
                             <SocialIcon icon="fa-github" /><SocialIcon icon="fa-linkedin" /><SocialIcon icon="fa-envelope" />
                          </div>
                       </div>
                    </div>
+                   <div className="absolute top-0 right-0 w-64 h-64 bg-amber-500/5 blur-[80px] rounded-full -z-10"></div>
                 </div>
              </div>
           </div>
         )}
       </main>
 
-      <nav className="fixed bottom-6 left-6 right-6 md:hidden z-50">
-        <div className="divine-glass flex justify-around p-4 rounded-3xl shadow-2xl border-white/10">
+      <nav className="fixed bottom-8 left-8 right-8 md:hidden z-50">
+        <div className="divine-glass flex justify-around p-5 rounded-[2.5rem] shadow-3xl border-white/10 backdrop-blur-3xl">
           <MobileNavItem icon="fa-magnifying-glass" active={activeView === 'SEARCH'} onClick={() => setActiveView('SEARCH')} />
           <MobileNavItem icon="fa-bookmark" active={activeView === 'SAVED'} onClick={() => setActiveView('SAVED')} />
           <MobileNavItem icon="fa-sliders" active={activeView === 'SETTINGS'} onClick={() => setActiveView('SETTINGS')} />
@@ -607,22 +641,30 @@ export default function App() {
 }
 
 const RecommendItem: React.FC<{ title: string; desc: string; icon: string; onClick: () => void; theme: string }> = ({ title, desc, icon, onClick, theme }) => (
-  <button onClick={onClick} className="divine-card p-10 rounded-[3rem] text-left group flex items-center justify-between transition-transform hover:scale-[1.02]">
-    <div className="flex gap-8 items-center">
-       <div className={`w-16 h-16 ${theme === 'dark' ? 'bg-white/5' : 'bg-black/5'} rounded-2xl flex items-center justify-center text-slate-500 group-hover:bg-amber-500/10 group-hover:text-amber-500 transition-all`}><i className={`fa-solid ${icon} text-2xl`}></i></div>
-       <div>
-         <p className="text-[10px] font-black uppercase tracking-[0.4em] text-amber-600/40 mb-2">{desc}</p>
-         <h4 className={`text-2xl font-bold ${theme === 'dark' ? 'text-slate-200' : 'text-slate-100'} bn-serif group-hover:text-amber-600 transition-colors`}>{title}</h4>
+  <button onClick={onClick} className="divine-card p-12 rounded-[3.5rem] text-left group flex items-center justify-between transition-all hover:scale-[1.03] hover:shadow-2xl hover:border-amber-500/30">
+    <div className="flex gap-10 items-center">
+       <div className={`w-20 h-20 ${theme === 'dark' ? 'bg-white/5' : 'bg-black/5'} rounded-[2rem] flex items-center justify-center text-slate-500 group-hover:bg-amber-500/15 group-hover:text-amber-500 transition-all shadow-inner border border-white/5`}>
+         <i className={`fa-solid ${icon} text-3xl`}></i>
+       </div>
+       <div className="space-y-2">
+         <p className="text-[11px] font-black uppercase tracking-[0.5em] text-amber-600/50">{desc}</p>
+         <h4 className={`text-2xl font-bold ${theme === 'dark' ? 'text-slate-200' : 'text-slate-800'} bn-serif group-hover:text-amber-600 transition-colors`}>{title}</h4>
        </div>
     </div>
-    <div className={`w-12 h-12 rounded-full border ${theme === 'dark' ? 'border-white/5' : 'border-black/5'} flex items-center justify-center text-slate-400 group-hover:text-amber-500 transition-all`}><i className="fa-solid fa-chevron-right text-xs"></i></div>
+    <div className={`w-14 h-14 rounded-full border-2 ${theme === 'dark' ? 'border-white/5' : 'border-black/5'} flex items-center justify-center text-slate-500 group-hover:text-amber-500 group-hover:border-amber-500/30 transition-all`}>
+      <i className="fa-solid fa-chevron-right text-sm"></i>
+    </div>
   </button>
 );
 
 const MobileNavItem: React.FC<{ icon: string; active: boolean; onClick: () => void }> = ({ icon, active, onClick }) => (
-  <button onClick={onClick} className={`w-14 h-14 flex items-center justify-center rounded-2xl transition-all ${active ? 'bg-amber-500 text-white shadow-lg' : 'text-slate-400'}`}><i className={`fa-solid ${icon} text-lg`}></i></button>
+  <button onClick={onClick} className={`w-16 h-16 flex items-center justify-center rounded-2xl transition-all ${active ? 'bg-amber-500 text-white shadow-xl scale-110' : 'text-slate-500 hover:text-slate-300'}`}>
+    <i className={`fa-solid ${icon} text-xl`}></i>
+  </button>
 );
 
 const SocialIcon: React.FC<{ icon: string }> = ({ icon }) => (
-  <button className="w-12 h-12 rounded-xl bg-white/5 flex items-center justify-center text-slate-400 hover:text-amber-500 hover:bg-amber-500/10 transition-all border border-white/5"><i className={`fa-brands ${icon} text-lg`}></i></button>
+  <button className="w-14 h-14 rounded-2xl bg-white/5 flex items-center justify-center text-slate-400 hover:text-amber-500 hover:bg-amber-500/10 transition-all border-2 border-white/5 hover:border-amber-500/30 shadow-sm active:scale-90">
+    <i className={`fa-brands ${icon} text-2xl`}></i>
+  </button>
 );
