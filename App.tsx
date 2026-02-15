@@ -21,21 +21,36 @@ export default function App() {
   const [savedVerses, setSavedVerses] = useState<VerseData[]>([]);
   const [isReading, setIsReading] = useState(false);
   const [selectedVoice, setSelectedVoice] = useState('Kore');
+  const [fontSize, setFontSize] = useState('base'); // 'sm', 'base', 'lg', 'xl'
   const [error, setError] = useState('');
 
   const audioContextRef = useRef<AudioContext | null>(null);
   const audioSourceRef = useRef<AudioBufferSourceNode | null>(null);
 
   useEffect(() => {
-    const stored = localStorage.getItem('sacred_word_verses');
-    if (stored) {
-      try { setSavedVerses(JSON.parse(stored)); } catch (e) { setSavedVerses([]); }
+    const storedVerses = localStorage.getItem('sacred_word_verses');
+    if (storedVerses) {
+      try { setSavedVerses(JSON.parse(storedVerses)); } catch (e) { setSavedVerses([]); }
     }
+    const storedFontSize = localStorage.getItem('sacred_word_font_size');
+    if (storedFontSize) setFontSize(storedFontSize);
+    const storedVoice = localStorage.getItem('sacred_word_voice');
+    if (storedVoice) setSelectedVoice(storedVoice);
   }, []);
 
   const saveToLocal = (verses: VerseData[]) => {
     localStorage.setItem('sacred_word_verses', JSON.stringify(verses));
     setSavedVerses(verses);
+  };
+
+  const handleFontSizeChange = (size: string) => {
+    setFontSize(size);
+    localStorage.setItem('sacred_word_font_size', size);
+  };
+
+  const handleVoiceChange = (voice: string) => {
+    setSelectedVoice(voice);
+    localStorage.setItem('sacred_word_voice', voice);
   };
 
   const handleSearch = async (searchQuery?: string) => {
@@ -98,6 +113,22 @@ export default function App() {
       console.error("Audio error:", e);
     }
   };
+
+  // Font size mapping for the main text
+  const mainTextSizeClass = {
+    sm: 'text-sm md:text-base',
+    base: 'text-base md:text-lg lg:text-xl',
+    lg: 'text-lg md:text-xl lg:text-2xl',
+    xl: 'text-xl md:text-2xl lg:text-3xl'
+  }[fontSize as keyof typeof mainTextSizeClass] || 'text-base md:text-lg lg:text-xl';
+
+  // Font size mapping for explanations
+  const explanationSizeClass = {
+    sm: 'text-xs md:text-sm',
+    base: 'text-base md:text-lg',
+    lg: 'text-lg md:text-xl',
+    xl: 'text-xl md:text-2xl'
+  }[fontSize as keyof typeof explanationSizeClass] || 'text-base md:text-lg';
 
   return (
     <div className="min-h-screen flex flex-col bg-[#030712] relative">
@@ -186,7 +217,7 @@ export default function App() {
                 {/* Main Quote Card */}
                 <div className="relative group">
                   <div className="absolute -inset-4 bg-amber-500/5 rounded-[4rem] blur-2xl group-hover:bg-amber-500/10 transition-all duration-700"></div>
-                  <div className="relative bg-slate-900/40 backdrop-blur-3xl p-12 md:p-20 rounded-[4rem] border border-white/5 overflow-hidden text-center shadow-2xl">
+                  <div className="relative bg-slate-900/40 backdrop-blur-3xl p-12 md:p-16 rounded-[4rem] border border-white/5 overflow-hidden text-center shadow-2xl">
                     <div className="absolute top-10 right-10 flex gap-4">
                       <button onClick={toggleSave} className={`w-14 h-14 flex items-center justify-center rounded-2xl divine-glass transition-all ${savedVerses.find(v => v.reference === currentVerse.reference) ? 'text-amber-400 bg-amber-500/10' : 'text-slate-500 hover:text-slate-300'}`}>
                         <i className={`fa-solid ${savedVerses.find(v => v.reference === currentVerse.reference) ? 'fa-bookmark' : 'fa-bookmark-o'}`}></i>
@@ -197,22 +228,22 @@ export default function App() {
                     </div>
 
                     <div className="mb-10">
-                      <i className="fa-solid fa-quote-left text-amber-500/20 text-5xl mb-6"></i>
-                      {/* Standardized Font Size for the main verse */}
-                      <h2 className="text-lg md:text-2xl font-bold text-white leading-relaxed bn-serif italic px-4 drop-shadow-xl max-w-4xl mx-auto">
+                      <i className="fa-solid fa-quote-left text-amber-500/20 text-4xl mb-6"></i>
+                      {/* Font size is now dynamic */}
+                      <h2 className={`${mainTextSizeClass} font-bold text-white leading-relaxed bn-serif italic px-6 drop-shadow-xl max-w-3xl mx-auto`}>
                         {currentVerse.text}
                       </h2>
                     </div>
                     
-                    <div className="inline-flex items-center gap-6 px-10 py-3.5 bg-amber-500/10 rounded-full border border-amber-500/20 shadow-inner">
+                    <div className="inline-flex items-center gap-6 px-10 py-3 bg-amber-500/10 rounded-full border border-amber-500/20 shadow-inner">
                       <div className="w-1.5 h-1.5 bg-amber-500 rounded-full animate-pulse"></div>
-                      <p className="text-amber-500 font-black tracking-[0.2em] text-base md:text-lg bn-serif">{currentVerse.reference}</p>
+                      <p className="text-amber-500 font-black tracking-[0.2em] text-sm md:text-base bn-serif">{currentVerse.reference}</p>
                       <div className="w-1.5 h-1.5 bg-amber-500 rounded-full animate-pulse"></div>
                     </div>
                   </div>
                 </div>
 
-                {/* Professional Analysis Sections - Standardized Font Size */}
+                {/* Professional Analysis Sections */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                   <div className="divine-card p-10 rounded-[3rem] space-y-6">
                     <div className="w-16 h-16 bg-amber-500/10 rounded-2xl flex items-center justify-center text-amber-500 text-2xl shadow-inner">
@@ -221,7 +252,7 @@ export default function App() {
                     <h4 className="text-xl font-black text-amber-400 bn-serif flex items-center gap-3">
                       তাত্ত্বিক অর্থ
                     </h4>
-                    <p className="text-slate-300 text-base md:text-lg leading-relaxed bn-serif italic font-light">
+                    <p className={`${explanationSizeClass} text-slate-300 leading-relaxed bn-serif italic font-light`}>
                       {currentVerse.explanation.theologicalMeaning}
                     </p>
                   </div>
@@ -233,7 +264,7 @@ export default function App() {
                     <h4 className="text-xl font-black text-blue-400 bn-serif flex items-center gap-3">
                       শাস্ত্রীয় প্রেক্ষাপট
                     </h4>
-                    <p className="text-slate-400 text-base md:text-lg leading-relaxed bn-serif font-light">
+                    <p className={`${explanationSizeClass} text-slate-400 leading-relaxed bn-serif font-light`}>
                       {currentVerse.explanation.historicalContext}
                     </p>
                   </div>
@@ -245,7 +276,7 @@ export default function App() {
                     <h4 className="text-xl font-black text-emerald-400 bn-serif flex items-center gap-3">
                       খ্রিস্টীয় জীবনচর্চা
                     </h4>
-                    <p className="text-slate-300 text-base md:text-lg leading-relaxed bn-serif italic font-light">
+                    <p className={`${explanationSizeClass} text-slate-300 leading-relaxed bn-serif italic font-light`}>
                       {currentVerse.explanation.practicalApplication}
                     </p>
                   </div>
@@ -337,7 +368,7 @@ export default function App() {
 
         {/* Settings View */}
         {activeView === 'SETTINGS' && (
-          <div className="max-w-3xl mx-auto py-12 space-y-12 animate-in fade-in zoom-in-95">
+          <div className="max-w-4xl mx-auto py-12 space-y-12 animate-in fade-in zoom-in-95">
              <div className="flex items-center gap-6">
                <div className="w-16 h-16 bg-white/5 rounded-3xl flex items-center justify-center text-slate-400">
                  <i className="fa-solid fa-sliders text-2xl"></i>
@@ -345,25 +376,89 @@ export default function App() {
                <h2 className="text-4xl font-black text-white">অ্যাপ সেটিংস</h2>
              </div>
 
-             <div className="divine-glass p-12 rounded-[4rem] space-y-12">
-                <div className="space-y-6">
-                   <h4 className="text-xs font-black text-amber-500 uppercase tracking-[0.4em] ml-2">Voice Synthesis</h4>
-                   <div className="grid grid-cols-2 gap-4">
-                      {['Kore', 'Zephyr', 'Charon', 'Puck'].map(v => (
-                        <button 
-                          key={v}
-                          onClick={() => setSelectedVoice(v)}
-                          className={`p-10 rounded-[2.5rem] border-2 transition-all flex flex-col items-center gap-4 ${selectedVoice === v ? 'bg-amber-500/10 border-amber-500/50 text-amber-400 shadow-[0_0_40px_rgba(251,191,36,0.1)]' : 'bg-white/5 border-transparent text-slate-500 hover:bg-white/10'}`}
-                        >
-                          <i className="fa-solid fa-microphone-lines text-2xl opacity-40"></i>
-                          <span className="font-black tracking-widest text-sm uppercase">{v} Voice</span>
-                        </button>
-                      ))}
+             <div className="space-y-8">
+                {/* Voice & Synthesis */}
+                <div className="divine-glass p-10 rounded-[4rem] space-y-8">
+                    <div className="space-y-6">
+                      <h4 className="text-xs font-black text-amber-500 uppercase tracking-[0.4em] ml-2">Voice Synthesis</h4>
+                      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                          {['Kore', 'Zephyr', 'Charon', 'Puck'].map(v => (
+                            <button 
+                              key={v}
+                              onClick={() => handleVoiceChange(v)}
+                              className={`p-6 md:p-10 rounded-[2.5rem] border-2 transition-all flex flex-col items-center gap-4 ${selectedVoice === v ? 'bg-amber-500/10 border-amber-500/50 text-amber-400 shadow-[0_0_40px_rgba(251,191,36,0.1)]' : 'bg-white/5 border-transparent text-slate-500 hover:bg-white/10'}`}
+                            >
+                              <i className="fa-solid fa-microphone-lines text-2xl opacity-40"></i>
+                              <span className="font-black tracking-widest text-[10px] uppercase">{v} Voice</span>
+                            </button>
+                          ))}
+                      </div>
+                    </div>
+
+                    {/* Font Size Controls */}
+                    <div className="pt-8 border-t border-white/5 space-y-6">
+                      <h4 className="text-xs font-black text-amber-500 uppercase tracking-[0.4em] ml-2">Reading Text Size</h4>
+                      <div className="flex flex-wrap gap-4">
+                          {[
+                            { id: 'sm', label: 'ছোট' },
+                            { id: 'base', label: 'মাঝারি' },
+                            { id: 'lg', label: 'বড়' },
+                            { id: 'xl', label: 'অতিরিক্ত বড়' }
+                          ].map(size => (
+                            <button 
+                              key={size.id}
+                              onClick={() => handleFontSizeChange(size.id)}
+                              className={`px-8 py-4 rounded-2xl border transition-all font-bold bn-serif ${fontSize === size.id ? 'bg-amber-500 text-black border-amber-500 shadow-lg' : 'bg-white/5 border-white/10 text-slate-400 hover:bg-white/10'}`}
+                            >
+                              {size.label}
+                            </button>
+                          ))}
+                      </div>
+                    </div>
+                </div>
+
+                {/* Developer Profile Section */}
+                <div className="divine-glass p-10 rounded-[4rem] space-y-8 overflow-hidden relative">
+                   <div className="absolute top-0 right-0 w-48 h-48 bg-amber-500/5 blur-3xl -z-10 rounded-full translate-x-12 -translate-y-12"></div>
+                   
+                   <h4 className="text-xs font-black text-amber-500 uppercase tracking-[0.4em] ml-2">Developer Profile</h4>
+                   
+                   <div className="flex flex-col md:flex-row gap-10 items-center md:items-start">
+                      <div className="relative group">
+                         <div className="absolute -inset-1 bg-gradient-to-tr from-amber-500 to-amber-200 rounded-full blur opacity-25 group-hover:opacity-50 transition-opacity"></div>
+                         <div className="w-32 h-32 bg-slate-800 rounded-full flex items-center justify-center relative border border-white/10 overflow-hidden">
+                            <i className="fa-solid fa-user-tie text-5xl text-slate-500"></i>
+                            {/* You can replace the icon with an actual image tag here if needed */}
+                         </div>
+                      </div>
+                      
+                      <div className="space-y-4 text-center md:text-left flex-1">
+                         <div>
+                            <h3 className="text-2xl font-black text-white bn-serif tracking-wide">পবিত্র বানী ডেভেলপার টিম</h3>
+                            <p className="text-amber-500/60 font-black uppercase tracking-widest text-[10px] mt-1">Lead AI Engineer & Biblical Scholar</p>
+                         </div>
+                         
+                         <p className="text-slate-400 leading-relaxed bn-serif text-sm italic">
+                           "পবিত্র বানী" অ্যাপটি আধুনিক কৃত্রিম বুদ্ধিমত্তা এবং বাইবেলীয় দর্শনের এক অনবদ্য মেলবন্ধন। আমাদের লক্ষ্য হলো প্রযুক্তির মাধ্যমে পবিত্র বাইবেলের শিক্ষাকে আরও সহজবোধ্য এবং শ্রুতিমধুরভাবে পৌঁছে দেওয়া।
+                         </p>
+                         
+                         <div className="flex flex-wrap justify-center md:justify-start gap-4 pt-4">
+                            <button className="w-12 h-12 rounded-xl bg-white/5 flex items-center justify-center text-slate-400 hover:text-amber-500 hover:bg-amber-500/10 transition-all border border-white/5">
+                               <i className="fa-brands fa-github text-lg"></i>
+                            </button>
+                            <button className="w-12 h-12 rounded-xl bg-white/5 flex items-center justify-center text-slate-400 hover:text-blue-400 hover:bg-blue-400/10 transition-all border border-white/5">
+                               <i className="fa-brands fa-linkedin-in text-lg"></i>
+                            </button>
+                            <button className="w-12 h-12 rounded-xl bg-white/5 flex items-center justify-center text-slate-400 hover:text-rose-400 hover:bg-rose-400/10 transition-all border border-white/5">
+                               <i className="fa-solid fa-envelope text-lg"></i>
+                            </button>
+                         </div>
+                      </div>
                    </div>
                 </div>
 
-                <div className="pt-10 border-t border-white/5 flex justify-between items-center opacity-40">
-                   <p className="text-[10px] font-black uppercase tracking-[0.3em]">Version 3.0 Biblical Edition</p>
+                <div className="flex justify-between items-center px-10 py-6 opacity-40">
+                   <p className="text-[10px] font-black uppercase tracking-[0.3em]">Version 3.2 Biblical Edition</p>
                    <p className="text-[10px] font-black uppercase tracking-[0.3em]">© পবিত্র বানী (Biblical AI)</p>
                 </div>
              </div>
