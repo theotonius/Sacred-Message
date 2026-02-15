@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { geminiService } from './services/geminiService';
 import { VerseData, AppState, View } from './types';
 
@@ -39,6 +39,10 @@ export default function App() {
   const [theme, setTheme] = useState('dark');
   const [error, setError] = useState('');
   const [showCopyFeedback, setShowCopyFeedback] = useState(false);
+  
+  const [filterTag, setFilterTag] = useState<string | null>(null);
+  const [newTagInputId, setNewTagInputId] = useState<string | null>(null);
+  const [newTagValue, setNewTagValue] = useState('');
 
   const audioContextRef = useRef<AudioContext | null>(null);
   const audioSourceRef = useRef<AudioBufferSourceNode | null>(null);
@@ -119,9 +123,46 @@ export default function App() {
     if (isSaved) {
       saveToLocal(savedVerses.filter(v => v.reference !== currentVerse.reference));
     } else {
-      saveToLocal([currentVerse, ...savedVerses]);
+      saveToLocal([{ ...currentVerse, tags: [] }, ...savedVerses]);
     }
   };
+
+  const addTagToVerse = (verseId: string, tag: string) => {
+    const cleanTag = tag.trim();
+    if (!cleanTag) return;
+    const updated = savedVerses.map(v => {
+      if (v.id === verseId) {
+        const existingTags = v.tags || [];
+        if (!existingTags.includes(cleanTag)) {
+          return { ...v, tags: [...existingTags, cleanTag] };
+        }
+      }
+      return v;
+    });
+    saveToLocal(updated);
+    setNewTagInputId(null);
+    setNewTagValue('');
+  };
+
+  const removeTagFromVerse = (verseId: string, tag: string) => {
+    const updated = savedVerses.map(v => {
+      if (v.id === verseId) {
+        return { ...v, tags: (v.tags || []).filter(t => t !== tag) };
+      }
+      return v;
+    });
+    saveToLocal(updated);
+  };
+
+  const uniqueTags = useMemo(() => {
+    const allTags = savedVerses.flatMap(v => v.tags || []);
+    return Array.from(new Set(allTags));
+  }, [savedVerses]);
+
+  const filteredVerses = useMemo(() => {
+    if (!filterTag) return savedVerses;
+    return savedVerses.filter(v => (v.tags || []).includes(filterTag));
+  }, [savedVerses, filterTag]);
 
   const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text).then(() => {
@@ -219,9 +260,9 @@ export default function App() {
         </div>
       </header>
 
-      <main className="flex-1 w-full max-w-7xl mx-auto p-6 relative z-10">
+      <main className="flex-1 w-full max-w-7xl mx-auto p-6 pb-20 md:pb-6 relative z-10">
         {activeView === 'SEARCH' && (
-          <div className="space-y-12 animate-in fade-in slide-in-from-bottom-8 duration-700">
+          <div className="space-y-12 animate-in fade-in slide-in-from-bottom-8 duration-700 pb-8 md:pb-0">
             <div className="max-w-4xl mx-auto mt-4 md:mt-8">
               <form onSubmit={(e) => { e.preventDefault(); handleSearch(); }} className="relative group">
                 <div className="absolute -inset-1 bg-gradient-to-r from-amber-500/30 to-amber-200/30 rounded-[2.5rem] blur-xl opacity-0 group-focus-within:opacity-100 transition-all duration-1000"></div>
@@ -345,7 +386,7 @@ export default function App() {
             )}
 
             {!currentVerse && state === AppState.IDLE && (
-              <div className="max-w-4xl mx-auto space-y-8">
+              <div className="max-w-4xl mx-auto space-y-8 pb-8 md:pb-0">
                 <div className="text-center opacity-40">
                   <p className="text-[10px] font-black uppercase tracking-[0.5em] mb-6">প্রস্তাবিত বাইবেলের পদসমূহ</p>
                 </div>
@@ -361,29 +402,95 @@ export default function App() {
         )}
 
         {activeView === 'SAVED' && (
-          <div className="animate-in fade-in slide-in-from-right-12 duration-600 space-y-12 py-10">
-            <div className="flex items-end gap-6 mb-16">
+          <div className="animate-in fade-in slide-in-from-right-12 duration-600 space-y-12 py-10 pb-12 md:pb-0">
+            <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-8">
                <h2 className={`text-6xl font-black ${theme === 'dark' ? 'text-white' : 'text-slate-900'} bn-serif leading-none`}>আপনার <span className="text-divine-gold">সংগ্রহ</span></h2>
-               <div className="h-1 flex-1 bg-white/5 rounded-full mb-3"></div>
+               <div className="flex-1 hidden md:block h-1 bg-white/5 rounded-full mb-3 ml-6"></div>
             </div>
 
-            {savedVerses.length === 0 ? (
-              <div className="divine-glass p-32 text-center rounded-[5rem] opacity-40">
+            {savedVerses.length > 0 && (
+              <div className="flex items-center gap-4 overflow-x-auto pb-4 scrollbar-hide no-scrollbar">
+                <button 
+                  onClick={() => setFilterTag(null)}
+                  className={`whitespace-nowrap px-6 py-2.5 rounded-full transition-all text-xs font-black uppercase tracking-widest border ${!filterTag ? 'bg-amber-500 text-white border-amber-500 shadow-lg shadow-amber-500/20' : 'divine-glass text-slate-400 border-white/5 hover:border-amber-500/20'}`}
+                >
+                  সবগুলো
+                </button>
+                {uniqueTags.map(tag => (
+                  <button 
+                    key={tag}
+                    onClick={() => setFilterTag(tag === filterTag ? null : tag)}
+                    className={`whitespace-nowrap px-6 py-2.5 rounded-full transition-all text-xs font-black uppercase tracking-widest border ${filterTag === tag ? 'bg-amber-500 text-white border-amber-500 shadow-lg shadow-amber-500/20' : 'divine-glass text-slate-400 border-white/5 hover:border-amber-500/20'}`}
+                  >
+                    {tag}
+                  </button>
+                ))}
+              </div>
+            )}
+
+            {filteredVerses.length === 0 ? (
+              <div className="divine-glass p-16 md:p-24 text-center rounded-[5rem] opacity-40">
                 <i className="fa-solid fa-bookmark text-7xl mb-8"></i>
-                <p className={`text-2xl bn-serif italic ${theme === 'dark' ? 'text-white' : 'text-slate-900'}`}>বর্তমানে কোনো সংরক্ষিত পদ নেই</p>
-                <button onClick={() => setActiveView('SEARCH')} className="mt-10 px-12 py-5 bg-amber-600 text-white font-black rounded-2xl hover:scale-105 transition-all">বাইবেলের পদ খুঁজুন</button>
+                <p className={`text-2xl bn-serif italic ${theme === 'dark' ? 'text-white' : 'text-slate-900'}`}>
+                  {filterTag ? `'${filterTag}' ট্যাগে কোনো পদ পাওয়া যায়নি` : "বর্তমানে কোনো সংরক্ষিত পদ নেই"}
+                </p>
+                {!filterTag && (
+                  <button onClick={() => setActiveView('SEARCH')} className="mt-10 px-12 py-5 bg-amber-600 text-white font-black rounded-2xl hover:scale-105 transition-all">বাইবেলের পদ খুঁজুন</button>
+                )}
               </div>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                {savedVerses.map(v => (
-                  <div key={v.id} className="divine-card p-10 rounded-[3rem] group cursor-pointer" onClick={() => { setCurrentVerse(v); setActiveView('SEARCH'); }}>
-                    <div className="flex justify-between items-start mb-6">
-                      <span className="text-amber-600 font-black text-sm bn-serif">{v.reference}</span>
-                      <button onClick={(e) => { e.stopPropagation(); saveToLocal(savedVerses.filter(item => item.id !== v.id)); }} className="text-slate-400 hover:text-rose-500 transition-colors p-2">
-                        <i className="fa-solid fa-trash-can"></i>
-                      </button>
+                {filteredVerses.map(v => (
+                  <div key={v.id} className="divine-card p-10 rounded-[3rem] group flex flex-col justify-between cursor-pointer transition-transform hover:scale-[1.01]" onClick={() => { setCurrentVerse(v); setActiveView('SEARCH'); }}>
+                    <div className="space-y-6">
+                      <div className="flex justify-between items-start">
+                        <span className="text-amber-600 font-black text-sm bn-serif">{v.reference}</span>
+                        <div className="flex gap-2">
+                          <button onClick={(e) => { e.stopPropagation(); setNewTagInputId(v.id); }} className="text-slate-400 hover:text-amber-500 transition-colors p-2">
+                            <i className="fa-solid fa-plus-circle"></i>
+                          </button>
+                          <button onClick={(e) => { e.stopPropagation(); saveToLocal(savedVerses.filter(item => item.id !== v.id)); }} className="text-slate-400 hover:text-rose-500 transition-colors p-2">
+                            <i className="fa-solid fa-trash-can"></i>
+                          </button>
+                        </div>
+                      </div>
+                      <p className={`${theme === 'dark' ? 'text-slate-200' : 'text-slate-700'} bn-serif text-lg italic line-clamp-4 leading-relaxed opacity-80 group-hover:opacity-100 transition-opacity`}>"{v.text}"</p>
                     </div>
-                    <p className={`${theme === 'dark' ? 'text-slate-200' : 'text-slate-700'} bn-serif text-lg italic line-clamp-3 leading-relaxed opacity-80 group-hover:opacity-100 transition-opacity`}>"{v.text}"</p>
+
+                    <div className="mt-8">
+                      <div className="flex flex-wrap gap-2">
+                        {(v.tags || []).map(tag => (
+                          <span key={tag} className="flex items-center gap-2 px-3 py-1 bg-amber-500/5 border border-amber-500/10 rounded-full text-[9px] font-black text-amber-600 uppercase tracking-widest group/tag hover:border-amber-500/30 transition-all">
+                            {tag}
+                            <button 
+                              onClick={(e) => { e.stopPropagation(); removeTagFromVerse(v.id, tag); }}
+                              className="opacity-40 hover:opacity-100 hover:text-rose-500"
+                            >
+                              <i className="fa-solid fa-xmark"></i>
+                            </button>
+                          </span>
+                        ))}
+                      </div>
+
+                      {newTagInputId === v.id && (
+                        <div className="mt-4 flex gap-2 animate-in fade-in slide-in-from-bottom-2 duration-300" onClick={e => e.stopPropagation()}>
+                          <input 
+                            autoFocus
+                            value={newTagValue}
+                            onChange={e => setNewTagValue(e.target.value)}
+                            onKeyDown={e => { if (e.key === 'Enter') addTagToVerse(v.id, newTagValue); if (e.key === 'Escape') setNewTagInputId(null); }}
+                            placeholder="ট্যাগ লিখুন.."
+                            className={`flex-1 bg-white/5 border border-white/10 rounded-xl px-4 py-2 text-xs outline-none focus:ring-1 ring-amber-500/50 ${theme === 'dark' ? 'text-white' : 'text-slate-900'}`}
+                          />
+                          <button 
+                            onClick={() => addTagToVerse(v.id, newTagValue)}
+                            className="bg-amber-600 text-white p-2 rounded-xl"
+                          >
+                            <i className="fa-solid fa-check"></i>
+                          </button>
+                        </div>
+                      )}
+                    </div>
                   </div>
                 ))}
               </div>
@@ -392,7 +499,7 @@ export default function App() {
         )}
 
         {activeView === 'SETTINGS' && (
-          <div className="max-w-4xl mx-auto py-12 space-y-12 animate-in fade-in zoom-in-95 pb-32">
+          <div className="max-w-4xl mx-auto py-12 space-y-12 animate-in fade-in zoom-in-95 pb-20 md:pb-16">
              <div className="flex items-center gap-6">
                <div className={`w-16 h-16 ${theme === 'dark' ? 'bg-white/5' : 'bg-black/5'} rounded-3xl flex items-center justify-center text-slate-500`}>
                  <i className="fa-solid fa-sliders text-2xl"></i>
@@ -482,7 +589,7 @@ export default function App() {
         )}
       </main>
 
-      <nav className="fixed bottom-8 left-6 right-6 md:hidden z-50">
+      <nav className="fixed bottom-6 left-6 right-6 md:hidden z-50">
         <div className="divine-glass flex justify-around p-4 rounded-3xl shadow-2xl border-white/10">
           <MobileNavItem icon="fa-magnifying-glass" active={activeView === 'SEARCH'} onClick={() => setActiveView('SEARCH')} />
           <MobileNavItem icon="fa-bookmark" active={activeView === 'SAVED'} onClick={() => setActiveView('SAVED')} />

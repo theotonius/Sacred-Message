@@ -9,6 +9,7 @@ export interface VerseData {
     practicalApplication: string;
   };
   keyThemes: string[];
+  tags?: string[];
   timestamp: number;
 }
 
