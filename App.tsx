@@ -180,7 +180,7 @@ export default function App() {
 
   const handleShare = async () => {
     if (!currentVerse) return;
-    const shareText = `${currentVerse.reference}\n\n"${currentVerse.text}"\n\n- পবিত্র বানী (Sacred Word) অ্যাপ থেকে সংগৃহীত`;
+    const shareText = `${currentVerse.reference}\n\n${currentVerse.text}\n\n- পবিত্র বানী (Sacred Word) অ্যাপ থেকে সংগৃহীত`;
     
     if (navigator.share) {
       try {
@@ -332,7 +332,6 @@ export default function App() {
                     </div>
 
                     <div className="mb-12 relative">
-                      <i className="fa-solid fa-quote-left text-amber-500/10 text-6xl absolute -top-10 -left-6"></i>
                       <h2 className={`${mainTextSizeClass} font-bold ${theme === 'dark' ? 'text-white' : 'text-slate-900'} leading-relaxed bn-serif px-8 drop-shadow-sm max-w-4xl mx-auto relative z-10 text-justify`}>
                         {currentVerse.text}
                       </h2>
@@ -390,7 +389,6 @@ export default function App() {
                     <h4 className="text-2xl font-black text-amber-600 bn-serif">ঐশ্বরিক প্রার্থনা</h4>
                   </div>
                   <div className="relative">
-                     <i className="fa-solid fa-quote-left text-amber-500/5 text-8xl absolute -top-10 -left-10 select-none"></i>
                      <p className={`${explanationSizeClass} ${theme === 'dark' ? 'text-slate-200' : 'text-slate-800'} leading-relaxed bn-serif font-medium text-justify relative z-10 px-4`}>
                        {currentVerse.prayer}
                      </p>
@@ -502,7 +500,7 @@ export default function App() {
                           </button>
                         </div>
                       </div>
-                      <p className={`${theme === 'dark' ? 'text-slate-200' : 'text-slate-800'} bn-serif text-lg leading-relaxed line-clamp-4 font-medium text-justify`}>"{v.text}"</p>
+                      <p className={`${theme === 'dark' ? 'text-slate-200' : 'text-slate-800'} bn-serif text-lg leading-relaxed line-clamp-4 font-medium text-justify`}>{v.text}</p>
                     </div>
 
                     <div className="mt-10">
