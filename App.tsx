@@ -650,21 +650,39 @@ export default function App() {
                     </div>
                 </div>
 
-                {/* Enhanced Developer Section */}
+                {/* Fixed Devloper Section with Robust Image Loading */}
                 <div className={`relative group overflow-hidden divine-glass p-12 md:p-16 rounded-[4.5rem] shadow-3xl border-2 ${theme === 'dark' ? 'border-white/5 hover:border-amber-500/20' : 'border-black/5 hover:border-amber-500/30'} transition-all duration-700`}>
                    <div className="absolute top-0 right-0 w-80 h-80 bg-gradient-to-br from-amber-500/10 via-amber-600/5 to-transparent blur-[80px] rounded-full -z-10 transition-opacity group-hover:opacity-100 opacity-60"></div>
                    
                    <div className="flex flex-col md:flex-row gap-12 items-center md:items-start relative z-10">
                       <div className="relative">
-                        <div className={`w-44 h-44 ${theme === 'dark' ? 'bg-slate-800' : 'bg-slate-200'} rounded-[3.5rem] flex items-center justify-center border-4 border-amber-500/10 shadow-2xl overflow-hidden group-hover:scale-105 transition-transform duration-500`}>
-                          <i className="fa-solid fa-user-gear text-8xl text-amber-500/50"></i>
+                        <div className={`w-44 h-44 ${theme === 'dark' ? 'bg-slate-800' : 'bg-slate-200'} rounded-[3.5rem] flex items-center justify-center border-4 border-amber-500/10 shadow-2xl overflow-hidden group-hover:scale-105 transition-transform duration-500 ring-4 ring-amber-500/30`}>
+                          <img 
+                            src="https://lh3.googleusercontent.com/d/1Xl-n2n_v8S8v5mFfF-wX5_S8e-uE6uE6" 
+                            alt="Devloper" 
+                            className="w-full h-full object-cover"
+                            loading="eager"
+                            crossOrigin="anonymous"
+                            onError={(e) => {
+                              // Comprehensive Fallback: Hide broken image and show a premium text-based profile
+                              const target = e.target as HTMLImageElement;
+                              target.style.display = 'none';
+                              const parent = target.parentElement;
+                              if (parent && !parent.querySelector('.fallback-profile')) {
+                                const fallback = document.createElement('div');
+                                fallback.className = 'fallback-profile w-full h-full flex items-center justify-center bg-gradient-to-br from-amber-400 via-amber-600 to-amber-800 text-white text-6xl font-black shadow-inner animate-pulse';
+                                fallback.innerText = 'AS';
+                                parent.appendChild(fallback);
+                              }
+                            }}
+                          />
                         </div>
                         <div className="absolute -bottom-4 -right-4 bg-amber-500 text-white px-5 py-2 rounded-2xl font-black text-[10px] uppercase tracking-widest shadow-lg border-4 border-slate-900 group-hover:rotate-6 transition-transform">Lead Engineer</div>
                       </div>
 
                       <div className="space-y-8 text-center md:text-left flex-1">
                          <div className="space-y-3">
-                           <h3 className={`text-4xl font-black ${theme === 'dark' ? 'text-white' : 'text-slate-900'} bn-serif tracking-tight`}>পবিত্র বানী <span className="text-amber-500">ডেভেলপার টিম</span></h3>
+                           <h3 className={`text-4xl font-black ${theme === 'dark' ? 'text-white' : 'text-slate-900'} bn-serif tracking-tight`}>পবিত্র বানী <span className="text-amber-500">ডেভলপার টিম</span></h3>
                            <p className="text-amber-600 font-black text-xs uppercase tracking-[0.5em]">শান্তি ও প্রজ্ঞার কারিগর</p>
                          </div>
                          
