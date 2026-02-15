@@ -24,6 +24,7 @@ export default function App() {
   const [fontSize, setFontSize] = useState('base'); 
   const [theme, setTheme] = useState('dark');
   const [error, setError] = useState('');
+  const [showCopyFeedback, setShowCopyFeedback] = useState(false);
 
   const audioContextRef = useRef<AudioContext | null>(null);
   const audioSourceRef = useRef<AudioBufferSourceNode | null>(null);
@@ -94,6 +95,34 @@ export default function App() {
       saveToLocal(savedVerses.filter(v => v.reference !== currentVerse.reference));
     } else {
       saveToLocal([currentVerse, ...savedVerses]);
+    }
+  };
+
+  const copyToClipboard = (text: string) => {
+    navigator.clipboard.writeText(text).then(() => {
+      setShowCopyFeedback(true);
+      setTimeout(() => setShowCopyFeedback(false), 2000);
+    });
+  };
+
+  const handleShare = async () => {
+    if (!currentVerse) return;
+    const shareText = `${currentVerse.reference}\n\n"${currentVerse.text}"\n\n- পবিত্র বানী (Sacred Word) অ্যাপ থেকে সংগৃহীত`;
+    
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: 'পবিত্র বানী',
+          text: shareText,
+        });
+      } catch (err) {
+        // If sharing failed or was aborted, fall back to clipboard only if not AbortError
+        if ((err as Error).name !== 'AbortError') {
+          copyToClipboard(shareText);
+        }
+      }
+    } else {
+      copyToClipboard(shareText);
     }
   };
 
@@ -274,10 +303,18 @@ export default function App() {
                    ))}
                 </div>
 
-                <div className="flex justify-center pt-8">
-                  <button onClick={toggleSave} className={`flex items-center gap-4 px-12 py-5 rounded-[2rem] divine-glass transition-all border-2 ${isCurrentVerseSaved ? 'text-amber-600 bg-amber-500/10 border-amber-500/40 shadow-[0_0_30px_rgba(251,191,36,0.15)]' : 'text-slate-500 border-white/5 hover:border-amber-500/20 hover:text-slate-700'}`}>
+                <div className="flex flex-wrap justify-center gap-4 pt-8">
+                  <button onClick={toggleSave} className={`flex items-center gap-4 px-10 py-5 rounded-[2rem] divine-glass transition-all border-2 ${isCurrentVerseSaved ? 'text-amber-600 bg-amber-500/10 border-amber-500/40 shadow-[0_0_30px_rgba(251,191,36,0.15)]' : 'text-slate-500 border-white/5 hover:border-amber-500/20 hover:text-slate-700'}`}>
                     <i className={`fa-solid ${isCurrentVerseSaved ? 'fa-bookmark' : 'fa-bookmark'} text-xl`}></i>
                     <span className="font-black bn-serif tracking-widest uppercase">{isCurrentVerseSaved ? 'সংগ্রহ থেকে সরান' : 'সংগ্রহে রাখুন'}</span>
+                  </button>
+
+                  <button onClick={handleShare} className={`flex items-center gap-4 px-10 py-5 rounded-[2rem] divine-glass transition-all border-2 text-slate-500 border-white/5 hover:border-amber-500/20 hover:text-slate-700 relative`}>
+                    {showCopyFeedback && (
+                      <div className="absolute -top-12 left-1/2 -translate-x-1/2 bg-emerald-500 text-white text-[10px] px-4 py-2 rounded-full font-black uppercase tracking-widest animate-in fade-in slide-in-from-bottom-2">কপি করা হয়েছে!</div>
+                    )}
+                    <i className="fa-solid fa-share-nodes text-xl"></i>
+                    <span className="font-black bn-serif tracking-widest uppercase">শেয়ার করুন</span>
                   </button>
                 </div>
               </div>
