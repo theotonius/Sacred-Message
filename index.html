@@ -8,37 +8,92 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
     <style>
-      @import url('https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@300;400;500;600;700&display=swap');
+      @import url('https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@300;400;500;600;700&family=Noto+Serif+Bengali:wght@400;700&display=swap');
+      
+      :root {
+        --divine-gold: #fde68a;
+        --divine-glow: rgba(251, 191, 36, 0.15);
+      }
+
       body {
         font-family: 'Hind Siliguri', sans-serif;
-        background-color: #020617;
+        background-color: #030712;
+        background-image: 
+          radial-gradient(circle at 50% -20%, rgba(251, 191, 36, 0.08) 0%, transparent 50%),
+          radial-gradient(circle at 0% 100%, rgba(59, 130, 246, 0.05) 0%, transparent 40%);
         color: #f8fafc;
         margin: 0;
         padding: 0;
         overflow-x: hidden;
       }
-      .glass {
-        background: rgba(15, 23, 42, 0.7);
-        backdrop-filter: blur(20px);
-        border: 1px solid rgba(255, 255, 255, 0.05);
-      }
+
       .bn-serif {
-        font-family: 'Hind Siliguri', serif;
+        font-family: 'Noto Serif Bengali', serif;
       }
-      .text-gold {
-        background: linear-gradient(to right, #fbbf24, #d97706);
+
+      .divine-glass {
+        background: rgba(15, 23, 42, 0.4);
+        backdrop-filter: blur(24px);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
+      }
+
+      .divine-card {
+        background: linear-gradient(135deg, rgba(30, 41, 59, 0.6), rgba(15, 23, 42, 0.8));
+        border: 1px solid rgba(251, 191, 36, 0.1);
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+
+      .divine-card:hover {
+        border-color: rgba(251, 191, 36, 0.3);
+        transform: translateY(-4px);
+        box-shadow: 0 20px 40px -20px rgba(251, 191, 36, 0.2);
+      }
+
+      .text-divine-gold {
+        background: linear-gradient(135deg, #fef3c7 0%, #fbbf24 50%, #d97706 100%);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
       }
+
+      .halo-effect {
+        position: relative;
+      }
+
+      .halo-effect::after {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 140%;
+        height: 140%;
+        background: radial-gradient(circle, var(--divine-glow) 0%, transparent 70%);
+        z-index: -1;
+        pointer-events: none;
+      }
+
       ::-webkit-scrollbar {
-        width: 5px;
+        width: 6px;
       }
       ::-webkit-scrollbar-track {
-        background: transparent;
+        background: #030712;
       }
       ::-webkit-scrollbar-thumb {
         background: #1e293b;
         border-radius: 10px;
+      }
+      ::-webkit-scrollbar-thumb:hover {
+        background: #fbbf24;
+      }
+
+      @keyframes float {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-10px); }
+      }
+
+      .animate-float {
+        animation: float 6s ease-in-out infinite;
       }
     </style>
     <script type="importmap">
