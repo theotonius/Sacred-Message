@@ -2,6 +2,9 @@
 import { GoogleGenAI, Type, Modality } from "@google/genai";
 import { VerseData } from "../types";
 
+// Simple in-memory cache for the current session
+const searchCache = new Map<string, VerseData>();
+
 // Standard base64 decode for audio handling
 function decode(base64: string) {
   const binaryString = window.atob(base64);
@@ -49,18 +52,23 @@ function extractJson(text: string): any {
 
 export const geminiService = {
   async fetchVerseExplanation(query: string): Promise<VerseData> {
+    const normalizedQuery = query.trim().toLowerCase();
+    
+    // Return from cache if available for instant results
+    if (searchCache.has(normalizedQuery)) {
+      return searchCache.get(normalizedQuery)!;
+    }
+
     const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
     
     try {
       const response = await ai.models.generateContent({
         model: "gemini-3-flash-preview",
-        contents: `Analyze the following Biblical text or verse: "${query}". 
-        Provide a deep, poetic, and soulful explanation in modern common Bengali (চলিত ভাষা). 
-        Do NOT use the Carey version (কেরী ভার্সন) or old formal Bengali. 
-        Additionally, write a short, heartfelt prayer in modern Bengali based on this verse.`,
+        contents: `Analyze: "${query}". Provide a soulful, poetic explanation in modern common Bengali (চলিত ভাষা). AVOID Carey/Archaic Bengali. Include a short prayer. Output JSON.`,
         config: {
-          systemInstruction: "You are 'Sacred Word', a divine Biblical scholar and Christian theologian. Analyze inputs strictly through a Biblical lens. Provide poetic and soulful explanations in MODERN COMMON BENGALI (চলিত ভাষা) based on Christian scripture. AVOID the Carey version (কেরী ভার্সন) and archaic language. For every verse, provide a short, soulful, and heartfelt prayer in modern Bengali. If the input is not related to the Bible, politely explain that you only provide Biblical insights. Output strictly valid JSON. All string values must be in Bengali script.",
+          systemInstruction: "You are 'Sacred Word'. Analyze Biblical text strictly. Use MODERN COMMON BENGALI (চলিত ভাষা) only. DO NOT use Carey or formal archaic Bengali. Provide: reference, verse text, 3-part explanation (theological, historical, practical), a heartfelt modern Bengali prayer, and key themes. If input is irrelevant, explain politely. Output STRICT JSON.",
           responseMimeType: "application/json",
+          thinkingConfig: { thinkingBudget: 0 }, // Disable thinking for maximum speed
           responseSchema: {
             type: Type.OBJECT,
             properties: {
@@ -75,7 +83,7 @@ export const geminiService = {
                 },
                 required: ["theologicalMeaning", "historicalContext", "practicalApplication"]
               },
-              prayer: { type: Type.STRING, description: "A soulful prayer based on the verse." },
+              prayer: { type: Type.STRING },
               keyThemes: { type: Type.ARRAY, items: { type: Type.STRING } }
             },
             required: ["reference", "text", "explanation", "prayer", "keyThemes"]
@@ -84,14 +92,18 @@ export const geminiService = {
       });
 
       const data = extractJson(response.text || '');
-      return {
+      const result = {
         ...data,
         id: Math.random().toString(36).substring(2, 11),
         timestamp: Date.now()
       };
+
+      // Store in cache
+      searchCache.set(normalizedQuery, result);
+      return result;
     } catch (error: any) {
       console.error("Gemini API Request Error:", error);
-      throw new Error(error.message || "এপিআই এর সাথে সংযোগ করা যাচ্ছে না। দয়া করে আপনার কী চেক করুন।");
+      throw new Error(error.message || "এপিআই এর সাথে সংযোগ করা যাচ্ছে না।");
     }
   },
 
