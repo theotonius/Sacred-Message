@@ -40,8 +40,6 @@ export default function App() {
   const [state, setState] = useState<AppState>(AppState.IDLE);
   const [currentVerse, setCurrentVerse] = useState<VerseData | null>(null);
   const [savedVerses, setSavedVerses] = useState<VerseData[]>([]);
-  const [isReading, setIsReading] = useState(false);
-  const [selectedVoice, setSelectedVoice] = useState('Zephyr');
   const [fontSize, setFontSize] = useState('base'); 
   const [fontFamily, setFontFamily] = useState('SolaimanLipi');
   const [theme, setTheme] = useState('dark');
@@ -61,8 +59,6 @@ export default function App() {
   const touchStartY = useRef(0);
   const isPulling = useRef(false);
 
-  const audioContextRef = useRef<AudioContext | null>(null);
-  const audioSourceRef = useRef<AudioBufferSourceNode | null>(null);
   const suggestionRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -72,8 +68,6 @@ export default function App() {
     }
     const storedFontSize = localStorage.getItem('sacred_word_font_size');
     if (storedFontSize) setFontSize(storedFontSize);
-    const storedVoice = localStorage.getItem('sacred_word_voice');
-    if (storedVoice) setSelectedVoice(storedVoice);
     const storedTheme = localStorage.getItem('sacred_word_theme');
     if (storedTheme) setTheme(storedTheme);
     const storedFont = localStorage.getItem('sacred_word_font');
@@ -167,11 +161,6 @@ export default function App() {
     localStorage.setItem('sacred_word_font', font);
   };
 
-  const handleVoiceChange = (voice: string) => {
-    setSelectedVoice(voice);
-    localStorage.setItem('sacred_word_voice', voice);
-  };
-
   const handleThemeChange = (newTheme: string) => {
     setTheme(newTheme);
     localStorage.setItem('sacred_word_theme', newTheme);
@@ -194,7 +183,6 @@ export default function App() {
     setState(AppState.SEARCHING);
     setError('');
     setCurrentVerse(null);
-    stopAudio();
     
     try {
       const data = await geminiService.fetchVerseExplanation(finalQuery, languageVersion);
@@ -261,13 +249,6 @@ export default function App() {
     return Array.from(new Set(allThemes));
   }, [savedVerses]);
 
-  const tagSuggestions = useMemo(() => {
-    if (!newTagValue.trim()) return [];
-    return uniqueTags.filter(tag => 
-      tag.toLowerCase().includes(newTagValue.toLowerCase())
-    ).slice(0, 5);
-  }, [newTagValue, uniqueTags]);
-
   const filteredVerses = useMemo(() => {
     return savedVerses.filter(v => {
       const matchesTag = !filterTag || (v.tags || []).includes(filterTag);
@@ -327,35 +308,6 @@ export default function App() {
       }
     } else {
       copyToClipboard(shareText);
-    }
-  };
-
-  const stopAudio = useCallback(() => {
-    if (audioSourceRef.current) {
-      try { audioSourceRef.current.stop(); } catch (e) {}
-      audioSourceRef.current = null;
-    }
-    setIsReading(false);
-  }, []);
-
-  const handleRead = async () => {
-    if (isReading) return stopAudio();
-    if (!currentVerse) return;
-    setIsReading(true);
-    try {
-      const buffer = await geminiService.readVerseAloud(currentVerse.text, selectedVoice);
-      if (!audioContextRef.current) {
-        audioContextRef.current = new (window.AudioContext || (window as any).webkitAudioContext)({ sampleRate: 24000 });
-      }
-      const source = audioContextRef.current.createBufferSource();
-      source.buffer = buffer;
-      source.connect(audioContextRef.current.destination);
-      source.onended = () => setIsReading(false);
-      audioSourceRef.current = source;
-      source.start(0);
-    } catch (e) { 
-      setIsReading(false); 
-      console.error("Audio error:", e);
     }
   };
 
@@ -505,9 +457,6 @@ export default function App() {
                       <div className="divine-glass px-4 py-2 rounded-xl flex items-center gap-2">
                         <span className="text-[10px] font-black uppercase tracking-widest text-amber-600/60">{languageVersion === 'modern' ? 'সাধারণ বাংলা' : 'কেরী ভার্শন'}</span>
                       </div>
-                      <button onClick={handleRead} className={`w-14 h-14 md:w-16 md:h-16 flex items-center justify-center rounded-2xl divine-glass transition-all ${isReading ? 'text-rose-500 shadow-[0_0_20px_rgba(244,63,94,0.3)]' : 'text-amber-500 hover:text-amber-600 hover:scale-105 active:scale-95'}`}>
-                        <i className={`fa-solid ${isReading ? 'fa-square' : 'fa-play'} text-lg md:text-xl`}></i>
-                      </button>
                     </div>
 
                     <div className="mb-8 md:mb-12 relative px-2 md:px-8">
