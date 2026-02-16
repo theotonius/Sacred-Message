@@ -55,6 +55,12 @@ export default function App() {
   const [newTagInputId, setNewTagInputId] = useState<string | null>(null);
   const [newTagValue, setNewTagValue] = useState('');
 
+  // Pull to refresh states
+  const [pullDistance, setPullDistance] = useState(0);
+  const [isRefreshing, setIsRefreshing] = useState(false);
+  const touchStartY = useRef(0);
+  const isPulling = useRef(false);
+
   const audioContextRef = useRef<AudioContext | null>(null);
   const audioSourceRef = useRef<AudioBufferSourceNode | null>(null);
   const suggestionRef = useRef<HTMLDivElement>(null);
@@ -83,6 +89,58 @@ export default function App() {
   useEffect(() => {
     document.documentElement.style.setProperty('--app-font', `'${fontFamily}', 'Hind Siliguri', sans-serif`);
   }, [fontFamily]);
+
+  // Pull to refresh handlers
+  const handleTouchStart = (e: React.TouchEvent) => {
+    if (window.scrollY === 0) {
+      touchStartY.current = e.touches[0].clientY;
+      isPulling.current = true;
+    }
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (!isPulling.current) return;
+    const currentY = e.touches[0].clientY;
+    const distance = currentY - touchStartY.current;
+    
+    if (distance > 0) {
+      const dampedDistance = Math.min(distance * 0.4, 100);
+      setPullDistance(dampedDistance);
+    } else {
+      isPulling.current = false;
+      setPullDistance(0);
+    }
+  };
+
+  const handleTouchEnd = () => {
+    if (!isPulling.current) return;
+    isPulling.current = false;
+
+    if (pullDistance > 70) {
+      triggerRefresh();
+    } else {
+      setPullDistance(0);
+    }
+  };
+
+  const triggerRefresh = useCallback(() => {
+    setIsRefreshing(true);
+    setPullDistance(70);
+
+    setTimeout(() => {
+      if (activeView === 'SEARCH') {
+        setQuery('');
+        setCurrentVerse(null);
+        setError('');
+        setState(AppState.IDLE);
+      } else if (activeView === 'SAVED') {
+        setFilterTag(null);
+        setFilterTheme(null);
+      }
+      setIsRefreshing(false);
+      setPullDistance(0);
+    }, 1000);
+  }, [activeView]);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -318,8 +376,23 @@ export default function App() {
   const isCurrentVerseSaved = currentVerse ? !!savedVerses.find(v => v.reference === currentVerse.reference) : false;
 
   return (
-    <div className={`min-h-screen flex flex-col relative transition-all duration-700 ease-in-out overflow-x-hidden`}>
-      {/* Background Glow with enhanced responsive units */}
+    <div 
+      className={`min-h-screen flex flex-col relative transition-all duration-700 ease-in-out overflow-x-hidden`}
+      onTouchStart={handleTouchStart}
+      onTouchMove={handleTouchMove}
+      onTouchEnd={handleTouchEnd}
+    >
+      {/* Pull to Refresh Indicator */}
+      <div 
+        className="fixed top-0 left-0 right-0 flex justify-center z-[100] pointer-events-none transition-transform duration-300"
+        style={{ transform: `translateY(${pullDistance - 50}px)`, opacity: pullDistance / 70 }}
+      >
+        <div className={`w-12 h-12 rounded-full divine-glass flex items-center justify-center shadow-2xl border-amber-500/30 ${isRefreshing ? 'animate-spin' : ''}`}>
+          <i className={`fa-solid ${isRefreshing ? 'fa-spinner' : 'fa-cross'} text-amber-500 text-lg`}></i>
+        </div>
+      </div>
+
+      {/* Background Glow */}
       <div className={`fixed top-0 left-1/2 -translate-x-1/2 w-[120vw] h-[80vh] md:w-[80vw] md:h-[600px] ${theme === 'dark' ? 'bg-amber-400/5' : 'bg-amber-500/10'} blur-[80px] md:blur-[120px] rounded-full -z-10 pointer-events-none transition-all duration-1000 ease-in-out`}></div>
 
       <header className="w-full max-w-7xl mx-auto px-4 md:px-6 pt-6 md:pt-10 pb-6 flex justify-between items-center z-20">
@@ -452,7 +525,6 @@ export default function App() {
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
-                  {/* Cards Section with responsive spacing */}
                   <div className="divine-card p-8 md:p-10 rounded-[2rem] md:rounded-[3rem] flex flex-col justify-between hover:border-amber-500/20 transition-all duration-700 group">
                     <div className="space-y-4 md:space-y-6">
                       <div className="w-12 h-12 md:w-16 md:h-16 bg-amber-500/10 rounded-xl md:rounded-2xl flex items-center justify-center text-amber-500 text-xl md:text-2xl shadow-inner group-hover:scale-110 transition-transform">
@@ -882,9 +954,9 @@ export default function App() {
                          <div className="flex flex-col sm:flex-row justify-center md:justify-start gap-4">
                             <a 
                               href="tel:+8801614802711" 
-                              className="flex items-center justify-center gap-3 px-6 py-4 bg-amber-600 hover:bg-amber-500 text-white rounded-2xl shadow-xl active:scale-95 transition-all duration-700"
+                              className="flex items-center justify-center gap-3 px-6 py-4 bg-amber-600 hover:bg-amber-500 text-white rounded-2xl shadow-xl active:scale-95 transition-all duration-700 group/call"
                             >
-                              <i className="fa-solid fa-phone-volume"></i>
+                              <i className="fa-solid fa-phone-volume group-hover/call:animate-bounce"></i>
                               <span className="font-black bn-serif text-base md:text-lg">+8801614802711</span>
                             </a>
 
