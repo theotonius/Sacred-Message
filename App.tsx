@@ -50,6 +50,7 @@ export default function App() {
   const [showSuggestions, setShowSuggestions] = useState(false);
   
   const [filterTag, setFilterTag] = useState<string | null>(null);
+  const [filterTheme, setFilterTheme] = useState<string | null>(null);
   const [newTagInputId, setNewTagInputId] = useState<string | null>(null);
   const [newTagValue, setNewTagValue] = useState('');
 
@@ -190,6 +191,11 @@ export default function App() {
     return Array.from(new Set(allTags));
   }, [savedVerses]);
 
+  const uniqueThemes = useMemo(() => {
+    const allThemes = savedVerses.flatMap(v => v.keyThemes || []);
+    return Array.from(new Set(allThemes));
+  }, [savedVerses]);
+
   const tagSuggestions = useMemo(() => {
     if (!newTagValue.trim()) return [];
     return uniqueTags.filter(tag => 
@@ -198,9 +204,12 @@ export default function App() {
   }, [newTagValue, uniqueTags]);
 
   const filteredVerses = useMemo(() => {
-    if (!filterTag) return savedVerses;
-    return savedVerses.filter(v => (v.tags || []).includes(filterTag));
-  }, [savedVerses, filterTag]);
+    return savedVerses.filter(v => {
+      const matchesTag = !filterTag || (v.tags || []).includes(filterTag);
+      const matchesTheme = !filterTheme || (v.keyThemes || []).includes(filterTheme);
+      return matchesTag && matchesTheme;
+    });
+  }, [savedVerses, filterTag, filterTheme]);
 
   const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text).then(() => {
@@ -499,8 +508,8 @@ export default function App() {
         )}
 
         {activeView === 'SAVED' && (
-          <div className="animate-in fade-in slide-in-from-right-12 duration-600 space-y-16 py-10 pb-12 md:pb-0">
-            <div className="flex flex-col items-center text-center gap-6 mb-20 animate-in fade-in slide-in-from-top-10 duration-1000">
+          <div className="animate-in fade-in slide-in-from-right-12 duration-600 space-y-12 py-10 pb-12 md:pb-0">
+            <div className="flex flex-col items-center text-center gap-6 mb-12 animate-in fade-in slide-in-from-top-10 duration-1000">
                <div className="flex items-center gap-8">
                  <div className="h-px w-12 md:w-24 bg-gradient-to-r from-transparent via-amber-500/40 to-transparent"></div>
                  <i className="fa-solid fa-bookmark text-amber-500/30 text-2xl"></i>
@@ -512,22 +521,64 @@ export default function App() {
             </div>
 
             {savedVerses.length > 0 && (
-              <div className="flex items-center justify-center gap-4 overflow-x-auto pb-6 scrollbar-hide no-scrollbar max-w-4xl mx-auto">
-                <button 
-                  onClick={() => setFilterTag(null)}
-                  className={`whitespace-nowrap px-8 py-3 rounded-full transition-all text-sm font-black uppercase tracking-widest border-2 ${!filterTag ? 'bg-amber-500 text-white border-amber-500 shadow-xl shadow-amber-500/20' : 'divine-glass text-slate-500 border-white/5 hover:border-amber-500/20'}`}
-                >
-                  সবগুলো
-                </button>
-                {uniqueTags.map(tag => (
-                  <button 
-                    key={tag}
-                    onClick={() => setFilterTag(tag === filterTag ? null : tag)}
-                    className={`whitespace-nowrap px-8 py-3 rounded-full transition-all text-sm font-black uppercase tracking-widest border-2 ${filterTag === tag ? 'bg-amber-500 text-white border-amber-500 shadow-xl shadow-amber-500/20' : 'divine-glass text-slate-500 border-white/5 hover:border-amber-500/20'}`}
-                  >
-                    {tag}
-                  </button>
-                ))}
+              <div className="max-w-4xl mx-auto space-y-8 animate-in fade-in duration-500">
+                {/* Filter Controls Row */}
+                <div className="flex flex-col md:flex-row gap-6 items-center justify-between divine-glass p-8 rounded-[3rem] border-white/5 shadow-2xl">
+                   {/* Tags Filter Pill List */}
+                   <div className="w-full md:w-2/3 space-y-4">
+                      <p className="text-[10px] font-black uppercase tracking-[0.3em] text-amber-600/50 px-2">ট্যাগ ফিল্টার</p>
+                      <div className="flex items-center gap-3 overflow-x-auto pb-2 scrollbar-hide no-scrollbar">
+                        <button 
+                          onClick={() => setFilterTag(null)}
+                          className={`whitespace-nowrap px-6 py-2 rounded-full transition-all text-[11px] font-black uppercase tracking-widest border-2 ${!filterTag ? 'bg-amber-500 text-white border-amber-500 shadow-lg' : 'bg-white/5 text-slate-500 border-white/5 hover:border-amber-500/20'}`}
+                        >
+                          সব ট্যাগ
+                        </button>
+                        {uniqueTags.map(tag => (
+                          <button 
+                            key={tag}
+                            onClick={() => setFilterTag(tag === filterTag ? null : tag)}
+                            className={`whitespace-nowrap px-6 py-2 rounded-full transition-all text-[11px] font-black uppercase tracking-widest border-2 ${filterTag === tag ? 'bg-amber-500 text-white border-amber-500 shadow-lg' : 'bg-white/5 text-slate-500 border-white/5 hover:border-amber-500/20'}`}
+                          >
+                            {tag}
+                          </button>
+                        ))}
+                      </div>
+                   </div>
+
+                   {/* Key Themes Dropdown Filter */}
+                   <div className="w-full md:w-1/3 space-y-4">
+                      <p className="text-[10px] font-black uppercase tracking-[0.3em] text-amber-600/50 px-2">মূল থিম ফিল্টার</p>
+                      <div className="relative group/theme-select">
+                        <select 
+                          value={filterTheme || ''} 
+                          onChange={(e) => setFilterTheme(e.target.value || null)}
+                          className={`w-full p-4 rounded-2xl border-2 transition-all appearance-none cursor-pointer outline-none focus:border-amber-500/50 shadow-inner ${theme === 'dark' ? 'bg-white/5 border-white/5 text-slate-200' : 'bg-black/5 border-black/5 text-slate-800'} bn-serif text-sm font-bold`}
+                        >
+                          <option value="" className="bg-slate-900 text-white">সব থিম</option>
+                          {uniqueThemes.map(themeName => (
+                            <option key={themeName} value={themeName} className="bg-slate-900 text-white">{themeName}</option>
+                          ))}
+                        </select>
+                        <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-amber-500/50 group-hover/theme-select:text-amber-500 transition-colors">
+                          <i className="fa-solid fa-chevron-down text-xs"></i>
+                        </div>
+                      </div>
+                   </div>
+                </div>
+                
+                {/* Active Filter Clear Info */}
+                {(filterTag || filterTheme) && (
+                  <div className="flex justify-center">
+                    <button 
+                      onClick={() => { setFilterTag(null); setFilterTheme(null); }}
+                      className="text-[10px] font-black uppercase tracking-[0.4em] text-amber-600/60 hover:text-amber-500 transition-colors flex items-center gap-2 group"
+                    >
+                      <i className="fa-solid fa-xmark group-hover:rotate-90 transition-transform"></i>
+                      ফিল্টার পরিষ্কার করুন
+                    </button>
+                  </div>
+                )}
               </div>
             )}
 
@@ -537,11 +588,9 @@ export default function App() {
                   <i className="fa-solid fa-bookmark text-5xl text-slate-500/50"></i>
                 </div>
                 <p className={`text-2xl bn-serif font-medium ${theme === 'dark' ? 'text-white' : 'text-slate-900'} mb-10`}>
-                  {filterTag ? `'${filterTag}' ট্যাগে কোনো পদ পাওয়া যায়নি` : "বর্তমানে কোনো সংরক্ষিত পদ নেই"}
+                  { (filterTag || filterTheme) ? "এই ফিল্টারে কোনো পদ পাওয়া যায়নি" : "বর্তমানে কোনো সংরক্ষিত পদ নেই" }
                 </p>
-                {!filterTag && (
-                  <button onClick={() => setActiveView('SEARCH')} className="px-14 py-6 bg-amber-600 hover:bg-amber-500 text-white font-black rounded-2xl transition-all shadow-xl active:scale-95">বাইবেলের পদ খুঁজুন</button>
-                )}
+                <button onClick={() => { setFilterTag(null); setFilterTheme(null); setActiveView('SEARCH'); }} className="px-14 py-6 bg-amber-600 hover:bg-amber-500 text-white font-black rounded-2xl transition-all shadow-xl active:scale-95">বাইবেলের পদ খুঁজুন</button>
               </div>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
@@ -564,7 +613,14 @@ export default function App() {
                       <p className={`${theme === 'dark' ? 'text-slate-200' : 'text-slate-800'} bn-serif text-lg leading-relaxed line-clamp-4 font-medium text-justify`}>{v.text}</p>
                     </div>
 
-                    <div className="mt-10">
+                    <div className="mt-10 space-y-4">
+                      {/* Key Themes List */}
+                      <div className="flex flex-wrap gap-2">
+                         {v.keyThemes.slice(0, 3).map((themeStr, i) => (
+                           <span key={i} className="text-[10px] font-black uppercase tracking-widest text-blue-500/60 bn-serif">{themeStr}</span>
+                         ))}
+                      </div>
+
                       <div className="flex flex-wrap gap-2.5">
                         {(v.tags || []).map(tag => (
                           <span key={tag} className="flex items-center gap-2 px-4 py-2 bg-amber-500/5 border border-amber-500/10 rounded-full text-xs font-black text-amber-600 uppercase tracking-widest group/tag hover:border-amber-500/30 transition-all shadow-sm">
