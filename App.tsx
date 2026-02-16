@@ -648,9 +648,31 @@ export default function App() {
                           ))}
                       </div>
                     </div>
+
+                    {/* New Feedback Section */}
+                    <div className={`pt-12 border-t ${theme === 'dark' ? 'border-white/5' : 'border-black/5'} space-y-8`}>
+                      <div className="flex items-center gap-4">
+                        <div className="h-2 w-2 bg-amber-500 rounded-full"></div>
+                        <h4 className="text-base font-black text-amber-600 uppercase tracking-[0.4em]">মতামত জানান</h4>
+                      </div>
+                      <a 
+                        href="mailto:theotonius2012@gmail.com?subject=Sacred Word Feedback" 
+                        className={`flex items-center justify-between p-8 rounded-[2rem] border-2 transition-all group ${theme === 'dark' ? 'bg-white/5 border-white/5 hover:border-violet-500/30' : 'bg-black/5 border-black/5 hover:border-violet-500/30'}`}
+                      >
+                         <div className="flex items-center gap-6">
+                           <div className="w-12 h-12 bg-amber-500/10 rounded-xl flex items-center justify-center text-amber-500">
+                             <i className="fa-solid fa-envelope-open-text text-xl"></i>
+                           </div>
+                           <div className="space-y-1">
+                             <p className={`font-black bn-serif ${theme === 'dark' ? 'text-slate-200' : 'text-slate-800'}`}>ফিডব্যাক বা সমস্যা রিপোর্ট করুন</p>
+                             <p className="text-xs text-slate-500 bn-serif">আপনার মতামত আমাদের অ্যাপটি উন্নত করতে সাহায্য করবে</p>
+                           </div>
+                         </div>
+                         <i className="fa-solid fa-arrow-right-long text-slate-500 group-hover:text-amber-500 group-hover:translate-x-2 transition-all"></i>
+                      </a>
+                    </div>
                 </div>
 
-                {/* Fixed Devloper Section with Robust Image Loading */}
                 <div className={`relative group overflow-hidden divine-glass p-12 md:p-16 rounded-[4.5rem] shadow-3xl border-2 ${theme === 'dark' ? 'border-white/5 hover:border-amber-500/20' : 'border-black/5 hover:border-amber-500/30'} transition-all duration-700`}>
                    <div className="absolute top-0 right-0 w-80 h-80 bg-gradient-to-br from-amber-500/10 via-amber-600/5 to-transparent blur-[80px] rounded-full -z-10 transition-opacity group-hover:opacity-100 opacity-60"></div>
                    
@@ -664,7 +686,6 @@ export default function App() {
                             loading="eager"
                             crossOrigin="anonymous"
                             onError={(e) => {
-                              // Comprehensive Fallback: Hide broken image and show a premium text-based profile
                               const target = e.target as HTMLImageElement;
                               target.style.display = 'none';
                               const parent = target.parentElement;
@@ -691,7 +712,6 @@ export default function App() {
                          </p>
 
                          <div className="flex flex-wrap justify-center md:justify-start gap-4">
-                            {/* Functional Call Button */}
                             <a 
                               href="tel:+8801614802711" 
                               className="flex items-center gap-4 px-8 py-5 bg-amber-600 hover:bg-amber-500 text-white rounded-[2rem] shadow-xl hover:shadow-amber-500/30 active:scale-95 transition-all group/call"
@@ -704,9 +724,9 @@ export default function App() {
                             </a>
 
                             <div className="flex gap-4">
-                               <SocialIcon icon="fa-github" />
-                               <SocialIcon icon="fa-linkedin" />
-                               <SocialIcon icon="fa-envelope" />
+                               <SocialIcon icon="fa-github" link="https://github.com/yourusername" />
+                               <SocialIcon icon="fa-linkedin" link="https://www.linkedin.com/in/sobuj-theotonius-biswas/" />
+                               <SocialIcon icon="fa-envelope" link="mailto:theotonius2012@gmail.com" />
                             </div>
                          </div>
                       </div>
@@ -751,8 +771,16 @@ const MobileNavItem: React.FC<{ icon: string; active: boolean; onClick: () => vo
   </button>
 );
 
-const SocialIcon: React.FC<{ icon: string }> = ({ icon }) => (
-  <button className="w-14 h-14 rounded-2xl bg-white/5 flex items-center justify-center text-slate-400 hover:text-amber-500 hover:bg-amber-500/10 transition-all border-2 border-white/5 hover:border-amber-500/30 shadow-sm active:scale-90">
-    <i className={`fa-brands ${icon} text-2xl`}></i>
-  </button>
-);
+const SocialIcon: React.FC<{ icon: string; link: string }> = ({ icon, link }) => {
+  const isDirect = link.startsWith('mailto:') || link.startsWith('tel:');
+  return (
+    <a 
+      href={link}
+      target={isDirect ? undefined : "_blank"}
+      rel={isDirect ? undefined : "noopener noreferrer"}
+      className="w-14 h-14 rounded-2xl bg-white/5 flex items-center justify-center text-slate-400 hover:text-amber-500 hover:bg-amber-500/10 transition-all border-2 border-white/5 hover:border-amber-500/30 shadow-sm active:scale-90"
+    >
+      <i className={`${icon.includes('envelope') || icon.includes('phone') ? 'fa-solid' : 'fa-brands'} ${icon} text-2xl`}></i>
+    </a>
+  );
+};
