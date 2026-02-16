@@ -81,7 +81,6 @@ export default function App() {
     document.documentElement.style.setProperty('--app-font', `'${fontFamily}', 'Hind Siliguri', sans-serif`);
   }, [fontFamily]);
 
-  // Click outside listener for suggestions
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (suggestionRef.current && !suggestionRef.current.contains(event.target as Node)) {
@@ -285,7 +284,6 @@ export default function App() {
 
   return (
     <div className={`min-h-screen flex flex-col relative transition-colors duration-500`}>
-      {/* Background Glow */}
       <div className={`fixed top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[600px] ${theme === 'dark' ? 'bg-amber-400/5' : 'bg-amber-500/10'} blur-[120px] rounded-full -z-10 pointer-events-none`}></div>
 
       <header className="w-full max-w-7xl mx-auto px-6 pt-10 pb-6 flex justify-between items-center z-20">
@@ -345,7 +343,6 @@ export default function App() {
                 </div>
               </form>
 
-              {/* Suggestions Dropdown */}
               {showSuggestions && filteredAutoSuggestions.length > 0 && (
                 <div className="absolute top-full left-0 right-0 mt-4 divine-glass rounded-[2rem] p-4 shadow-3xl z-50 animate-in fade-in slide-in-from-top-4 duration-300">
                   <p className="text-[10px] font-black uppercase tracking-[0.3em] text-amber-600/60 px-6 py-2">প্রস্তাবিত বিষয়সমূহ</p>
@@ -416,56 +413,84 @@ export default function App() {
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                  <div className="divine-card p-12 rounded-[3rem] space-y-8 hover:border-amber-500/20 transition-all group">
-                    <div className="w-16 h-16 bg-amber-500/10 rounded-2xl flex items-center justify-center text-amber-500 text-2xl shadow-inner group-hover:scale-110 transition-transform">
-                      <i className="fa-solid fa-church"></i>
+                  {/* Theological Meaning Card */}
+                  <div className="divine-card p-10 md:p-12 rounded-[3rem] flex flex-col justify-between hover:border-amber-500/20 transition-all group">
+                    <div className="space-y-6">
+                      <div className="w-16 h-16 bg-amber-500/10 rounded-2xl flex items-center justify-center text-amber-500 text-2xl shadow-inner group-hover:scale-110 transition-transform">
+                        <i className="fa-solid fa-church"></i>
+                      </div>
+                      <div className="space-y-4">
+                        <h4 className="text-xl font-black text-amber-600 bn-serif">তাত্ত্বিক অর্থ</h4>
+                        <div className="h-0.5 w-10 bg-amber-500/20 rounded-full"></div>
+                        <p className={`${explanationSizeClass} ${theme === 'dark' ? 'text-slate-300' : 'text-slate-700'} leading-relaxed bn-serif font-medium text-justify`}>
+                          {currentVerse.explanation.theologicalMeaning}
+                        </p>
+                      </div>
                     </div>
-                    <div className="space-y-4">
-                      <h4 className="text-xl font-black text-amber-600 bn-serif">তাত্ত্বিক অর্থ</h4>
-                      <div className="h-0.5 w-10 bg-amber-500/20 rounded-full"></div>
-                      <p className={`${explanationSizeClass} ${theme === 'dark' ? 'text-slate-300' : 'text-slate-700'} leading-relaxed bn-serif font-medium text-justify`}>{currentVerse.explanation.theologicalMeaning}</p>
+                    <div className="mt-8 pt-6 border-t border-white/5">
+                       <p className="text-[10px] font-black uppercase tracking-widest text-amber-600/40 flex items-center gap-2">
+                         <i className="fa-solid fa-book-bookmark"></i>
+                         সূত্র: {currentVerse.explanation.theologicalReference}
+                       </p>
                     </div>
                   </div>
 
-                  <div className="divine-card p-12 rounded-[3rem] space-y-8 hover:border-blue-500/20 transition-all group">
-                    <div className="w-16 h-16 bg-blue-500/10 rounded-2xl flex items-center justify-center text-blue-500 text-2xl shadow-inner group-hover:scale-110 transition-transform">
-                      <i className="fa-solid fa-book-open-reader"></i>
+                  {/* Historical Context Card */}
+                  <div className="divine-card p-10 md:p-12 rounded-[3rem] flex flex-col justify-between hover:border-blue-500/20 transition-all group">
+                    <div className="space-y-6">
+                      <div className="w-16 h-16 bg-blue-500/10 rounded-2xl flex items-center justify-center text-blue-500 text-2xl shadow-inner group-hover:scale-110 transition-transform">
+                        <i className="fa-solid fa-book-open-reader"></i>
+                      </div>
+                      <div className="space-y-4">
+                        <h4 className="text-xl font-black text-blue-600 bn-serif">শাস্ত্রীয় প্রেক্ষাপট</h4>
+                        <div className="h-0.5 w-10 bg-blue-500/20 rounded-full"></div>
+                        <p className={`${explanationSizeClass} ${theme === 'dark' ? 'text-slate-300' : 'text-slate-700'} leading-relaxed bn-serif font-medium text-justify`}>
+                          {currentVerse.explanation.historicalContext}
+                        </p>
+                      </div>
                     </div>
-                    <div className="space-y-4">
-                      <h4 className="text-xl font-black text-blue-600 bn-serif">শাস্ত্রীয় প্রেক্ষাপট</h4>
-                      <div className="h-0.5 w-10 bg-blue-500/20 rounded-full"></div>
-                      <p className={`${explanationSizeClass} ${theme === 'dark' ? 'text-slate-300' : 'text-slate-700'} leading-relaxed bn-serif font-medium text-justify`}>{currentVerse.explanation.historicalContext}</p>
+                    <div className="mt-8 pt-6 border-t border-white/5">
+                       <p className="text-[10px] font-black uppercase tracking-widest text-blue-600/40 flex items-center gap-2">
+                         <i className="fa-solid fa-book-bookmark"></i>
+                         সূত্র: {currentVerse.explanation.historicalReference}
+                       </p>
                     </div>
                   </div>
 
-                  <div className="divine-card p-12 rounded-[3rem] space-y-8 hover:border-emerald-500/20 transition-all group">
-                    <div className="w-16 h-16 bg-emerald-500/10 rounded-2xl flex items-center justify-center text-emerald-500 text-2xl shadow-inner group-hover:scale-110 transition-transform">
-                      <i className="fa-solid fa-cross"></i>
+                  {/* Practical Application Card */}
+                  <div className="divine-card p-10 md:p-12 rounded-[3rem] flex flex-col justify-between hover:border-emerald-500/20 transition-all group">
+                    <div className="space-y-6">
+                      <div className="w-16 h-16 bg-emerald-500/10 rounded-2xl flex items-center justify-center text-emerald-500 text-2xl shadow-inner group-hover:scale-110 transition-transform">
+                        <i className="fa-solid fa-cross"></i>
+                      </div>
+                      <div className="space-y-4">
+                        <h4 className="text-xl font-black text-emerald-600 bn-serif">খ্রিস্টীয় জীবনচর্চা</h4>
+                        <div className="h-0.5 w-10 bg-emerald-500/20 rounded-full"></div>
+                        <p className={`${explanationSizeClass} ${theme === 'dark' ? 'text-slate-300' : 'text-slate-700'} leading-relaxed bn-serif font-medium text-justify`}>
+                          {currentVerse.explanation.practicalApplication}
+                        </p>
+                      </div>
                     </div>
-                    <div className="space-y-4">
-                      <h4 className="text-xl font-black text-emerald-600 bn-serif">খ্রিস্টীয় জীবনচর্চা</h4>
-                      <div className="h-0.5 w-10 bg-emerald-500/20 rounded-full"></div>
-                      <p className={`${explanationSizeClass} ${theme === 'dark' ? 'text-slate-300' : 'text-slate-700'} leading-relaxed bn-serif font-medium text-justify`}>{currentVerse.explanation.practicalApplication}</p>
+                    <div className="mt-8 pt-6 border-t border-white/5">
+                       <p className="text-[10px] font-black uppercase tracking-widest text-emerald-600/40 flex items-center gap-2">
+                         <i className="fa-solid fa-book-bookmark"></i>
+                         সূত্র: {currentVerse.explanation.practicalReference}
+                       </p>
                     </div>
                   </div>
                 </div>
 
-                {/* Soulful Prayer Section */}
-                <div className="max-w-4xl mx-auto divine-glass p-12 rounded-[4rem] space-y-8 border-amber-500/20 shadow-3xl animate-in slide-in-from-bottom-8 duration-1000">
+                <div className="max-w-4xl mx-auto divine-glass p-12 rounded-[4rem] space-y-8 border-amber-500/20 shadow-3xl animate-in slide-in-from-bottom-8 duration-1000 text-center">
                   <div className="flex flex-col items-center gap-6">
                     <div className="w-16 h-16 bg-amber-500/10 rounded-full flex items-center justify-center text-amber-500 text-3xl shadow-inner animate-pulse">
                       <i className="fa-solid fa-hands-praying"></i>
                     </div>
                     <h4 className="text-2xl font-black text-amber-600 bn-serif">ঐশ্বরিক প্রার্থনা</h4>
                   </div>
-                  <div className="relative">
-                     <p className={`${explanationSizeClass} ${theme === 'dark' ? 'text-slate-200' : 'text-slate-800'} leading-relaxed bn-serif font-medium text-justify relative z-10 px-4`}>
-                       {currentVerse.prayer}
-                     </p>
-                  </div>
-                  <div className="text-center">
-                    <p className="text-amber-600/60 font-black text-xs uppercase tracking-[0.4em] bn-serif">আমেন</p>
-                  </div>
+                  <p className={`${explanationSizeClass} ${theme === 'dark' ? 'text-slate-200' : 'text-slate-800'} leading-relaxed bn-serif font-medium text-justify relative z-10 px-4`}>
+                    {currentVerse.prayer}
+                  </p>
+                  <p className="text-amber-600/60 font-black text-xs uppercase tracking-[0.4em] bn-serif">আমেন</p>
                 </div>
 
                 <div className="flex flex-wrap justify-center gap-3 pt-6">
@@ -522,9 +547,7 @@ export default function App() {
 
             {savedVerses.length > 0 && (
               <div className="max-w-4xl mx-auto space-y-8 animate-in fade-in duration-500">
-                {/* Filter Controls Row */}
                 <div className="flex flex-col md:flex-row gap-6 items-center justify-between divine-glass p-8 rounded-[3rem] border-white/5 shadow-2xl">
-                   {/* Tags Filter Pill List */}
                    <div className="w-full md:w-2/3 space-y-4">
                       <p className="text-[10px] font-black uppercase tracking-[0.3em] text-amber-600/50 px-2">ট্যাগ ফিল্টার</p>
                       <div className="flex items-center gap-3 overflow-x-auto pb-2 scrollbar-hide no-scrollbar">
@@ -546,7 +569,6 @@ export default function App() {
                       </div>
                    </div>
 
-                   {/* Key Themes Dropdown Filter */}
                    <div className="w-full md:w-1/3 space-y-4">
                       <p className="text-[10px] font-black uppercase tracking-[0.3em] text-amber-600/50 px-2">মূল থিম ফিল্টার</p>
                       <div className="relative group/theme-select">
@@ -567,7 +589,6 @@ export default function App() {
                    </div>
                 </div>
                 
-                {/* Active Filter Clear Info */}
                 {(filterTag || filterTheme) && (
                   <div className="flex justify-center">
                     <button 
@@ -614,7 +635,6 @@ export default function App() {
                     </div>
 
                     <div className="mt-10 space-y-4">
-                      {/* Key Themes List */}
                       <div className="flex flex-wrap gap-2">
                          {v.keyThemes.slice(0, 3).map((themeStr, i) => (
                            <span key={i} className="text-[10px] font-black uppercase tracking-widest text-blue-500/60 bn-serif">{themeStr}</span>
@@ -690,7 +710,6 @@ export default function App() {
 
              <div className="space-y-10">
                 <div className="divine-glass p-10 md:p-14 rounded-[4rem] space-y-12 shadow-3xl">
-                    {/* Theme Selection */}
                     <div className="space-y-8">
                       <div className="flex items-center gap-4">
                         <div className="h-2 w-2 bg-amber-500 rounded-full"></div>
@@ -714,7 +733,6 @@ export default function App() {
                       </div>
                     </div>
 
-                    {/* Font Selection Dropdown */}
                     <div className={`pt-12 border-t ${theme === 'dark' ? 'border-white/5' : 'border-black/5'} space-y-8`}>
                       <div className="flex items-center gap-4">
                         <div className="h-2 w-2 bg-blue-500 rounded-full"></div>
@@ -737,7 +755,6 @@ export default function App() {
                       </div>
                     </div>
 
-                    {/* Voice Selection */}
                     <div className={`pt-12 border-t ${theme === 'dark' ? 'border-white/5' : 'border-black/5'} space-y-8`}>
                       <div className="flex items-center gap-4">
                         <div className="h-2 w-2 bg-emerald-500 rounded-full"></div>
@@ -753,7 +770,6 @@ export default function App() {
                       </div>
                     </div>
 
-                    {/* Font Size Selection */}
                     <div className={`pt-12 border-t ${theme === 'dark' ? 'border-white/5' : 'border-black/5'} space-y-8`}>
                       <div className="flex items-center gap-4">
                         <div className="h-2 w-2 bg-rose-500 rounded-full"></div>
@@ -766,7 +782,6 @@ export default function App() {
                       </div>
                     </div>
 
-                    {/* New Feedback Section */}
                     <div className={`pt-12 border-t ${theme === 'dark' ? 'border-white/5' : 'border-black/5'} space-y-8`}>
                       <div className="flex items-center gap-4">
                         <div className="h-2 w-2 bg-amber-500 rounded-full"></div>
@@ -790,7 +805,6 @@ export default function App() {
                     </div>
                 </div>
 
-                {/* Developer Profile Card */}
                 <div className={`relative group overflow-hidden divine-glass p-12 md:p-16 rounded-[4.5rem] shadow-3xl border-2 ${theme === 'dark' ? 'border-white/5 hover:border-amber-500/20' : 'border-black/5 hover:border-amber-500/30'} transition-all duration-700`}>
                    <div className="absolute top-0 right-0 w-80 h-80 bg-gradient-to-br from-amber-500/10 via-amber-600/5 to-transparent blur-[80px] rounded-full -z-10 transition-opacity group-hover:opacity-100 opacity-60"></div>
                    

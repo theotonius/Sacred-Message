@@ -2,10 +2,8 @@
 import { GoogleGenAI, Type, Modality } from "@google/genai";
 import { VerseData } from "../types";
 
-// Simple in-memory cache for the current session
 const searchCache = new Map<string, VerseData>();
 
-// Standard base64 decode for audio handling
 function decode(base64: string) {
   const binaryString = window.atob(base64);
   const len = binaryString.length;
@@ -16,7 +14,6 @@ function decode(base64: string) {
   return bytes;
 }
 
-// Decode raw PCM audio from the API
 async function decodeAudioData(
   data: Uint8Array,
   ctx: AudioContext,
@@ -36,7 +33,6 @@ async function decodeAudioData(
   return buffer;
 }
 
-// Robust JSON extraction helper
 function extractJson(text: string): any {
   try {
     const jsonMatch = text.match(/\{[\s\S]*\}/);
@@ -54,7 +50,6 @@ export const geminiService = {
   async fetchVerseExplanation(query: string): Promise<VerseData> {
     const normalizedQuery = query.trim().toLowerCase();
     
-    // Return from cache if available for instant results
     if (searchCache.has(normalizedQuery)) {
       return searchCache.get(normalizedQuery)!;
     }
@@ -64,11 +59,11 @@ export const geminiService = {
     try {
       const response = await ai.models.generateContent({
         model: "gemini-3-flash-preview",
-        contents: `Analyze: "${query}". Provide a soulful, poetic explanation in modern common Bengali (চলিত ভাষা). AVOID Carey/Archaic Bengali. Include a short prayer. Output JSON.`,
+        contents: `Analyze: "${query}". Provide soulful explanation in modern common Bengali. For each section (theological, historical, practical), YOU MUST provide a specific Biblical reference/source (সূত্র). Output JSON.`,
         config: {
-          systemInstruction: "You are 'Sacred Word'. Analyze Biblical text strictly. Use MODERN COMMON BENGALI (চলিত ভাষা) only. DO NOT use Carey or formal archaic Bengali. Provide: reference, verse text, 3-part explanation (theological, historical, practical), a heartfelt modern Bengali prayer, and key themes. If input is irrelevant, explain politely. Output STRICT JSON.",
+          systemInstruction: "You are 'Sacred Word'. Use MODERN COMMON BENGALI only. AVOID Carey/Archaic Bengali. For each analytical part, include a specific 'reference' (e.g., specific verse or scholarly source). Provide: reference, verse text, 3-part explanation with individual sources, a modern prayer, and key themes. Output STRICT JSON.",
           responseMimeType: "application/json",
-          thinkingConfig: { thinkingBudget: 0 }, // Disable thinking for maximum speed
+          thinkingConfig: { thinkingBudget: 0 },
           responseSchema: {
             type: Type.OBJECT,
             properties: {
@@ -78,10 +73,13 @@ export const geminiService = {
                 type: Type.OBJECT,
                 properties: {
                   theologicalMeaning: { type: Type.STRING },
+                  theologicalReference: { type: Type.STRING },
                   historicalContext: { type: Type.STRING },
+                  historicalReference: { type: Type.STRING },
                   practicalApplication: { type: Type.STRING },
+                  practicalReference: { type: Type.STRING },
                 },
-                required: ["theologicalMeaning", "historicalContext", "practicalApplication"]
+                required: ["theologicalMeaning", "theologicalReference", "historicalContext", "historicalReference", "practicalApplication", "practicalReference"]
               },
               prayer: { type: Type.STRING },
               keyThemes: { type: Type.ARRAY, items: { type: Type.STRING } }
@@ -98,7 +96,6 @@ export const geminiService = {
         timestamp: Date.now()
       };
 
-      // Store in cache
       searchCache.set(normalizedQuery, result);
       return result;
     } catch (error: any) {

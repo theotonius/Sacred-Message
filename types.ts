@@ -5,8 +5,11 @@ export interface VerseData {
   text: string;
   explanation: {
     theologicalMeaning: string;
+    theologicalReference: string;
     historicalContext: string;
+    historicalReference: string;
     practicalApplication: string;
+    practicalReference: string;
   };
   prayer: string;
   keyThemes: string[];
