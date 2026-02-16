@@ -47,6 +47,8 @@ export default function App() {
   const [error, setError] = useState('');
   const [showCopyFeedback, setShowCopyFeedback] = useState(false);
   const [showSuggestions, setShowSuggestions] = useState(false);
+  const [isStartup, setIsStartup] = useState(true);
+  const [startupExit, setStartupExit] = useState(false);
   
   const [filterTag, setFilterTag] = useState<string | null>(null);
   const [filterTheme, setFilterTheme] = useState<string | null>(null);
@@ -74,6 +76,14 @@ export default function App() {
     if (storedFont) setFontFamily(storedFont);
     const storedLangVersion = localStorage.getItem('sacred_word_lang_version');
     if (storedLangVersion) setLanguageVersion(storedLangVersion as any);
+
+    // Startup animation timer
+    const timer = setTimeout(() => {
+      setStartupExit(true);
+      setTimeout(() => setIsStartup(false), 800);
+    }, 2500);
+
+    return () => clearTimeout(timer);
   }, []);
 
   useEffect(() => {
@@ -327,9 +337,38 @@ export default function App() {
 
   const isCurrentVerseSaved = currentVerse ? !!savedVerses.find(v => v.reference === currentVerse.reference) : false;
 
+  if (isStartup) {
+    return (
+      <div className={`fixed inset-0 z-[1000] flex flex-col items-center justify-center bg-[#0f172a] transition-all duration-800 ease-in-out ${startupExit ? 'opacity-0 scale-110 pointer-events-none' : 'opacity-100 scale-100'}`}>
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[150vw] h-[150vw] bg-amber-500/5 blur-[120px] rounded-full"></div>
+        
+        <div className="relative mb-12">
+          {/* Pulsing ring */}
+          <div className="absolute inset-[-20px] border-2 border-amber-500/20 rounded-full animate-ping opacity-20"></div>
+          <div className="absolute inset-[-40px] border-2 border-amber-500/10 rounded-full animate-ping opacity-10" style={{ animationDelay: '0.5s' }}></div>
+          
+          <div className="w-24 h-24 md:w-32 md:h-32 bg-gradient-to-br from-amber-400 via-amber-600 to-amber-800 rounded-[2.5rem] flex items-center justify-center shadow-[0_0_60px_rgba(251,191,36,0.4)] animate-pulse">
+            <i className="fa-solid fa-cross text-white text-4xl md:text-6xl"></i>
+          </div>
+        </div>
+
+        <div className="text-center space-y-4 animate-in fade-in slide-in-from-bottom-8 duration-1000">
+          <h1 className="text-4xl md:text-6xl font-black text-white leading-none tracking-tighter bn-serif">
+            পবিত্র <span className="text-amber-500">বানী</span>
+          </h1>
+          <div className="flex items-center justify-center gap-3 overflow-hidden">
+            <div className="h-px w-8 bg-amber-500/40"></div>
+            <p className="text-amber-600/80 font-bold tracking-[0.3em] text-xs md:text-sm uppercase bn-serif">Sacred Word</p>
+            <div className="h-px w-8 bg-amber-500/40"></div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div 
-      className={`min-h-screen flex flex-col relative transition-all duration-700 ease-in-out overflow-x-hidden`}
+      className={`min-h-screen flex flex-col relative transition-all duration-700 ease-in-out overflow-x-hidden animate-in fade-in duration-1000`}
       onTouchStart={handleTouchStart}
       onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
