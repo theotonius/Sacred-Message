@@ -56,23 +56,29 @@ export const geminiService = {
 
     const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
     
-    const versionInstruction = version === 'carey' 
-      ? "Use 'Carey Style' Bengali (Traditional, Sadhu Bhasha, formal, and classical spiritual tone)." 
-      : "Use Modern Common Bengali (Simple, soulful, and everyday conversational tone).";
+    const explanationStyle = version === 'carey' 
+      ? "Carey Style (Traditional Sadhu Bhasha, classical tone)" 
+      : "Modern Simple Bengali (Soulful, contemporary tone)";
 
     try {
       const response = await ai.models.generateContent({
         model: "gemini-3-flash-preview",
-        contents: `Analyze: "${query}". Provide soulful explanation. Language style: ${versionInstruction}. For each section (theological, historical, practical), YOU MUST provide a specific Biblical reference/source (সূত্র). Output JSON.`,
+        contents: `Analyze: "${query}". 
+        IMPORTANT RULES:
+        1. The "text" field (the core verse/lyric) MUST ALWAYS be in Modern Simple Bengali for clarity.
+        2. The "explanation" fields (theologicalMeaning, historicalContext, practicalApplication) MUST be in ${explanationStyle}.
+        3. The "prayer" and "keyThemes" should match the explanation style.
+        4. For each explanation part, provide a source (সূত্র). 
+        Output STRICT JSON.`,
         config: {
-          systemInstruction: `You are 'Sacred Word'. ${versionInstruction} For each analytical part, include a specific 'reference' (e.g., specific verse or scholarly source). Provide: reference, verse text, 3-part explanation with individual sources, a modern prayer, and key themes. Output STRICT JSON.`,
+          systemInstruction: `You are 'Sacred Word'. Regardless of the user's version preference, the MAIN VERSE (text) should always be Modern Simple Bengali. The EXPLANATION details should follow the selected version: ${explanationStyle}. Ensure deep theological and historical accuracy with references.`,
           responseMimeType: "application/json",
           thinkingConfig: { thinkingBudget: 0 },
           responseSchema: {
             type: Type.OBJECT,
             properties: {
               reference: { type: Type.STRING },
-              text: { type: Type.STRING },
+              text: { type: Type.STRING, description: "Main verse in Modern Simple Bengali" },
               explanation: {
                 type: Type.OBJECT,
                 properties: {
