@@ -26,6 +26,14 @@ const fonts = [
   { id: 'Noto Sans Bengali', name: 'নোটো সান্স' }
 ];
 
+const SPIRITUAL_SUGGESTIONS = [
+  "গীতসংহিতা ২৩", "যোহন ৩:১৬", "১ করিন্থীয় ১৩", "রোমীয় ৮:২৮", 
+  "যিশাইয় ৪০:৩১", "হিতোপদেশ ৩:৫-৬", "ফিলিপীয় ৪:১৩", "মথি ১১:২৮",
+  "ঈশ্বরের ভালোবাসা", "শান্তি ও সান্ত্বনা", "ক্ষমা ও মুক্তি", "সুরক্ষা প্রার্থনা",
+  "যীশু খ্রিস্টের জীবন", "বিশ্বাস ও ধৈর্য", "আশীর্বাদ ও অনুগ্রহ",
+  "যোহন ১৪:৬", "গীতসংহিতা ৯১", "মথি ৬:৯-১৩"
+];
+
 export default function App() {
   const [activeView, setActiveView] = useState<View>('SEARCH');
   const [query, setQuery] = useState('');
@@ -39,6 +47,7 @@ export default function App() {
   const [theme, setTheme] = useState('dark');
   const [error, setError] = useState('');
   const [showCopyFeedback, setShowCopyFeedback] = useState(false);
+  const [showSuggestions, setShowSuggestions] = useState(false);
   
   const [filterTag, setFilterTag] = useState<string | null>(null);
   const [newTagInputId, setNewTagInputId] = useState<string | null>(null);
@@ -46,6 +55,7 @@ export default function App() {
 
   const audioContextRef = useRef<AudioContext | null>(null);
   const audioSourceRef = useRef<AudioBufferSourceNode | null>(null);
+  const suggestionRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const storedVerses = localStorage.getItem('sacred_word_verses');
@@ -69,6 +79,17 @@ export default function App() {
   useEffect(() => {
     document.documentElement.style.setProperty('--app-font', `'${fontFamily}', 'Hind Siliguri', sans-serif`);
   }, [fontFamily]);
+
+  // Click outside listener for suggestions
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (suggestionRef.current && !suggestionRef.current.contains(event.target as Node)) {
+        setShowSuggestions(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   const saveToLocal = (verses: VerseData[]) => {
     localStorage.setItem('sacred_word_verses', JSON.stringify(verses));
@@ -99,8 +120,11 @@ export default function App() {
     const finalQuery = (typeof searchQuery === 'string' ? searchQuery : query).trim();
     if (!finalQuery || state === AppState.SEARCHING) return;
 
-    if (typeof searchQuery === 'string') setQuery(searchQuery);
+    if (typeof searchQuery === 'string') {
+      setQuery(searchQuery);
+    }
     
+    setShowSuggestions(false);
     setState(AppState.SEARCHING);
     setError('');
     setCurrentVerse(null);
@@ -116,6 +140,13 @@ export default function App() {
       setState(AppState.ERROR);
     }
   };
+
+  const filteredAutoSuggestions = useMemo(() => {
+    if (!query.trim()) return SPIRITUAL_SUGGESTIONS.slice(0, 6);
+    return SPIRITUAL_SUGGESTIONS.filter(s => 
+      s.toLowerCase().includes(query.toLowerCase())
+    ).slice(0, 6);
+  }, [query]);
 
   const toggleSave = () => {
     if (!currentVerse) return;
@@ -245,6 +276,7 @@ export default function App() {
 
   return (
     <div className={`min-h-screen flex flex-col relative transition-colors duration-500`}>
+      {/* Background Glow */}
       <div className={`fixed top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[600px] ${theme === 'dark' ? 'bg-amber-400/5' : 'bg-amber-500/10'} blur-[120px] rounded-full -z-10 pointer-events-none`}></div>
 
       <header className="w-full max-w-7xl mx-auto px-6 pt-10 pb-6 flex justify-between items-center z-20">
@@ -270,29 +302,58 @@ export default function App() {
       <main className="flex-1 w-full max-w-7xl mx-auto p-6 pb-20 md:pb-6 relative z-10">
         {activeView === 'SEARCH' && (
           <div className="space-y-16 animate-in fade-in slide-in-from-bottom-8 duration-700 pb-8 md:pb-0">
-            <div className="max-w-4xl mx-auto mt-4 md:mt-8">
+            <div className="max-w-4xl mx-auto mt-4 md:mt-8 relative" ref={suggestionRef}>
               <form onSubmit={(e) => { e.preventDefault(); handleSearch(); }} className="relative group">
                 <div className="absolute -inset-1 bg-gradient-to-r from-amber-500/15 to-amber-200/15 rounded-[2.5rem] blur-xl opacity-0 group-focus-within:opacity-100 transition-all duration-1000"></div>
                 <div className="relative">
                   <input 
                     value={query} 
-                    onChange={e => setQuery(e.target.value)}
+                    onChange={e => { setQuery(e.target.value); setShowSuggestions(true); }}
+                    onFocus={() => setShowSuggestions(true)}
                     placeholder="পবিত্র বাইবেলের পদ বা অধ্যায় লিখুন.."
-                    className={`w-full ${theme === 'dark' ? 'bg-slate-900/40' : 'bg-white/80'} backdrop-blur-3xl border border-white/10 pl-10 pr-32 md:pr-48 py-8 rounded-[2.5rem] text-xl md:text-2xl outline-none focus:ring-2 ring-amber-500/50 transition-all ${theme === 'dark' ? 'placeholder-slate-600 text-white' : 'placeholder-slate-400 text-slate-900'} font-bold shadow-3xl bn-serif`}
+                    className={`w-full ${theme === 'dark' ? 'bg-slate-900/40' : 'bg-white/80'} backdrop-blur-3xl border border-white/10 pl-10 pr-40 md:pr-64 py-8 rounded-[2.5rem] text-xl md:text-2xl outline-none focus:ring-2 ring-amber-500/50 transition-all ${theme === 'dark' ? 'placeholder-slate-600 text-white' : 'placeholder-slate-400 text-slate-900'} font-bold shadow-3xl bn-serif`}
                   />
-                  <div className="absolute right-3 top-1/2 -translate-y-1/2 flex gap-2">
-                     <button 
-                        type="submit"
-                        disabled={state === AppState.SEARCHING}
-                        className="bg-amber-600 hover:bg-amber-500 text-white font-black px-8 md:px-12 py-5 rounded-full shadow-lg transition-all flex items-center gap-3 disabled:opacity-40 active:scale-95 group/btn overflow-hidden relative"
+                  <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-2">
+                    {query && (
+                      <button 
+                        type="button"
+                        onClick={() => { setQuery(''); setShowSuggestions(true); }}
+                        className="w-12 h-12 flex items-center justify-center text-slate-400 hover:text-amber-500 transition-colors rounded-full"
                       >
-                        <div className="absolute inset-0 bg-white/10 translate-y-full group-hover/btn:translate-y-0 transition-transform"></div>
-                        {state === AppState.SEARCHING ? <i className="fa-solid fa-spinner fa-spin"></i> : <i className="fa-solid fa-magnifying-glass"></i>}
-                        <span className="relative z-10 hidden md:inline">সার্চ</span>
+                        <i className="fa-solid fa-circle-xmark text-lg"></i>
                       </button>
+                    )}
+                    <button 
+                      type="submit"
+                      disabled={state === AppState.SEARCHING}
+                      className="bg-amber-600 hover:bg-amber-500 text-white font-black px-8 md:px-12 py-5 rounded-full shadow-lg transition-all flex items-center gap-3 disabled:opacity-40 active:scale-95 group/btn overflow-hidden relative"
+                    >
+                      <div className="absolute inset-0 bg-white/10 translate-y-full group-hover/btn:translate-y-0 transition-transform"></div>
+                      {state === AppState.SEARCHING ? <i className="fa-solid fa-spinner fa-spin"></i> : <i className="fa-solid fa-magnifying-glass"></i>}
+                      <span className="relative z-10 hidden md:inline">সার্চ</span>
+                    </button>
                   </div>
                 </div>
               </form>
+
+              {/* Suggestions Dropdown */}
+              {showSuggestions && filteredAutoSuggestions.length > 0 && (
+                <div className="absolute top-full left-0 right-0 mt-4 divine-glass rounded-[2rem] p-4 shadow-3xl z-50 animate-in fade-in slide-in-from-top-4 duration-300">
+                  <p className="text-[10px] font-black uppercase tracking-[0.3em] text-amber-600/60 px-6 py-2">প্রস্তাবিত বিষয়সমূহ</p>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-1 mt-2">
+                    {filteredAutoSuggestions.map((suggestion, idx) => (
+                      <button
+                        key={idx}
+                        onClick={() => handleSearch(suggestion)}
+                        className={`text-left px-6 py-4 rounded-xl transition-all ${theme === 'dark' ? 'hover:bg-white/5 text-slate-200' : 'hover:bg-black/5 text-slate-800'} font-bold bn-serif flex items-center gap-4 group`}
+                      >
+                        <i className="fa-solid fa-arrow-right text-[10px] text-amber-500 opacity-0 group-hover:opacity-100 transition-all -translate-x-2 group-hover:translate-x-0"></i>
+                        {suggestion}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
 
             {state === AppState.SEARCHING && (
@@ -657,7 +718,7 @@ export default function App() {
                       </div>
                       <a 
                         href="mailto:theotonius2012@gmail.com?subject=Sacred Word Feedback" 
-                        className={`flex items-center justify-between p-8 rounded-[2rem] border-2 transition-all group ${theme === 'dark' ? 'bg-white/5 border-white/5 hover:border-violet-500/30' : 'bg-black/5 border-black/5 hover:border-violet-500/30'}`}
+                        className={`flex items-center justify-between p-8 rounded-[2rem] border-2 transition-all group ${theme === 'dark' ? 'bg-white/5 border-white/5 hover:border-amber-500/30' : 'bg-black/5 border-black/5 hover:border-amber-500/30'}`}
                       >
                          <div className="flex items-center gap-6">
                            <div className="w-12 h-12 bg-amber-500/10 rounded-xl flex items-center justify-center text-amber-500">
@@ -673,6 +734,7 @@ export default function App() {
                     </div>
                 </div>
 
+                {/* Developer Profile Card */}
                 <div className={`relative group overflow-hidden divine-glass p-12 md:p-16 rounded-[4.5rem] shadow-3xl border-2 ${theme === 'dark' ? 'border-white/5 hover:border-amber-500/20' : 'border-black/5 hover:border-amber-500/30'} transition-all duration-700`}>
                    <div className="absolute top-0 right-0 w-80 h-80 bg-gradient-to-br from-amber-500/10 via-amber-600/5 to-transparent blur-[80px] rounded-full -z-10 transition-opacity group-hover:opacity-100 opacity-60"></div>
                    
