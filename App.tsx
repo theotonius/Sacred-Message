@@ -952,13 +952,10 @@ export default function App() {
                          </p>
 
                          <div className="flex flex-col sm:flex-row justify-center md:justify-start gap-4">
-                            <a 
-                              href="tel:+8801614802711" 
-                              className="flex items-center justify-center gap-3 px-6 py-4 bg-amber-600 hover:bg-amber-500 text-white rounded-2xl shadow-xl active:scale-95 transition-all duration-700 group/call"
-                            >
-                              <i className="fa-solid fa-phone-volume group-hover/call:animate-bounce"></i>
+                            <div className="flex items-center justify-center gap-3 px-6 py-4 bg-amber-600 text-white rounded-2xl shadow-xl transition-all duration-700">
+                              <i className="fa-solid fa-phone-volume"></i>
                               <span className="font-black bn-serif text-base md:text-lg">+8801614802711</span>
-                            </a>
+                            </div>
 
                             <div className="flex justify-center gap-4">
                                <SocialIcon icon="fa-github" link="https://github.com/yourusername" />
