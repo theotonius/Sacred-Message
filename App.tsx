@@ -55,6 +55,12 @@ export default function App() {
   const [newTagInputId, setNewTagInputId] = useState<string | null>(null);
   const [newTagValue, setNewTagValue] = useState('');
 
+  // Pull to refresh states
+  const [pullDistance, setPullDistance] = useState(0);
+  const [isRefreshing, setIsRefreshing] = useState(false);
+  const touchStartY = useRef(0);
+  const isPulling = useRef(false);
+
   const audioContextRef = useRef<AudioContext | null>(null);
   const audioSourceRef = useRef<AudioBufferSourceNode | null>(null);
   const suggestionRef = useRef<HTMLDivElement>(null);
@@ -83,6 +89,67 @@ export default function App() {
   useEffect(() => {
     document.documentElement.style.setProperty('--app-font', `'${fontFamily}', 'Hind Siliguri', sans-serif`);
   }, [fontFamily]);
+
+  // Pull to refresh handlers
+  const handleTouchStart = (e: React.TouchEvent) => {
+    if (window.scrollY === 0) {
+      touchStartY.current = e.touches[0].clientY;
+      isPulling.current = true;
+    }
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (!isPulling.current) return;
+    const currentY = e.touches[0].clientY;
+    const distance = currentY - touchStartY.current;
+    
+    if (distance > 0) {
+      // Apply resistance
+      const dampedDistance = Math.min(distance * 0.4, 120);
+      setPullDistance(dampedDistance);
+      if (dampedDistance > 80) {
+        // Optional: Vibration feedback if supported
+        if ('vibrate' in navigator && pullDistance < 80) {
+          navigator.vibrate(10);
+        }
+      }
+    } else {
+      isPulling.current = false;
+      setPullDistance(0);
+    }
+  };
+
+  const handleTouchEnd = () => {
+    if (!isPulling.current) return;
+    isPulling.current = false;
+
+    if (pullDistance > 80) {
+      triggerRefresh();
+    } else {
+      setPullDistance(0);
+    }
+  };
+
+  const triggerRefresh = useCallback(() => {
+    setIsRefreshing(true);
+    setPullDistance(80); // Keep indicator visible
+
+    // Simulate refresh logic
+    setTimeout(() => {
+      if (activeView === 'SEARCH') {
+        setQuery('');
+        setCurrentVerse(null);
+        setError('');
+        setState(AppState.IDLE);
+      } else if (activeView === 'SAVED') {
+        setFilterTag(null);
+        setFilterTheme(null);
+      }
+      
+      setIsRefreshing(false);
+      setPullDistance(0);
+    }, 1000);
+  }, [activeView]);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -318,7 +385,22 @@ export default function App() {
   const isCurrentVerseSaved = currentVerse ? !!savedVerses.find(v => v.reference === currentVerse.reference) : false;
 
   return (
-    <div className={`min-h-screen flex flex-col relative transition-all duration-700 ease-in-out overflow-x-hidden`}>
+    <div 
+      className={`min-h-screen flex flex-col relative transition-all duration-700 ease-in-out overflow-x-hidden`}
+      onTouchStart={handleTouchStart}
+      onTouchMove={handleTouchMove}
+      onTouchEnd={handleTouchEnd}
+    >
+      {/* Pull to Refresh Indicator */}
+      <div 
+        className="fixed top-0 left-0 right-0 flex justify-center z-[100] pointer-events-none transition-transform duration-200"
+        style={{ transform: `translateY(${pullDistance - 50}px)`, opacity: pullDistance / 80 }}
+      >
+        <div className={`w-12 h-12 rounded-full divine-glass flex items-center justify-center shadow-2xl border-amber-500/30 ${isRefreshing ? 'animate-spin' : ''}`}>
+          <i className={`fa-solid ${isRefreshing ? 'fa-spinner' : 'fa-cross'} text-amber-500 text-lg`}></i>
+        </div>
+      </div>
+
       {/* Background Glow with enhanced responsive units */}
       <div className={`fixed top-0 left-1/2 -translate-x-1/2 w-[120vw] h-[80vh] md:w-[80vw] md:h-[600px] ${theme === 'dark' ? 'bg-amber-400/5' : 'bg-amber-500/10'} blur-[80px] md:blur-[120px] rounded-full -z-10 pointer-events-none transition-all duration-1000 ease-in-out`}></div>
 
@@ -452,7 +534,6 @@ export default function App() {
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
-                  {/* Cards Section with responsive spacing */}
                   <div className="divine-card p-8 md:p-10 rounded-[2rem] md:rounded-[3rem] flex flex-col justify-between hover:border-amber-500/20 transition-all duration-700 group">
                     <div className="space-y-4 md:space-y-6">
                       <div className="w-12 h-12 md:w-16 md:h-16 bg-amber-500/10 rounded-xl md:rounded-2xl flex items-center justify-center text-amber-500 text-xl md:text-2xl shadow-inner group-hover:scale-110 transition-transform">
