@@ -45,6 +45,7 @@ export default function App() {
   const [fontSize, setFontSize] = useState('base'); 
   const [fontFamily, setFontFamily] = useState('SolaimanLipi');
   const [theme, setTheme] = useState('dark');
+  const [languageVersion, setLanguageVersion] = useState<'modern' | 'carey'>('modern');
   const [error, setError] = useState('');
   const [showCopyFeedback, setShowCopyFeedback] = useState(false);
   const [showSuggestions, setShowSuggestions] = useState(false);
@@ -71,6 +72,8 @@ export default function App() {
     if (storedTheme) setTheme(storedTheme);
     const storedFont = localStorage.getItem('sacred_word_font');
     if (storedFont) setFontFamily(storedFont);
+    const storedLangVersion = localStorage.getItem('sacred_word_lang_version');
+    if (storedLangVersion) setLanguageVersion(storedLangVersion as any);
   }, []);
 
   useEffect(() => {
@@ -116,6 +119,11 @@ export default function App() {
     localStorage.setItem('sacred_word_theme', newTheme);
   };
 
+  const handleLangVersionChange = (version: 'modern' | 'carey') => {
+    setLanguageVersion(version);
+    localStorage.setItem('sacred_word_lang_version', version);
+  };
+
   const handleSearch = async (searchQuery?: string) => {
     const finalQuery = (typeof searchQuery === 'string' ? searchQuery : query).trim();
     if (!finalQuery || state === AppState.SEARCHING) return;
@@ -131,7 +139,7 @@ export default function App() {
     stopAudio();
     
     try {
-      const data = await geminiService.fetchVerseExplanation(finalQuery);
+      const data = await geminiService.fetchVerseExplanation(finalQuery, languageVersion);
       setCurrentVerse(data);
       setState(AppState.IDLE);
     } catch (err: any) {
@@ -328,9 +336,9 @@ export default function App() {
         </div>
         
         <div className="hidden md:flex divine-glass px-2 py-2 rounded-3xl gap-1">
-          <NavItem icon="fa-magnifying-glass" label="সার্চ" active={activeView === 'SEARCH'} onClick={() => setActiveView('SEARCH'} theme={theme} />
-          <NavItem icon="fa-bookmark" label="সংগ্রহ" active={activeView === 'SAVED'} onClick={() => setActiveView('SAVED'} theme={theme} />
-          <NavItem icon="fa-sliders" label="সেটিংস" active={activeView === 'SETTINGS'} onClick={() => setActiveView('SETTINGS'} theme={theme} />
+          <NavItem icon="fa-magnifying-glass" label="সার্চ" active={activeView === 'SEARCH'} onClick={() => setActiveView('SEARCH')} theme={theme} />
+          <NavItem icon="fa-bookmark" label="সংগ্রহ" active={activeView === 'SAVED'} onClick={() => setActiveView('SAVED')} theme={theme} />
+          <NavItem icon="fa-sliders" label="সেটিংস" active={activeView === 'SETTINGS'} onClick={() => setActiveView('SETTINGS')} theme={theme} />
         </div>
       </header>
 
@@ -420,7 +428,10 @@ export default function App() {
                 <div className="relative group">
                   <div className="absolute -inset-4 bg-amber-500/5 rounded-[4rem] blur-2xl group-hover:bg-amber-500/10 transition-all duration-700"></div>
                   <div className={`relative ${theme === 'dark' ? 'bg-slate-900/50' : 'bg-white/70'} backdrop-blur-3xl p-12 md:p-20 rounded-[4rem] border border-white/5 overflow-hidden text-center shadow-3xl transition-all duration-700`}>
-                    <div className="absolute top-10 right-10">
+                    <div className="absolute top-10 right-10 flex gap-4">
+                      <div className="divine-glass px-4 py-2 rounded-xl flex items-center gap-2">
+                        <span className="text-[10px] font-black uppercase tracking-widest text-amber-600/60">{languageVersion === 'modern' ? 'সাধারণ বাংলা' : 'কেরী ভার্শন'}</span>
+                      </div>
                       <button onClick={handleRead} className={`w-16 h-16 flex items-center justify-center rounded-2xl divine-glass transition-all ${isReading ? 'text-rose-500 shadow-[0_0_20px_rgba(244,63,94,0.3)]' : 'text-amber-500 hover:text-amber-600 hover:scale-105 active:scale-95'}`}>
                         <i className={`fa-solid ${isReading ? 'fa-square' : 'fa-play'} text-xl`}></i>
                       </button>
@@ -747,7 +758,31 @@ export default function App() {
 
              <div className="space-y-10">
                 <div className="divine-glass p-10 md:p-14 rounded-[4rem] space-y-12 shadow-3xl transition-all duration-700">
+                    {/* New Language Version Setting */}
                     <div className="space-y-8">
+                      <div className="flex items-center gap-4">
+                        <div className="h-2 w-2 bg-amber-500 rounded-full"></div>
+                        <h4 className="text-base font-black text-amber-600 uppercase tracking-[0.4em]">ব্যাখ্যার ভার্শন নির্বাচন</h4>
+                      </div>
+                      <div className="grid grid-cols-2 gap-6">
+                          <button 
+                            onClick={() => handleLangVersionChange('modern')} 
+                            className={`p-10 rounded-[2.5rem] border-2 transition-all duration-700 flex flex-col items-center gap-4 ${languageVersion === 'modern' ? 'bg-amber-500/10 border-amber-500/50 text-amber-500 shadow-[0_0_50px_rgba(251,191,36,0.15)]' : 'bg-white/5 border-transparent text-slate-500 hover:bg-white/10'}`}
+                          >
+                            <i className="fa-solid fa-feather-pointed text-2xl opacity-50"></i>
+                            <span className="font-black tracking-[0.2em] text-[11px] uppercase bn-serif">সাধারণ বাংলা</span>
+                          </button>
+                          <button 
+                            onClick={() => handleLangVersionChange('carey')} 
+                            className={`p-10 rounded-[2.5rem] border-2 transition-all duration-700 flex flex-col items-center gap-4 ${languageVersion === 'carey' ? 'bg-amber-500/10 border-amber-500/50 text-amber-500 shadow-[0_0_50px_rgba(251,191,36,0.15)]' : 'bg-white/5 border-transparent text-slate-500 hover:bg-white/10'}`}
+                          >
+                            <i className="fa-solid fa-scroll text-2xl opacity-50"></i>
+                            <span className="font-black tracking-[0.2em] text-[11px] uppercase bn-serif">কেরী ভার্শন</span>
+                          </button>
+                      </div>
+                    </div>
+
+                    <div className={`pt-12 border-t ${theme === 'dark' ? 'border-white/5' : 'border-black/5'} space-y-8 transition-colors duration-700`}>
                       <div className="flex items-center gap-4">
                         <div className="h-2 w-2 bg-amber-500 rounded-full"></div>
                         <h4 className="text-base font-black text-amber-600 uppercase tracking-[0.4em]">থিম পরিবর্তন</h4>
@@ -839,6 +874,28 @@ export default function App() {
                          </div>
                          <i className="fa-solid fa-arrow-right-long text-slate-500 group-hover:text-amber-500 group-hover:translate-x-2 transition-all"></i>
                       </a>
+                    </div>
+
+                    {/* New About Sacred Word Section */}
+                    <div className={`pt-12 border-t ${theme === 'dark' ? 'border-white/5' : 'border-black/5'} space-y-8 transition-colors duration-700`}>
+                      <div className="flex items-center gap-4">
+                        <div className="h-2 w-2 bg-amber-500 rounded-full"></div>
+                        <h4 className="text-base font-black text-amber-600 uppercase tracking-[0.4em]">অ্যাপ সম্পর্কে (About)</h4>
+                      </div>
+                      <div className={`p-10 rounded-[2.5rem] space-y-6 ${theme === 'dark' ? 'bg-white/5' : 'bg-black/5'}`}>
+                         <div className="flex items-center gap-6">
+                           <div className="w-16 h-16 bg-amber-500/10 rounded-2xl flex items-center justify-center text-amber-500 text-2xl shadow-inner">
+                             <i className="fa-solid fa-circle-info"></i>
+                           </div>
+                           <div className="space-y-1">
+                             <h5 className={`text-xl font-black bn-serif ${theme === 'dark' ? 'text-white' : 'text-slate-900'}`}>পবিত্র বানী (Sacred Word)</h5>
+                             <p className="text-amber-600 text-[10px] font-black uppercase tracking-widest">Version 1.5.0 Stable</p>
+                           </div>
+                         </div>
+                         <p className={`${theme === 'dark' ? 'text-slate-400' : 'text-slate-700'} leading-relaxed bn-serif font-medium text-justify text-sm`}>
+                           এটি একটি কৃত্রিম বুদ্ধিমত্তা চালিত আধ্যাত্মিক সহচর, যা বাইবেলের প্রতিটি পদের গভীর তাত্ত্বিক বিশ্লেষণ, ঐতিহাসিক প্রেক্ষাপট এবং দৈনন্দিন জীবনে এর ব্যবহারিক প্রয়োগ সম্পর্কে স্বচ্ছ ধারণা প্রদান করে। আমাদের লক্ষ্য প্রযুক্তির মাধ্যমে পবিত্র বাণীর আলো সবার মাঝে পৌঁছে দেওয়া।
+                         </p>
+                      </div>
                     </div>
                 </div>
 

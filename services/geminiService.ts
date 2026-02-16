@@ -47,8 +47,8 @@ function extractJson(text: string): any {
 }
 
 export const geminiService = {
-  async fetchVerseExplanation(query: string): Promise<VerseData> {
-    const normalizedQuery = query.trim().toLowerCase();
+  async fetchVerseExplanation(query: string, version: 'modern' | 'carey' = 'modern'): Promise<VerseData> {
+    const normalizedQuery = `${query.trim().toLowerCase()}_${version}`;
     
     if (searchCache.has(normalizedQuery)) {
       return searchCache.get(normalizedQuery)!;
@@ -56,12 +56,16 @@ export const geminiService = {
 
     const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
     
+    const versionInstruction = version === 'carey' 
+      ? "Use 'Carey Style' Bengali (Traditional, Sadhu Bhasha, formal, and classical spiritual tone)." 
+      : "Use Modern Common Bengali (Simple, soulful, and everyday conversational tone).";
+
     try {
       const response = await ai.models.generateContent({
         model: "gemini-3-flash-preview",
-        contents: `Analyze: "${query}". Provide soulful explanation in modern common Bengali. For each section (theological, historical, practical), YOU MUST provide a specific Biblical reference/source (সূত্র). Output JSON.`,
+        contents: `Analyze: "${query}". Provide soulful explanation. Language style: ${versionInstruction}. For each section (theological, historical, practical), YOU MUST provide a specific Biblical reference/source (সূত্র). Output JSON.`,
         config: {
-          systemInstruction: "You are 'Sacred Word'. Use MODERN COMMON BENGALI only. AVOID Carey/Archaic Bengali. For each analytical part, include a specific 'reference' (e.g., specific verse or scholarly source). Provide: reference, verse text, 3-part explanation with individual sources, a modern prayer, and key themes. Output STRICT JSON.",
+          systemInstruction: `You are 'Sacred Word'. ${versionInstruction} For each analytical part, include a specific 'reference' (e.g., specific verse or scholarly source). Provide: reference, verse text, 3-part explanation with individual sources, a modern prayer, and key themes. Output STRICT JSON.`,
           responseMimeType: "application/json",
           thinkingConfig: { thinkingBudget: 0 },
           responseSchema: {
